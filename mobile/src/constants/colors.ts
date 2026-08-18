@@ -8,4 +8,5 @@ export const colors = {
   textMuted: '#77776B',
   border: '#E6E4D4',
   error: '#B42318',
+  onPrimary: '#FFFFFF',
 };

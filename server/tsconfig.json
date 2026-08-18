@@ -17,6 +17,9 @@
     "incremental": true,
     "skipLibCheck": true,
     "types": ["node", "jest"],
+    "paths": {
+      "@nestjs/typeorm": ["./node_modules/@nestjs/typeorm/index.d.ts"]
+    },
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
