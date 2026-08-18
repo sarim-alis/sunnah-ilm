@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -14,11 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
-import {
-  errorMessage,
-  updateProfile,
-  type AuthUser,
-} from '@/services/auth';
+import { errorMessage, updateProfile, type AuthUser } from '@/services/auth';
 import { authStyles as styles } from './authStyles';
 
 type ProfileScreenProps = {
@@ -86,6 +83,15 @@ export default function ProfileScreen({
 
   return (
     <View style={styles.container}>
+      <View style={profileStyles.topBar}>
+        <TouchableOpacity
+          onPress={onBack}
+          style={profileStyles.backButton}
+          activeOpacity={0.8}
+        >
+          <Text style={profileStyles.backText}>Back</Text>
+        </TouchableOpacity>
+      </View>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -95,11 +101,6 @@ export default function ProfileScreen({
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.overlay}>
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
-              <Ionicons name="chevron-back" size={22} color={colors.primary} />
-              <Text style={styles.backText}>Back</Text>
-            </TouchableOpacity>
-
             <View style={styles.header}>
               <Text style={styles.welcomeText}>Edit Profile</Text>
               <Text style={styles.subtitleText}>Update your photo and details</Text>
@@ -176,3 +177,28 @@ export default function ProfileScreen({
     </View>
   );
 }
+
+const profileStyles = StyleSheet.create({
+  topBar: {
+    paddingHorizontal: 24,
+    paddingTop: 8,
+    paddingBottom: 4,
+  },
+  backButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: colors.card,
+    borderColor: colors.border,
+    borderRadius: 12,
+    borderWidth: 1,
+    minWidth: 96,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+  },
+  backText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+

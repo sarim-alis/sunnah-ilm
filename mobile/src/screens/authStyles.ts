@@ -23,17 +23,6 @@ export const authStyles = StyleSheet.create({
     marginBottom: 20,
     width: 120,
   },
-  backButton: {
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  backText: {
-    color: colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
   avatarButton: {
     alignSelf: 'center',
     marginBottom: 24,
