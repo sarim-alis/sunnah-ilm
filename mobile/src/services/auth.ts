@@ -5,6 +5,7 @@ export type AuthUser = {
   id: string;
   name: string;
   email: string;
+  imageUrl?: string | null;
 };
 
 type AuthResponse = {
@@ -16,6 +17,15 @@ type AuthResponse = {
 function messageFrom(data: AuthResponse) {
   if (Array.isArray(data.message)) return data.message[0];
   return data.message ?? 'Request failed';
+}
+
+export function errorMessage(err: unknown, fallback: string) {
+  if (typeof err === 'string' && err.length > 0) return err;
+  if (typeof err === 'object' && err !== null && 'message' in err) {
+    const message = (err as { message: unknown }).message;
+    if (typeof message === 'string' && message.length > 0) return message;
+  }
+  return fallback;
 }
 
 export async function login(email: string, password: string) {
@@ -41,6 +51,37 @@ export async function register(name: string, email: string, password: string) {
   const data = (await response.json()) as AuthResponse;
   if (!response.ok) throw new Error(messageFrom(data));
   return data;
+}
+
+export async function updateProfile(
+  name: string,
+  email: string,
+  imageUri?: string | null,
+) {
+  const token = await AsyncStorage.getItem('token');
+  if (!token) throw new Error('Please log in again');
+
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('email', email);
+
+  if (imageUri) {
+    formData.append('image', {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'profile.jpg',
+    } as unknown as Blob);
+  }
+
+  const response = await fetch(`${apiConfig.baseUrl}/users/profile`, {
+    method: 'PUT',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  const data = (await response.json()) as AuthResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
+  await AsyncStorage.setItem('user', JSON.stringify(data.user));
+  return data.user;
 }
 
 export async function logout() {

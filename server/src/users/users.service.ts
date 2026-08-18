@@ -16,4 +16,11 @@ export class UsersService {
   create(data: { name: string; email: string; password: string }) {
     return this.usersRepository.create(data);
   }
+
+  update(
+    id: string,
+    data: { name?: string; email?: string; imageUrl?: string },
+  ) {
+    return this.usersRepository.update(id, data);
+  }
 }

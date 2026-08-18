@@ -23,6 +23,42 @@ export const authStyles = StyleSheet.create({
     marginBottom: 20,
     width: 120,
   },
+  backButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  backText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  avatarButton: {
+    alignSelf: 'center',
+    marginBottom: 24,
+  },
+  avatar: {
+    borderColor: colors.border,
+    borderRadius: 48,
+    borderWidth: 2,
+    height: 96,
+    width: 96,
+  },
+  avatarPlaceholder: {
+    alignItems: 'center',
+    backgroundColor: colors.accent,
+    borderRadius: 48,
+    height: 96,
+    justifyContent: 'center',
+    width: 96,
+  },
+  avatarHint: {
+    color: colors.textMuted,
+    fontSize: 12,
+    marginTop: 8,
+    textAlign: 'center',
+  },
   header: {
     alignItems: 'center',
     marginBottom: 40,

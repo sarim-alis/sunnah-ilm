@@ -20,6 +20,9 @@ export class User {
   @Column()
   password!: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  imageUrl!: string | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

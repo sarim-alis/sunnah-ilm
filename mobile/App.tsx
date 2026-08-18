@@ -9,6 +9,7 @@ import {
 import { colors } from '@/constants/colors';
 import HomeScreen from '@/screens/HomeScreen';
 import LoginScreen from '@/screens/LoginScreen';
+import ProfileScreen from '@/screens/ProfileScreen';
 import SignupScreen from '@/screens/SignupScreen';
 import { getUser, logout, type AuthUser } from '@/services/auth';
 
@@ -17,6 +18,7 @@ function AppContent() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [booting, setBooting] = useState(true);
   const [authScreen, setAuthScreen] = useState<'login' | 'signup'>('login');
+  const [appScreen, setAppScreen] = useState<'home' | 'profile'>('home');
 
   useEffect(() => {
     getUser()
@@ -28,6 +30,7 @@ function AppContent() {
     await logout();
     setUser(null);
     setAuthScreen('login');
+    setAppScreen('home');
   };
 
   return (
@@ -52,7 +55,19 @@ function AppContent() {
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : user ? (
-        <HomeScreen user={user} onLogout={handleLogout} />
+        appScreen === 'profile' ? (
+          <ProfileScreen
+            user={user}
+            onBack={() => setAppScreen('home')}
+            onUpdated={setUser}
+          />
+        ) : (
+          <HomeScreen
+            user={user}
+            onLogout={handleLogout}
+            onOpenProfile={() => setAppScreen('profile')}
+          />
+        )
       ) : authScreen === 'login' ? (
         <LoginScreen
           onSuccess={setUser}

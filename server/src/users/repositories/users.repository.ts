@@ -31,6 +31,7 @@ export class UsersRepository {
             id: true,
             name: true,
             email: true,
+            imageUrl: true,
             createdAt: true,
             updatedAt: true,
           },
@@ -43,9 +44,33 @@ export class UsersRepository {
       name: data.name,
       email: data.email.toLowerCase(),
       password: data.password,
+      imageUrl: null,
     });
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
     return saved;
+  }
+
+  async update(
+    id: string,
+    data: { name?: string; email?: string; imageUrl?: string },
+  ) {
+    const user = await this.users.findOne({ where: { id } });
+    if (!user) return null;
+
+    if (data.name) user.name = data.name;
+    if (data.email) user.email = data.email.toLowerCase();
+    if (data.imageUrl !== undefined) user.imageUrl = data.imageUrl;
+
+    const saved = await this.users.save(user);
+    await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
+    return {
+      id: saved.id,
+      name: saved.name,
+      email: saved.email,
+      imageUrl: saved.imageUrl,
+      createdAt: saved.createdAt,
+      updatedAt: saved.updatedAt,
+    };
   }
 }

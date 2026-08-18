@@ -20,6 +20,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Sunnah-Ilm to access your photos for a profile image."
+        }
+      ]
+    ]
   }
 }

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CategoryCard } from '@/components/CategoryCard';
 import { SearchBar } from '@/components/SearchBar';
 import { appConfig } from '@/configs/app';
@@ -8,13 +8,27 @@ import type { AuthUser } from '@/services/auth';
 type HomeScreenProps = {
   user?: AuthUser | null;
   onLogout?: () => void;
+  onOpenProfile?: () => void;
 };
 
-export default function HomeScreen({ user, onLogout }: HomeScreenProps) {
+export default function HomeScreen({ user, onLogout, onOpenProfile }: HomeScreenProps) {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>{appConfig.name}</Text>
-      {user ? <Text style={styles.welcome}>Assalamu alaikum, {user.name}</Text> : null}
+      {user ? (
+        <TouchableOpacity
+          onPress={onOpenProfile}
+          disabled={!onOpenProfile}
+          style={styles.userRow}
+        >
+          {user.imageUrl ? (
+            <Image source={{ uri: user.imageUrl }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarFallback} />
+          )}
+          <Text style={styles.welcome}>Assalamu alaikum, {user.name}</Text>
+        </TouchableOpacity>
+      ) : null}
       <SearchBar value="" onChangeText={() => {}} />
       <CategoryCard title="Sahih Bukhari" />
       <CategoryCard title="Sahih Muslim" />
@@ -38,6 +52,22 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 28,
     fontWeight: '700',
+  },
+  userRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  avatar: {
+    borderRadius: 18,
+    height: 36,
+    width: 36,
+  },
+  avatarFallback: {
+    backgroundColor: colors.accent,
+    borderRadius: 18,
+    height: 36,
+    width: 36,
   },
   welcome: {
     color: colors.textMuted,

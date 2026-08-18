@@ -13,7 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
-import { login, type AuthUser } from '@/services/auth';
+import { errorMessage, login, type AuthUser } from '@/services/auth';
 import { authStyles as styles } from './authStyles';
 
 type LoginScreenProps = {
@@ -41,7 +41,7 @@ export default function LoginScreen({ onSuccess, onGoSignup }: LoginScreenProps)
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
-        text2: err instanceof Error ? err.message : 'Login failed',
+        text2: errorMessage(err, 'Login failed'),
       });
     } finally {
       setLoading(false);
