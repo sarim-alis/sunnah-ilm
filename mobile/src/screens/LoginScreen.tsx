@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -54,9 +55,11 @@ export default function LoginScreen({ onSuccess, onGoSignup }: LoginScreenProps)
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.overlay}>
-            <View style={styles.badge}>
-              <Ionicons name="book-outline" size={22} color={colors.primary} />
-            </View>
+            <Image
+              source={require('../../public/sunnah.png')}
+              style={styles.logo}
+              accessibilityLabel="Sunnah-Ilm"
+            />
             <View style={styles.header}>
               <Text style={styles.welcomeText}>Welcome Back</Text>
               <Text style={styles.subtitleText}>Sign in to continue</Text>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -55,12 +56,14 @@ export default function SignupScreen({ onSuccess, onGoLogin }: SignupScreenProps
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.overlay}>
-            <View style={styles.badge}>
-              <Ionicons name="book-outline" size={22} color={colors.primary} />
-            </View>
+            <Image
+              source={require('../../public/sunnah.png')}
+              style={styles.logo}
+              accessibilityLabel="Sunnah-Ilm"
+            />
             <View style={styles.header}>
               <Text style={styles.welcomeText}>Create Account</Text>
-              <Text style={styles.subtitleText}>Join SunnahIlm and start learning</Text>
+              <Text style={styles.subtitleText}>Join and start learning</Text>
             </View>
 
             <View style={styles.inputContainer}>

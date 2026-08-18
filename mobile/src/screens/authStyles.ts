@@ -16,13 +16,12 @@ export const authStyles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 40,
   },
-  badge: {
+  logo: {
     alignSelf: 'center',
-    backgroundColor: colors.accent,
-    borderRadius: 20,
-    marginBottom: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    borderRadius: 24,
+    height: 120,
+    marginBottom: 20,
+    width: 120,
   },
   header: {
     alignItems: 'center',

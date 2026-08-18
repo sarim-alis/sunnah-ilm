@@ -1,3 +1,3 @@
 export const appConfig = {
-  name: 'SunnahIlm',
+  name: 'Sunnah-Ilm',
 };
