@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -72,6 +73,7 @@ export default function App() {
     <SafeAreaProvider>
       <AppContent />
       <StatusBar style="dark" />
+      <Toast />
     </SafeAreaProvider>
   );
 }

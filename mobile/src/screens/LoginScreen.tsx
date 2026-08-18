@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
 import { login, type AuthUser } from '@/services/auth';
 import { authStyles as styles } from './authStyles';
@@ -25,20 +26,23 @@ export default function LoginScreen({ onSuccess, onGoSignup }: LoginScreenProps)
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setError('Please fill in all fields');
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Please fill in all fields' });
       return;
     }
     setLoading(true);
-    setError('');
     try {
       const data = await login(email.trim(), password);
+      Toast.show({ type: 'success', text1: 'Success', text2: 'Login successful!' });
       onSuccess(data.user);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      Toast.show({
+        type: 'error',
+        text1: 'Login Failed',
+        text2: err instanceof Error ? err.message : 'Login failed',
+      });
     } finally {
       setLoading(false);
     }
@@ -115,8 +119,6 @@ export default function LoginScreen({ onSuccess, onGoSignup }: LoginScreenProps)
                 </TouchableOpacity>
               </View>
             </View>
-
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <TouchableOpacity
               onPress={handleLogin}

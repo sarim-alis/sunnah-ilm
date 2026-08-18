@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
 import { register } from '@/services/auth';
 import { authStyles as styles } from './authStyles';
@@ -26,20 +27,27 @@ export default function SignupScreen({ onSuccess, onGoLogin }: SignupScreenProps
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSignup = async () => {
     if (!name || !email || !password) {
-      setError('Please fill in all fields');
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Please fill in all fields' });
       return;
     }
     setLoading(true);
-    setError('');
     try {
       await register(name.trim(), email.trim(), password);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Account created successfully!',
+      });
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Failed',
+        text2: err instanceof Error ? err.message : 'Registration failed',
+      });
     } finally {
       setLoading(false);
     }
@@ -136,8 +144,6 @@ export default function SignupScreen({ onSuccess, onGoLogin }: SignupScreenProps
                 </TouchableOpacity>
               </View>
             </View>
-
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <TouchableOpacity
               onPress={handleSignup}
