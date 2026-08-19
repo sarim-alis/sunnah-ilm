@@ -19,7 +19,7 @@ export class UsersService {
 
   update(
     id: string,
-    data: { name?: string; email?: string; imageUrl?: string },
+    data: { name?: string; email?: string; imageUrl?: string; password?: string },
   ) {
     return this.usersRepository.update(id, data);
   }

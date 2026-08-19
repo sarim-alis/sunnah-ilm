@@ -53,21 +53,23 @@ export async function register(name: string, email: string, password: string) {
   return data;
 }
 
-export async function updateProfile(
-  name: string,
-  email: string,
-  imageUri?: string | null,
-) {
+export async function updateProfile(data: {
+  name: string;
+  email: string;
+  password?: string;
+  imageUri?: string | null;
+}) {
   const token = await AsyncStorage.getItem('token');
   if (!token) throw new Error('Please log in again');
 
   const formData = new FormData();
-  formData.append('name', name);
-  formData.append('email', email);
+  formData.append('name', data.name);
+  formData.append('email', data.email);
+  if (data.password) formData.append('password', data.password);
 
-  if (imageUri) {
+  if (data.imageUri) {
     formData.append('image', {
-      uri: imageUri,
+      uri: data.imageUri,
       type: 'image/jpeg',
       name: 'profile.jpg',
     } as unknown as Blob);
@@ -78,10 +80,10 @@ export async function updateProfile(
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
   });
-  const data = (await response.json()) as AuthResponse;
-  if (!response.ok) throw new Error(messageFrom(data));
-  await AsyncStorage.setItem('user', JSON.stringify(data.user));
-  return data.user;
+  const payload = (await response.json()) as AuthResponse;
+  if (!response.ok) throw new Error(messageFrom(payload));
+  await AsyncStorage.setItem('user', JSON.stringify(payload.user));
+  return payload.user;
 }
 
 export async function logout() {

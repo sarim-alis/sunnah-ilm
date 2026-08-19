@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
@@ -84,11 +79,7 @@ export class AuthService {
     return user;
   }
 
-  async updateProfile(
-    userId: string,
-    dto: UpdateProfileDto,
-    file?: Express.Multer.File,
-  ) {
+  async updateProfile( userId: string, dto: UpdateProfileDto, file?: Express.Multer.File) {
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -104,10 +95,14 @@ export class AuthService {
     const imageUrl = file
       ? await this.cloudinaryService.uploadImage(file.buffer)
       : undefined;
+    const password = dto.password
+      ? await bcrypt.hash(dto.password, 10)
+      : undefined;
     const updated = await this.usersService.update(userId, {
       name: dto.name,
       email: dto.email,
       imageUrl,
+      password,
     });
     if (!updated) {
       throw new NotFoundException('User not found');

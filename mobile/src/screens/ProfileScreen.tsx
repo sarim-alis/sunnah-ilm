@@ -1,9 +1,21 @@
 import { useState } from 'react';
-import { ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
+import { PencilIcon } from '@/components/PencilIcon';
+import { EditProfileModal } from '@/modals/EditProfileModal';
+import { PhotoSheetModal } from '@/modals/PhotoSheetModal';
+import { ViewPhotoModal } from '@/modals/ViewPhotoModal';
 import { errorMessage, updateProfile, type AuthUser } from '@/services/auth';
 
 type ProfileScreenProps = {
@@ -13,21 +25,23 @@ type ProfileScreenProps = {
   onLogout?: () => void;
 };
 
-export default function ProfileScreen({ user, onBack, onUpdated, onLogout }: ProfileScreenProps) {
+export default function ProfileScreen({ user, onBack, onUpdated }: ProfileScreenProps) {
   const [imageUri, setImageUri] = useState<string | null>(user.imageUrl ?? null);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
-  const localTime = new Date().toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
+  const [editOpen, setEditOpen] = useState(false);
 
   const saveImage = async (uri: string) => {
     setImageUri(uri);
     setLoading(true);
     try {
-      const updated = await updateProfile(user.name, user.email, uri);
+      const updated = await updateProfile({
+        name: user.name,
+        email: user.email,
+        imageUri: uri,
+      });
       onUpdated(updated);
       Toast.show({ type: 'success', text1: 'Success', text2: 'Photo updated' });
     } catch (err) {
@@ -95,6 +109,24 @@ export default function ProfileScreen({ user, onBack, onUpdated, onLogout }: Pro
     setViewOpen(true);
   };
 
+  const saveDetails = async (data: { name: string; email: string; password?: string }) => {
+    setSaving(true);
+    try {
+      const updated = await updateProfile(data);
+      onUpdated(updated);
+      setEditOpen(false);
+      Toast.show({ type: 'success', text1: 'Success', text2: 'Profile updated' });
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Update Failed',
+        text2: errorMessage(err, 'Could not update profile'),
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <View style={styles.screen}>
       <View style={styles.topBar}>
@@ -110,7 +142,11 @@ export default function ProfileScreen({ user, onBack, onUpdated, onLogout }: Pro
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.avatarWrap}>
-          <TouchableOpacity onPress={() => setSheetOpen(true)} activeOpacity={0.85} style={styles.avatarInner}>
+          <TouchableOpacity
+            onPress={() => setSheetOpen(true)}
+            activeOpacity={0.85}
+            style={styles.avatarInner}
+          >
             {imageUri ? (
               <Image source={{ uri: imageUri }} style={styles.avatarImage} resizeMode="cover" />
             ) : (
@@ -121,26 +157,34 @@ export default function ProfileScreen({ user, onBack, onUpdated, onLogout }: Pro
               </View>
             )}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSheetOpen(true)} style={styles.avatarBadge} activeOpacity={0.85}>
+          <TouchableOpacity
+            onPress={() => setSheetOpen(true)}
+            style={styles.avatarBadge}
+            activeOpacity={0.85}
+          >
             {loading ? (
               <ActivityIndicator size="small" color={colors.primary} />
             ) : (
-              <Ionicons name="pencil" size={12} color={colors.primary} />
+              <PencilIcon size={14} />
             )}
           </TouchableOpacity>
         </View>
 
         <View style={styles.identity}>
-          <View style={styles.nameRow}>
-            <Text style={styles.name}>{user.name}</Text>
-            <View style={styles.statusDot} />
-          </View>
-          <View style={styles.timeRow}>
-            <Ionicons name="time-outline" size={14} color={colors.textMuted} />
-            <Text style={styles.timeText}>{localTime} local time</Text>
-          </View>
+          <Text style={styles.name}>{user.name}</Text>
         </View>
         <View style={styles.divider} />
+
+        <View style={styles.sectionHead}>
+          <TouchableOpacity
+            onPress={() => setEditOpen(true)}
+            style={styles.editIcon}
+            hitSlop={8}
+            accessibilityLabel="Edit profile"
+          >
+            <PencilIcon size={28} />
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.row}>
           <View style={[styles.rowIcon, { backgroundColor: colors.accent }]}>
@@ -163,43 +207,25 @@ export default function ProfileScreen({ user, onBack, onUpdated, onLogout }: Pro
         </View>
       </ScrollView>
 
-      <Modal
+      <PhotoSheetModal
         visible={sheetOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setSheetOpen(false)}
-      >
-        <Pressable style={styles.sheetBackdrop} onPress={() => setSheetOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => {}}>
-            <TouchableOpacity onPress={fromGallery} style={styles.sheetItem}>
-              <Text style={styles.sheetItemText}>Upload from gallery</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={takePhoto} style={styles.sheetItem}>
-              <Text style={styles.sheetItemText}>Take photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={viewCurrent} style={styles.sheetItem}>
-              <Text style={styles.sheetItemText}>View current</Text>
-            </TouchableOpacity>
-            <View style={styles.sheetDivider} />
-            <TouchableOpacity onPress={() => setSheetOpen(false)} style={styles.sheetItem}>
-              <Text style={styles.sheetCancel}>Cancel</Text>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
-
-      <Modal
+        onClose={() => setSheetOpen(false)}
+        onGallery={fromGallery}
+        onCamera={takePhoto}
+        onView={viewCurrent}
+      />
+      <ViewPhotoModal
         visible={viewOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setViewOpen(false)}
-      >
-        <Pressable style={styles.viewBackdrop} onPress={() => setViewOpen(false)}>
-          {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.viewImage} resizeMode="contain" />
-          ) : null}
-        </Pressable>
-      </Modal>
+        uri={imageUri}
+        onClose={() => setViewOpen(false)}
+      />
+      <EditProfileModal
+        visible={editOpen}
+        user={user}
+        saving={saving}
+        onClose={() => setEditOpen(false)}
+        onSave={saveDetails}
+      />
     </View>
   );
 }
@@ -287,37 +313,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
   },
-  nameRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
   name: {
     color: colors.text,
     fontSize: 24,
     fontWeight: '700',
-  },
-  statusDot: {
-    backgroundColor: colors.secondary,
-    borderRadius: 5,
-    height: 10,
-    width: 10,
-  },
-  timeRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 6,
-    marginTop: 6,
-  },
-  timeText: {
-    color: colors.textMuted,
-    fontSize: 13,
+    textAlign: 'center',
   },
   divider: {
     backgroundColor: colors.border,
     height: 1,
     marginHorizontal: 20,
-    marginVertical: 18,
+    marginTop: 18,
+    marginBottom: 8,
+  },
+  sectionHead: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 20,
+    paddingBottom: 4,
+  },
+  editIcon: {
+    alignItems: 'center',
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
   },
   row: {
     alignItems: 'center',
@@ -345,58 +363,5 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 14,
     marginTop: 2,
-  },
-  logout: {
-    alignSelf: 'flex-start',
-    marginTop: 20,
-    paddingHorizontal: 20,
-  },
-  logoutText: {
-    color: colors.primary,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  sheetBackdrop: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(21, 21, 21, 0.45)',
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 36,
-  },
-  sheet: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    overflow: 'hidden',
-    width: '100%',
-  },
-  sheetItem: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  sheetItemText: {
-    color: colors.text,
-    fontSize: 16,
-  },
-  sheetDivider: {
-    backgroundColor: colors.border,
-    height: 1,
-  },
-  sheetCancel: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  viewBackdrop: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(21, 21, 21, 0.88)',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  viewImage: {
-    borderRadius: 16,
-    height: '70%',
-    width: '100%',
   },
 });

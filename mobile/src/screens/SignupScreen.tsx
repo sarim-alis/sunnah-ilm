@@ -77,68 +77,70 @@ export default function SignupScreen({ onSuccess, onGoLogin }: SignupScreenProps
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Name</Text>
               <View style={styles.inputWrapper}>
-                <Ionicons
-                  name="person-outline"
-                  size={20}
-                  color={colors.textMuted}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your name"
-                  placeholderTextColor={colors.textMuted}
-                  value={name}
-                  onChangeText={setName}
-                  autoCapitalize="words"
-                />
+                <View style={styles.leadingIcon}>
+                  <Ionicons name="person-outline" size={20} color={colors.textMuted} />
+                </View>
+                <View style={styles.inputField}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your name"
+                    placeholderTextColor={colors.textMuted}
+                    value={name}
+                    onChangeText={setName}
+                    autoCapitalize="words"
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
               </View>
             </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Email</Text>
               <View style={styles.inputWrapper}>
-                <Ionicons
-                  name="mail-outline"
-                  size={20}
-                  color={colors.textMuted}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your email"
-                  placeholderTextColor={colors.textMuted}
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                />
+                <View style={styles.leadingIcon}>
+                  <Ionicons name="mail-outline" size={20} color={colors.textMuted} />
+                </View>
+                <View style={styles.inputField}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your email"
+                    placeholderTextColor={colors.textMuted}
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
               </View>
             </View>
 
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Password</Text>
               <View style={styles.inputWrapper}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={20}
-                  color={colors.textMuted}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  placeholderTextColor={colors.textMuted}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                />
+                <View style={styles.leadingIcon}>
+                  <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />
+                </View>
+                <View style={styles.inputField}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    placeholderTextColor={colors.textMuted}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    underlineColorAndroid="transparent"
+                  />
+                </View>
                 <TouchableOpacity
                   onPress={() => setShowPassword((value) => !value)}
                   style={styles.eyeIcon}
+                  hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
                 >
                   <Ionicons
                     name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                    size={20}
+                    size={32}
                     color={colors.textMuted}
                   />
                 </TouchableOpacity>

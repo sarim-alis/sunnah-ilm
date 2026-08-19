@@ -53,7 +53,7 @@ export class UsersRepository {
 
   async update(
     id: string,
-    data: { name?: string; email?: string; imageUrl?: string },
+    data: { name?: string; email?: string; imageUrl?: string; password?: string },
   ) {
     const user = await this.users.findOne({ where: { id } });
     if (!user) return null;
@@ -61,6 +61,7 @@ export class UsersRepository {
     if (data.name) user.name = data.name;
     if (data.email) user.email = data.email.toLowerCase();
     if (data.imageUrl !== undefined) user.imageUrl = data.imageUrl;
+    if (data.password) user.password = data.password;
 
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
