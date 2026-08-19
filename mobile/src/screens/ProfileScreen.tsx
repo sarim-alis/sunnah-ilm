@@ -22,12 +22,14 @@ type ProfileScreenProps = {
   user: AuthUser;
   onBack: () => void;
   onUpdated: (user: AuthUser) => void;
+  onLogout?: () => void;
 };
 
 export default function ProfileScreen({
   user,
   onBack,
   onUpdated,
+  onLogout,
 }: ProfileScreenProps) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
@@ -171,6 +173,12 @@ export default function ProfileScreen({
                 )}
               </View>
             </TouchableOpacity>
+
+            {onLogout ? (
+              <TouchableOpacity onPress={onLogout} style={styles.linkContainer}>
+                <Text style={styles.link}>Log out</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

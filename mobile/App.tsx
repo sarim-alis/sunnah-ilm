@@ -7,9 +7,13 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import { colors } from '@/constants/colors';
+import { TabBar, type AppTab } from '@/components/TabBar';
+import AskScreen from '@/screens/AskScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import LoginScreen from '@/screens/LoginScreen';
 import ProfileScreen from '@/screens/ProfileScreen';
+import SavedScreen from '@/screens/SavedScreen';
+import SearchScreen from '@/screens/SearchScreen';
 import SignupScreen from '@/screens/SignupScreen';
 import { getUser, logout, type AuthUser } from '@/services/auth';
 
@@ -18,7 +22,7 @@ function AppContent() {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [booting, setBooting] = useState(true);
   const [authScreen, setAuthScreen] = useState<'login' | 'signup'>('login');
-  const [appScreen, setAppScreen] = useState<'home' | 'profile'>('home');
+  const [tab, setTab] = useState<AppTab>('home');
 
   useEffect(() => {
     getUser()
@@ -30,7 +34,7 @@ function AppContent() {
     await logout();
     setUser(null);
     setAuthScreen('login');
-    setAppScreen('home');
+    setTab('home');
   };
 
   return (
@@ -38,7 +42,7 @@ function AppContent() {
       style={{
         backgroundColor: colors.background,
         flex: 1,
-        paddingBottom: insets.bottom,
+        paddingBottom: user && tab !== 'profile' ? 0 : insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
         paddingTop: insets.top,
@@ -55,19 +59,35 @@ function AppContent() {
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : user ? (
-        appScreen === 'profile' ? (
-          <ProfileScreen
-            user={user}
-            onBack={() => setAppScreen('home')}
-            onUpdated={setUser}
-          />
-        ) : (
-          <HomeScreen
-            user={user}
-            onLogout={handleLogout}
-            onOpenProfile={() => setAppScreen('profile')}
-          />
-        )
+        <>
+          <View style={{ flex: 1 }}>
+            {tab === 'home' ? (
+              <HomeScreen
+                user={user}
+                onOpenProfile={() => setTab('profile')}
+                onOpenSearch={() => setTab('search')}
+                onOpenAsk={() => setTab('ask')}
+                onOpenSaved={() => setTab('saved')}
+              />
+            ) : null}
+            {tab === 'search' ? <SearchScreen /> : null}
+            {tab === 'ask' ? <AskScreen /> : null}
+            {tab === 'saved' ? <SavedScreen /> : null}
+            {tab === 'profile' ? (
+              <ProfileScreen
+                user={user}
+                onBack={() => setTab('home')}
+                onUpdated={setUser}
+                onLogout={handleLogout}
+              />
+            ) : null}
+          </View>
+          {tab !== 'profile' ? (
+            <View style={{ paddingBottom: insets.bottom }}>
+              <TabBar tab={tab} onChange={setTab} />
+            </View>
+          ) : null}
+        </>
       ) : authScreen === 'login' ? (
         <LoginScreen
           onSuccess={setUser}
