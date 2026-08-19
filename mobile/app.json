@@ -25,7 +25,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Sunnah-Ilm to access your photos for a profile image."
+          "photosPermission": "Allow Sunnah-Ilm to access your photos for a profile image.",
+          "cameraPermission": "Allow Sunnah-Ilm to take a profile photo."
         }
       ]
     ]

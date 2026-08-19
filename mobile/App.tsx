@@ -42,7 +42,7 @@ function AppContent() {
       style={{
         backgroundColor: colors.background,
         flex: 1,
-        paddingBottom: user && tab !== 'profile' ? 0 : insets.bottom,
+        paddingBottom: user ? 0 : insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
         paddingTop: insets.top,
@@ -82,11 +82,9 @@ function AppContent() {
               />
             ) : null}
           </View>
-          {tab !== 'profile' ? (
-            <View style={{ paddingBottom: insets.bottom }}>
-              <TabBar tab={tab} onChange={setTab} />
-            </View>
-          ) : null}
+          <View style={{ paddingBottom: insets.bottom }}>
+            <TabBar tab={tab} onChange={setTab} />
+          </View>
         </>
       ) : authScreen === 'login' ? (
         <LoginScreen
