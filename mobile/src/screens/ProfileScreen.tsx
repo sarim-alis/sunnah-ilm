@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   ActivityIndicator,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -60,49 +61,68 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
     }
   };
 
-  const fromGallery = async () => {
+  const afterSheetClose = (action: () => Promise<void>) => {
     setSheetOpen(false);
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Toast.show({
-        type: 'error',
-        text1: 'Permission needed',
-        text2: 'Allow photo access to upload a profile image',
-      });
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
-
-    if (result.canceled || !result.assets[0]) return;
-    await saveImage(result.assets[0].uri);
+    setTimeout(() => {
+      void action();
+    }, 400);
   };
 
-  const takePhoto = async () => {
-    setSheetOpen(false);
-    const permission = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permission.granted) {
-      Toast.show({
-        type: 'error',
-        text1: 'Permission needed',
-        text2: 'Allow camera access to take a profile photo',
+  const fromGallery = () => {
+    afterSheetClose(async () => {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Toast.show({
+          type: 'error',
+          text1: 'Permission needed',
+          text2: 'Allow photo access to upload a profile image',
+        });
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
       });
-      return;
-    }
 
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
+      if (result.canceled || !result.assets[0]) return;
+      await saveImage(result.assets[0].uri);
     });
+  };
 
-    if (result.canceled || !result.assets[0]) return;
-    await saveImage(result.assets[0].uri);
+  const takePhoto = () => {
+    afterSheetClose(async () => {
+      try {
+        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        if (!permission.granted) {
+          Toast.show({
+            type: 'error',
+            text1: 'Permission needed',
+            text2: 'Allow camera access to take a profile photo',
+          });
+          return;
+        }
+
+        const result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ['images'],
+          allowsEditing: Platform.OS === 'ios',
+          aspect: [1, 1],
+          quality: 0.7,
+          cameraType: ImagePicker.CameraType.back,
+        });
+
+        if (result.canceled || !result.assets[0]) return;
+        await saveImage(result.assets[0].uri);
+      } catch (err) {
+        Toast.show({
+          type: 'error',
+          text1: 'Camera failed',
+          text2: errorMessage(err, 'Could not open the camera'),
+        });
+      }
+    });
   };
 
   const viewCurrent = () => {

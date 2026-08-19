@@ -18,8 +18,9 @@ export function PhotoSheetModal({
 }: PhotoSheetModalProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.sheet} onPress={() => {}}>
+      <View style={styles.backdrop}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <View style={styles.sheet}>
           <TouchableOpacity onPress={onGallery} style={styles.item}>
             <Text style={styles.itemText}>Upload from gallery</Text>
           </TouchableOpacity>
@@ -33,8 +34,8 @@ export function PhotoSheetModal({
           <TouchableOpacity onPress={onClose} style={styles.item}>
             <Text style={styles.cancel}>Cancel</Text>
           </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 }
