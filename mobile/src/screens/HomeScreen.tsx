@@ -9,10 +9,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/constants/colors';
-import type { AuthUser } from '@/services/auth';
+import { useCurrentUser } from '@/users/hooks';
 
 type HomeScreenProps = {
-  user?: AuthUser | null;
   onOpenProfile?: () => void;
   onOpenSearch?: () => void;
   onOpenAsk?: () => void;
@@ -28,12 +27,12 @@ const quickActions = [
 ] as const;
 
 export default function HomeScreen({
-  user,
   onOpenProfile,
   onOpenSearch,
   onOpenAsk,
   onOpenSaved,
 }: HomeScreenProps) {
+  const { data: user } = useCurrentUser();
   const [hideSetup, setHideSetup] = useState(false);
   const firstName = user?.name?.split(' ')[0] ?? 'friend';
   const initial = firstName.charAt(0).toUpperCase();

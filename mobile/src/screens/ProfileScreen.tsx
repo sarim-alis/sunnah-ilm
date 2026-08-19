@@ -16,35 +16,40 @@ import { PencilIcon } from '@/components/PencilIcon';
 import { EditProfileModal } from '@/modals/EditProfileModal';
 import { PhotoSheetModal } from '@/modals/PhotoSheetModal';
 import { ViewPhotoModal } from '@/modals/ViewPhotoModal';
-import { errorMessage, updateProfile, type AuthUser } from '@/services/auth';
+import { errorMessage } from '@/services/auth';
+import { useCurrentUser, useUpdateProfile } from '@/users/hooks';
 
 type ProfileScreenProps = {
-  user: AuthUser;
   onBack: () => void;
-  onUpdated: (user: AuthUser) => void;
   onLogout?: () => void;
 };
 
-export default function ProfileScreen({ user, onBack, onUpdated }: ProfileScreenProps) {
-  const [imageUri, setImageUri] = useState<string | null>(user.imageUrl ?? null);
+export default function ProfileScreen({ onBack }: ProfileScreenProps) {
+  const { data: user } = useCurrentUser();
+  const updateProfileMutation = useUpdateProfile();
+  const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
+  const imageUri = previewUri ?? user?.imageUrl ?? null;
+
   const saveImage = async (uri: string) => {
-    setImageUri(uri);
+    if (!user) return;
+    setPreviewUri(uri);
     setLoading(true);
     try {
-      const updated = await updateProfile({
+      await updateProfileMutation.mutateAsync({
         name: user.name,
         email: user.email,
         imageUri: uri,
       });
-      onUpdated(updated);
+      setPreviewUri(null);
       Toast.show({ type: 'success', text1: 'Success', text2: 'Photo updated' });
     } catch (err) {
+      setPreviewUri(null);
       Toast.show({
         type: 'error',
         text1: 'Update Failed',
@@ -112,8 +117,7 @@ export default function ProfileScreen({ user, onBack, onUpdated }: ProfileScreen
   const saveDetails = async (data: { name: string; email: string; password?: string }) => {
     setSaving(true);
     try {
-      const updated = await updateProfile(data);
-      onUpdated(updated);
+      await updateProfileMutation.mutateAsync(data);
       setEditOpen(false);
       Toast.show({ type: 'success', text1: 'Success', text2: 'Profile updated' });
     } catch (err) {
@@ -126,6 +130,8 @@ export default function ProfileScreen({ user, onBack, onUpdated }: ProfileScreen
       setSaving(false);
     }
   };
+
+  if (!user) return null;
 
   return (
     <View style={styles.screen}>

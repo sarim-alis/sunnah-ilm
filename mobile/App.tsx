@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { useState } from 'react';
+import { View } from 'react-native';
+import { QueryClientProvider } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import {
   SafeAreaProvider,
@@ -8,6 +9,7 @@ import {
 } from 'react-native-safe-area-context';
 import { colors } from '@/constants/colors';
 import { TabBar, type AppTab } from '@/components/TabBar';
+import { queryClient } from '@/query/client';
 import AskScreen from '@/screens/AskScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import LoginScreen from '@/screens/LoginScreen';
@@ -15,24 +17,18 @@ import ProfileScreen from '@/screens/ProfileScreen';
 import SavedScreen from '@/screens/SavedScreen';
 import SearchScreen from '@/screens/SearchScreen';
 import SignupScreen from '@/screens/SignupScreen';
-import { getUser, logout, type AuthUser } from '@/services/auth';
+import { HydrateUserCache } from '@/users/HydrateUserCache';
+import { useCurrentUser, useLogout } from '@/users/hooks';
 
 function AppContent() {
   const insets = useSafeAreaInsets();
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [booting, setBooting] = useState(true);
   const [authScreen, setAuthScreen] = useState<'login' | 'signup'>('login');
   const [tab, setTab] = useState<AppTab>('home');
-
-  useEffect(() => {
-    getUser()
-      .then(setUser)
-      .finally(() => setBooting(false));
-  }, []);
+  const { data: user } = useCurrentUser();
+  const logoutMutation = useLogout();
 
   const handleLogout = async () => {
-    await logout();
-    setUser(null);
+    await logoutMutation.mutateAsync();
     setAuthScreen('login');
     setTab('home');
   };
@@ -48,22 +44,11 @@ function AppContent() {
         paddingTop: insets.top,
       }}
     >
-      {booting ? (
-        <View
-          style={{
-            alignItems: 'center',
-            flex: 1,
-            justifyContent: 'center',
-          }}
-        >
-          <ActivityIndicator color={colors.primary} />
-        </View>
-      ) : user ? (
+      {user ? (
         <>
           <View style={{ flex: 1 }}>
             {tab === 'home' ? (
               <HomeScreen
-                user={user}
                 onOpenProfile={() => setTab('profile')}
                 onOpenSearch={() => setTab('search')}
                 onOpenAsk={() => setTab('ask')}
@@ -75,9 +60,7 @@ function AppContent() {
             {tab === 'saved' ? <SavedScreen /> : null}
             {tab === 'profile' ? (
               <ProfileScreen
-                user={user}
                 onBack={() => setTab('home')}
-                onUpdated={setUser}
                 onLogout={handleLogout}
               />
             ) : null}
@@ -87,10 +70,7 @@ function AppContent() {
           </View>
         </>
       ) : authScreen === 'login' ? (
-        <LoginScreen
-          onSuccess={setUser}
-          onGoSignup={() => setAuthScreen('signup')}
-        />
+        <LoginScreen onGoSignup={() => setAuthScreen('signup')} />
       ) : (
         <SignupScreen
           onSuccess={() => setAuthScreen('login')}
@@ -103,10 +83,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <AppContent />
-      <StatusBar style="dark" />
-      <Toast />
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <HydrateUserCache>
+          <AppContent />
+        </HydrateUserCache>
+        <StatusBar style="dark" />
+        <Toast />
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

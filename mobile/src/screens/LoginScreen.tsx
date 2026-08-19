@@ -13,38 +13,34 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
-import { errorMessage, login, type AuthUser } from '@/services/auth';
+import { errorMessage } from '@/services/auth';
+import { useLogin } from '@/users/hooks';
 import { authStyles as styles } from './authStyles';
 
 type LoginScreenProps = {
-  onSuccess: (user: AuthUser) => void;
   onGoSignup: () => void;
 };
 
-export default function LoginScreen({ onSuccess, onGoSignup }: LoginScreenProps) {
+export default function LoginScreen({ onGoSignup }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const loginMutation = useLogin();
 
   const handleLogin = async () => {
     if (!email || !password) {
       Toast.show({ type: 'error', text1: 'Error', text2: 'Please fill in all fields' });
       return;
     }
-    setLoading(true);
     try {
-      const data = await login(email.trim(), password);
+      await loginMutation.mutateAsync({ email: email.trim(), password });
       Toast.show({ type: 'success', text1: 'Success', text2: 'Login successful!' });
-      onSuccess(data.user);
     } catch (err) {
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
         text2: errorMessage(err, 'Login failed'),
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -124,11 +120,11 @@ export default function LoginScreen({ onSuccess, onGoSignup }: LoginScreenProps)
 
             <TouchableOpacity
               onPress={handleLogin}
-              disabled={loading}
+              disabled={loginMutation.isPending}
               style={styles.buttonContainer}
             >
               <View style={styles.primaryButton}>
-                {loading ? (
+                {loginMutation.isPending ? (
                   <ActivityIndicator color={colors.onPrimary} />
                 ) : (
                   <Text style={styles.buttonText}>Sign In</Text>

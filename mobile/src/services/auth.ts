@@ -91,7 +91,39 @@ export async function logout() {
   await AsyncStorage.removeItem('user');
 }
 
+export async function getToken() {
+  return AsyncStorage.getItem('token');
+}
+
 export async function getUser(): Promise<AuthUser | null> {
   const raw = await AsyncStorage.getItem('user');
   return raw ? (JSON.parse(raw) as AuthUser) : null;
+}
+
+function toAuthUser(user: AuthUser): AuthUser {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    imageUrl: user.imageUrl ?? null,
+  };
+}
+
+export async function getProfile(): Promise<AuthUser> {
+  const token = await getToken();
+  if (!token) throw new Error('Please log in again');
+
+  const response = await fetch(`${apiConfig.baseUrl}/users/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = (await response.json()) as AuthResponse;
+  if (!response.ok) {
+    if (response.status === 401) await logout();
+    throw new Error(messageFrom(data));
+  }
+  if (!data.user) throw new Error('Request failed');
+
+  const user = toAuthUser(data.user);
+  await AsyncStorage.setItem('user', JSON.stringify(user));
+  return user;
 }

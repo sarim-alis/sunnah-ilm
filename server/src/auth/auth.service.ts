@@ -76,7 +76,7 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return user;
+    return { user: this.publicUser(user) };
   }
 
   async updateProfile( userId: string, dto: UpdateProfileDto, file?: Express.Multer.File) {

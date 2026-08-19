@@ -1,3 +1,5 @@
+import { userKeys } from '@/users/query/keys';
+
 export const queryKeys = {
   hadiths: {
     all: ['hadiths'] as const,
@@ -8,4 +10,5 @@ export const queryKeys = {
   ask: {
     all: ['ask'] as const,
   },
+  users: userKeys,
 };
