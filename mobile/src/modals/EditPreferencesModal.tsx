@@ -15,11 +15,9 @@ import { useTheme } from '@/theme/ThemeProvider';
 import {
   HADITH_TOPICS,
   MAX_PREFERENCE_TOPICS,
-  normalizePreferences,
-  preferenceNames,
-  type HadithTopic,
-  type UserPreference,
+  uniqueTopicNames,
 } from '@/users/preferences';
+import type { HadithTopic, UserPreference } from '@/users/preferences';
 
 type EditPreferencesModalProps = {
   visible: boolean;
@@ -39,14 +37,14 @@ export function EditPreferencesModal({
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [topics, setTopics] = useState<HadithTopic[]>(
-    preferenceNames(normalizePreferences(preferences)),
+    uniqueTopicNames(preferences),
   );
 
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!visible) return;
-    setTopics(preferenceNames(normalizePreferences(preferences)));
+    setTopics(uniqueTopicNames(preferences));
     setError('');
   }, [visible, preferences]);
 

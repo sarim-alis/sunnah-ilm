@@ -112,7 +112,7 @@ export class AuthService {
       imageUrl,
       password,
       preferenceNames: dto.preferences
-        ? uniqueTopicNames(dto.preferences.topics)
+        ? uniqueTopicNames(dto.preferences)
         : undefined,
       mode: dto.mode,
     });

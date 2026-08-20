@@ -21,11 +21,8 @@ import { ViewPhotoModal } from '@/modals/ViewPhotoModal';
 import { errorMessage } from '@/services/auth';
 import { useTheme } from '@/theme/ThemeProvider';
 import { useCurrentUser, useUpdateProfile } from '@/users/hooks';
-import {
-  normalizePreferences,
-  preferenceNames,
-  type HadithTopic,
-} from '@/users/preferences';
+import { normalizePreferences } from '@/users/preferences';
+import type { HadithTopic } from '@/users/preferences';
 
 type ProfileScreenProps = {
   onBack: () => void;
@@ -47,7 +44,6 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
 
   const imageUri = previewUri ?? user?.imageUrl ?? null;
   const preferences = normalizePreferences(user?.preferences);
-  const topics = preferenceNames(preferences);
 
   const saveImage = async (uri: string) => {
     if (!user) return;
@@ -163,7 +159,7 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
     }
   };
 
-  const savePreferences = async (next: HadithTopic[], message = 'Preferences saved') => {
+  const savePreferences = async (next: HadithTopic[]) => {
     if (!user) return;
     setSaving(true);
     try {
@@ -173,7 +169,7 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
         preferences: { topics: next },
       });
       setPrefsOpen(false);
-      Toast.show({ type: 'success', text1: 'Success', text2: message });
+      Toast.show({ type: 'success', text1: 'Success', text2: 'Preferences saved' });
     } catch (err) {
       Toast.show({
         type: 'error',
@@ -183,13 +179,6 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
     } finally {
       setSaving(false);
     }
-  };
-
-  const removeTopic = (topic: string) => {
-    void savePreferences(
-      topics.filter((item) => item !== topic),
-      'Topic removed',
-    );
   };
 
   if (!user) return null;
@@ -294,14 +283,6 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
               preferences.map((pref) => (
                 <View key={pref.id} style={styles.chip}>
                   <Text style={styles.chipText}>{pref.name}</Text>
-                  <TouchableOpacity
-                    onPress={() => removeTopic(pref.name)}
-                    hitSlop={8}
-                    disabled={saving}
-                    accessibilityLabel={`Remove ${pref.name}`}
-                  >
-                    <Ionicons name="close" size={14} color={colors.textMuted} />
-                  </TouchableOpacity>
                 </View>
               ))
             ) : (
@@ -499,8 +480,6 @@ const createStyles = (colors: ThemeColors) =>
     borderColor: colors.border,
     borderRadius: 16,
     borderWidth: 1,
-    flexDirection: 'row',
-    gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },

@@ -21,6 +21,9 @@ export type PublicPreference = {
 export const MAX_PREFERENCE_TOPICS = 3;
 
 export function uniqueTopicNames(values: unknown): HadithTopic[] {
+  if (values && typeof values === 'object' && !Array.isArray(values) && 'topics' in values) {
+    values = (values as { topics: unknown }).topics;
+  }
   if (!Array.isArray(values)) return [];
   const allowed = new Set<string>(HADITH_TOPICS);
   const topics: HadithTopic[] = [];

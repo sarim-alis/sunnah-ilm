@@ -26,9 +26,7 @@ export class User {
   imageUrl!: string | null;
 
   @OneToMany(() => Preference, (preference) => preference.user, {
-    cascade: true,
     eager: true,
-    orphanedRowAction: 'delete',
   })
   preferences!: Preference[];
 

@@ -1,5 +1,5 @@
 import { IsEmail, IsIn, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { plainToInstance, Transform, Type } from 'class-transformer';
 import { UserPreferencesDto } from './user-preferences.dto';
 
 function emptyToUndefined({ value }: { value: unknown }) {
@@ -8,13 +8,19 @@ function emptyToUndefined({ value }: { value: unknown }) {
 
 function parsePreferences({ value }: { value: unknown }) {
   if (value == null || value === '') return undefined;
-  if (typeof value === 'object') return value;
-  if (typeof value !== 'string') return value;
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
+  let parsed: unknown = value;
+  if (typeof value === 'string') {
+    try {
+      parsed = JSON.parse(value);
+    } catch {
+      return value;
+    }
   }
+  if (Array.isArray(parsed)) {
+    parsed = { topics: parsed };
+  }
+  if (!parsed || typeof parsed !== 'object') return parsed;
+  return plainToInstance(UserPreferencesDto, parsed);
 }
 
 export class UpdateProfileDto {

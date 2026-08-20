@@ -75,16 +75,29 @@ export class UsersRepository {
     if (data.imageUrl !== undefined) user.imageUrl = data.imageUrl;
     if (data.password) user.password = data.password;
     if (data.mode) user.mode = data.mode;
+
+    await this.users.update(id, {
+      name: user.name,
+      email: user.email,
+      imageUrl: user.imageUrl,
+      password: user.password,
+      mode: user.mode,
+    });
+
     if (data.preferenceNames !== undefined) {
       const names = uniqueTopicNames(data.preferenceNames);
-      user.preferences = names.map((name) => {
-        const existing = (user.preferences ?? []).find((item) => item.name === name);
-        return existing ?? this.preferences.create({ name, userId: user.id, user });
-      });
+      await this.preferences.delete({ userId: id });
+      if (names.length) {
+        await this.preferences.save(
+          names.map((name) => this.preferences.create({ name, userId: id })),
+        );
+      }
     }
 
-    const saved = await this.users.save(user);
-    await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
-    return saved;
+    await this.queryClient.removeQueries({ queryKey: userKeys.all });
+    return this.users.findOne({
+      where: { id },
+      relations: { preferences: true },
+    });
   }
 }

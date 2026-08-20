@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post, Put, Req, UploadedFile, UseGuards, UseInte
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from '../common/guards/jwt.guard';
 import { imageUploadOptions } from '../common/cloudinary/image-upload';
+import { ParseJsonFieldsInterceptor } from '../common/interceptors/parse-json-fields.interceptor';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -29,7 +30,10 @@ export class AuthController {
 
   @Put('profile')
   @UseGuards(JwtGuard)
-  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
+  @UseInterceptors(
+    FileInterceptor('image', imageUploadOptions),
+    ParseJsonFieldsInterceptor,
+  )
   updateProfile(
     @Req() req: { user: { id: string } },
     @Body() dto: UpdateProfileDto,

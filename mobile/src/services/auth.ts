@@ -1,10 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiConfig } from '@/configs/api';
-import { normalizeMode, type AppMode } from '@/constants/colors';
-import {
-  normalizePreferences,
-  type UserPreference,
-} from '@/users/preferences';
+import { normalizeMode } from '@/constants/colors';
+import type { AppMode } from '@/constants/colors';
+import { normalizePreferences } from '@/users/preferences';
+import type { UserPreference } from '@/users/preferences';
 
 export type AuthUser = {
   id: string;
