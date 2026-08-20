@@ -3,14 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryClient } from '@tanstack/query-core';
 import { Repository } from 'typeorm';
 import { QUERY_CLIENT } from '../../common/query/query-client.provider';
+import { Preference } from '../entities/preference.entity';
 import { User } from '../entities/user.entity';
-import { defaultPreferences, type UserPreferences } from '../preferences';
+import { uniqueTopicNames, type HadithTopic } from '../preferences';
 import { userKeys } from '../query/keys';
 
 @Injectable()
 export class UsersRepository {
   constructor(
     @InjectRepository(User) private users: Repository<User>,
+    @InjectRepository(Preference) private preferences: Repository<Preference>,
     @Inject(QUERY_CLIENT) private queryClient: QueryClient,
   ) {}
 
@@ -18,7 +20,11 @@ export class UsersRepository {
     const normalized = email.toLowerCase();
     return this.queryClient.fetchQuery({
       queryKey: userKeys.email(normalized),
-      queryFn: () => this.users.findOne({ where: { email: normalized } }),
+      queryFn: () =>
+        this.users.findOne({
+          where: { email: normalized },
+          relations: { preferences: true },
+        }),
     });
   }
 
@@ -28,16 +34,7 @@ export class UsersRepository {
       queryFn: () =>
         this.users.findOne({
           where: { id },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            imageUrl: true,
-            preferences: true,
-            mode: true,
-            createdAt: true,
-            updatedAt: true,
-          },
+          relations: { preferences: true },
         }),
     });
   }
@@ -48,7 +45,7 @@ export class UsersRepository {
       email: data.email.toLowerCase(),
       password: data.password,
       imageUrl: null,
-      preferences: defaultPreferences,
+      preferences: [],
       mode: 'light',
     });
     const saved = await this.users.save(user);
@@ -63,31 +60,31 @@ export class UsersRepository {
       email?: string;
       imageUrl?: string;
       password?: string;
-      preferences?: UserPreferences;
+      preferenceNames?: HadithTopic[];
       mode?: 'light' | 'dark';
     },
   ) {
-    const user = await this.users.findOne({ where: { id } });
+    const user = await this.users.findOne({
+      where: { id },
+      relations: { preferences: true },
+    });
     if (!user) return null;
 
     if (data.name) user.name = data.name;
     if (data.email) user.email = data.email.toLowerCase();
     if (data.imageUrl !== undefined) user.imageUrl = data.imageUrl;
     if (data.password) user.password = data.password;
-    if (data.preferences) user.preferences = data.preferences;
     if (data.mode) user.mode = data.mode;
+    if (data.preferenceNames !== undefined) {
+      const names = uniqueTopicNames(data.preferenceNames);
+      user.preferences = names.map((name) => {
+        const existing = (user.preferences ?? []).find((item) => item.name === name);
+        return existing ?? this.preferences.create({ name, userId: user.id, user });
+      });
+    }
 
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
-    return {
-      id: saved.id,
-      name: saved.name,
-      email: saved.email,
-      imageUrl: saved.imageUrl,
-      preferences: saved.preferences ?? defaultPreferences,
-      mode: saved.mode === 'dark' ? ('dark' as const) : ('light' as const),
-      createdAt: saved.createdAt,
-      updatedAt: saved.updatedAt,
-    };
+    return saved;
   }
 }

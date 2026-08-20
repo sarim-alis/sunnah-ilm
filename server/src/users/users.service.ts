@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './repositories/users.repository';
-import type { UserPreferences } from './preferences';
+import type { HadithTopic } from './preferences';
 
 @Injectable()
 export class UsersService {
@@ -25,7 +25,7 @@ export class UsersService {
       email?: string;
       imageUrl?: string;
       password?: string;
-      preferences?: UserPreferences;
+      preferenceNames?: HadithTopic[];
       mode?: 'light' | 'dark';
     },
   ) {

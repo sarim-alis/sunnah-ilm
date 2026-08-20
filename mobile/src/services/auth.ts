@@ -3,7 +3,7 @@ import { apiConfig } from '@/configs/api';
 import { normalizeMode, type AppMode } from '@/constants/colors';
 import {
   normalizePreferences,
-  type UserPreferences,
+  type UserPreference,
 } from '@/users/preferences';
 
 export type AuthUser = {
@@ -11,7 +11,7 @@ export type AuthUser = {
   name: string;
   email: string;
   imageUrl?: string | null;
-  preferences: UserPreferences;
+  preferences: UserPreference[];
   mode: AppMode;
 };
 
@@ -66,7 +66,7 @@ export async function updateProfile(data: {
   email: string;
   password?: string;
   imageUri?: string | null;
-  preferences?: UserPreferences;
+  preferences?: { topics: string[] };
   mode?: AppMode;
 }) {
   const token = await AsyncStorage.getItem('token');

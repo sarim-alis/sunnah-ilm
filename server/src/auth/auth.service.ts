@@ -4,8 +4,8 @@ import * as bcrypt from 'bcryptjs';
 import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
 import { UsersService } from '../users/users.service';
 import {
-  normalizePreferences,
-  type UserPreferences,
+  toPublicPreferences,
+  uniqueTopicNames,
 } from '../users/preferences';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -24,7 +24,7 @@ export class AuthService {
     name: string;
     email: string;
     imageUrl?: string | null;
-    preferences?: UserPreferences | null;
+    preferences?: { id?: string; name: string }[] | null;
     mode?: 'light' | 'dark' | null;
   }) {
     return {
@@ -32,7 +32,7 @@ export class AuthService {
       name: user.name,
       email: user.email,
       imageUrl: user.imageUrl ?? null,
-      preferences: normalizePreferences(user.preferences),
+      preferences: toPublicPreferences(user.preferences),
       mode: user.mode === 'dark' ? 'dark' : 'light',
     };
   }
@@ -111,8 +111,8 @@ export class AuthService {
       email: dto.email,
       imageUrl,
       password,
-      preferences: dto.preferences
-        ? normalizePreferences(dto.preferences)
+      preferenceNames: dto.preferences
+        ? uniqueTopicNames(dto.preferences.topics)
         : undefined,
       mode: dto.mode,
     });

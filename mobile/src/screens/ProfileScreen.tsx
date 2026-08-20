@@ -23,7 +23,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { useCurrentUser, useUpdateProfile } from '@/users/hooks';
 import {
   normalizePreferences,
-  type UserPreferences,
+  preferenceNames,
+  type HadithTopic,
 } from '@/users/preferences';
 
 type ProfileScreenProps = {
@@ -46,6 +47,7 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
 
   const imageUri = previewUri ?? user?.imageUrl ?? null;
   const preferences = normalizePreferences(user?.preferences);
+  const topics = preferenceNames(preferences);
 
   const saveImage = async (uri: string) => {
     if (!user) return;
@@ -161,14 +163,14 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
     }
   };
 
-  const savePreferences = async (next: UserPreferences, message = 'Preferences saved') => {
+  const savePreferences = async (next: HadithTopic[], message = 'Preferences saved') => {
     if (!user) return;
     setSaving(true);
     try {
       await updateProfileMutation.mutateAsync({
         name: user.name,
         email: user.email,
-        preferences: next,
+        preferences: { topics: next },
       });
       setPrefsOpen(false);
       Toast.show({ type: 'success', text1: 'Success', text2: message });
@@ -185,7 +187,7 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
 
   const removeTopic = (topic: string) => {
     void savePreferences(
-      { topics: preferences.topics.filter((item) => item !== topic) },
+      topics.filter((item) => item !== topic),
       'Topic removed',
     );
   };
@@ -288,15 +290,15 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
 
         <View style={styles.prefBlock}>
           <View style={styles.chips}>
-            {(preferences.topics ?? []).length ? (
-              (preferences.topics ?? []).map((topic) => (
-                <View key={topic} style={styles.chip}>
-                  <Text style={styles.chipText}>{topic}</Text>
+            {preferences.length ? (
+              preferences.map((pref) => (
+                <View key={pref.id} style={styles.chip}>
+                  <Text style={styles.chipText}>{pref.name}</Text>
                   <TouchableOpacity
-                    onPress={() => removeTopic(topic)}
+                    onPress={() => removeTopic(pref.name)}
                     hitSlop={8}
                     disabled={saving}
-                    accessibilityLabel={`Remove ${topic}`}
+                    accessibilityLabel={`Remove ${pref.name}`}
                   >
                     <Ionicons name="close" size={14} color={colors.textMuted} />
                   </TouchableOpacity>

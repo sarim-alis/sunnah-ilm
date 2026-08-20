@@ -3,45 +3,47 @@ export const HADITH_TOPICS = [
   'Quran',
   'Parents',
   'Marriage',
-  'Fasting',
-  'Charity',
   'Prayer',
-  'Happiness',
   'Love',
   'Health',
   'Anger',
-  'Dua',
   'Death',
-  'Jannah',
-  'Knowledge',
-  'Character',
   'Education',
 ] as const;
 
 export type HadithTopic = (typeof HADITH_TOPICS)[number];
 
-export type UserPreferences = {
-  topics: HadithTopic[];
+export type PublicPreference = {
+  id: string;
+  name: string;
 };
 
-export const MAX_PREFERENCE_TOPICS = 5;
+export const MAX_PREFERENCE_TOPICS = 3;
 
-export const defaultPreferences: UserPreferences = {
-  topics: [],
-};
-
-export function normalizePreferences(value: unknown): UserPreferences {
-  const raw =
-    value && typeof value === 'object' ? (value as Partial<UserPreferences>) : {};
-  if (!Array.isArray(raw.topics)) return { topics: [] };
-
+export function uniqueTopicNames(values: unknown): HadithTopic[] {
+  if (!Array.isArray(values)) return [];
   const allowed = new Set<string>(HADITH_TOPICS);
   const topics: HadithTopic[] = [];
-  for (const item of raw.topics) {
-    if (typeof item === 'string' && allowed.has(item) && !topics.includes(item as HadithTopic)) {
-      topics.push(item as HadithTopic);
+  for (const item of values) {
+    const name =
+      typeof item === 'string'
+        ? item
+        : item && typeof item === 'object' && 'name' in item
+          ? String((item as { name: unknown }).name)
+          : '';
+    if (allowed.has(name) && !topics.includes(name as HadithTopic)) {
+      topics.push(name as HadithTopic);
     }
     if (topics.length >= MAX_PREFERENCE_TOPICS) break;
   }
-  return { topics };
+  return topics;
+}
+
+export function toPublicPreferences(
+  preferences?: { id?: string; name: string }[] | null,
+): PublicPreference[] {
+  return uniqueTopicNames(preferences).map((name) => {
+    const match = preferences?.find((item) => item.name === name);
+    return { id: match?.id ?? name, name };
+  });
 }

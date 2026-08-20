@@ -2,10 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import type { UserPreferences } from '../preferences';
+import { Preference } from './preference.entity';
 
 @Entity('users')
 export class User {
@@ -24,8 +25,12 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   imageUrl!: string | null;
 
-  @Column({ type: 'jsonb', nullable: true })
-  preferences!: UserPreferences | null;
+  @OneToMany(() => Preference, (preference) => preference.user, {
+    cascade: true,
+    eager: true,
+    orphanedRowAction: 'delete',
+  })
+  preferences!: Preference[];
 
   @Column({ type: 'varchar', default: 'light' })
   mode!: 'light' | 'dark';

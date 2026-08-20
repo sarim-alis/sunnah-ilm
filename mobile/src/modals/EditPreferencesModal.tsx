@@ -16,16 +16,17 @@ import {
   HADITH_TOPICS,
   MAX_PREFERENCE_TOPICS,
   normalizePreferences,
+  preferenceNames,
   type HadithTopic,
-  type UserPreferences,
+  type UserPreference,
 } from '@/users/preferences';
 
 type EditPreferencesModalProps = {
   visible: boolean;
-  preferences?: UserPreferences | null;
+  preferences?: UserPreference[] | null;
   saving: boolean;
   onClose: () => void;
-  onSave: (preferences: UserPreferences) => void;
+  onSave: (topics: HadithTopic[]) => void;
 };
 
 export function EditPreferencesModal({
@@ -38,16 +39,22 @@ export function EditPreferencesModal({
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const [topics, setTopics] = useState<HadithTopic[]>(
-    normalizePreferences(preferences).topics,
+    preferenceNames(normalizePreferences(preferences)),
   );
 
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!visible) return;
-    setTopics(normalizePreferences(preferences).topics);
+    setTopics(preferenceNames(normalizePreferences(preferences)));
     setError('');
   }, [visible, preferences]);
+
+  const handleSave = () => {
+    const next = (topics ?? []).slice(0, MAX_PREFERENCE_TOPICS);
+    setError('');
+    onSave(next);
+  };
 
   const toggleTopic = (topic: HadithTopic) => {
     const current = topics ?? [];
@@ -57,7 +64,7 @@ export function EditPreferencesModal({
       return;
     }
     if (current.length >= MAX_PREFERENCE_TOPICS) {
-      setError(`You can pick up to ${MAX_PREFERENCE_TOPICS} topics`);
+      setError(`You cannot pick more than ${MAX_PREFERENCE_TOPICS} topics`);
       return;
     }
     setError('');
@@ -88,9 +95,7 @@ export function EditPreferencesModal({
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.hint}>
-            Pick up to {MAX_PREFERENCE_TOPICS} topics. Tap again to remove one.
-          </Text>
+          <Text style={styles.hint}>Pick upto {MAX_PREFERENCE_TOPICS} topics</Text>
           <Text style={styles.count}>
             {(topics ?? []).length} / {MAX_PREFERENCE_TOPICS}
           </Text>
@@ -142,7 +147,7 @@ export function EditPreferencesModal({
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <TouchableOpacity
-            onPress={() => onSave({ topics: (topics ?? []).slice(0, MAX_PREFERENCE_TOPICS) })}
+            onPress={handleSave}
             disabled={saving}
             style={styles.saveButton}
           >
@@ -212,15 +217,18 @@ const createStyles = (colors: ThemeColors) =>
   chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
+    rowGap: 8,
   },
   chip: {
     alignItems: 'center',
     borderRadius: 18,
     borderWidth: 1,
     flexDirection: 'row',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    width: '48.5%',
   },
   chipOn: {
     backgroundColor: colors.primary,
