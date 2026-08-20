@@ -34,6 +34,7 @@ export class UsersRepository {
             email: true,
             imageUrl: true,
             preferences: true,
+            mode: true,
             createdAt: true,
             updatedAt: true,
           },
@@ -48,6 +49,7 @@ export class UsersRepository {
       password: data.password,
       imageUrl: null,
       preferences: defaultPreferences,
+      mode: 'light',
     });
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -62,6 +64,7 @@ export class UsersRepository {
       imageUrl?: string;
       password?: string;
       preferences?: UserPreferences;
+      mode?: 'light' | 'dark';
     },
   ) {
     const user = await this.users.findOne({ where: { id } });
@@ -72,6 +75,7 @@ export class UsersRepository {
     if (data.imageUrl !== undefined) user.imageUrl = data.imageUrl;
     if (data.password) user.password = data.password;
     if (data.preferences) user.preferences = data.preferences;
+    if (data.mode) user.mode = data.mode;
 
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -81,6 +85,7 @@ export class UsersRepository {
       email: saved.email,
       imageUrl: saved.imageUrl,
       preferences: saved.preferences ?? defaultPreferences,
+      mode: saved.mode === 'dark' ? ('dark' as const) : ('light' as const),
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
     };

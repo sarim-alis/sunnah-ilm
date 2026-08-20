@@ -7,7 +7,6 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { colors } from '@/constants/colors';
 import { TabBar, type AppTab } from '@/components/TabBar';
 import { queryClient } from '@/query/client';
 import AskScreen from '@/screens/AskScreen';
@@ -17,11 +16,13 @@ import ProfileScreen from '@/screens/ProfileScreen';
 import SavedScreen from '@/screens/SavedScreen';
 import SearchScreen from '@/screens/SearchScreen';
 import SignupScreen from '@/screens/SignupScreen';
+import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 import { HydrateUserCache } from '@/users/HydrateUserCache';
 import { useCurrentUser, useLogout } from '@/users/hooks';
 
 function AppContent() {
   const insets = useSafeAreaInsets();
+  const { colors, mode } = useTheme();
   const [authScreen, setAuthScreen] = useState<'login' | 'signup'>('login');
   const [tab, setTab] = useState<AppTab>('home');
   const { data: user } = useCurrentUser();
@@ -77,6 +78,7 @@ function AppContent() {
           onGoLogin={() => setAuthScreen('login')}
         />
       )}
+      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
     </View>
   );
 }
@@ -86,9 +88,10 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <HydrateUserCache>
-          <AppContent />
+          <ThemeProvider>
+            <AppContent />
+          </ThemeProvider>
         </HydrateUserCache>
-        <StatusBar style="dark" />
         <Toast />
       </SafeAreaProvider>
     </QueryClientProvider>

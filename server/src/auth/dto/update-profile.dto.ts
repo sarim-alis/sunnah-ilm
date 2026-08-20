@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsEmail, IsIn, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { UserPreferencesDto } from './user-preferences.dto';
 
@@ -39,4 +39,9 @@ export class UpdateProfileDto {
   @ValidateNested()
   @Type(() => UserPreferencesDto)
   preferences?: UserPreferencesDto;
+
+  @IsOptional()
+  @Transform(emptyToUndefined)
+  @IsIn(['light', 'dark'])
+  mode?: 'light' | 'dark';
 }

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiConfig } from '@/configs/api';
+import { normalizeMode, type AppMode } from '@/constants/colors';
 import {
   normalizePreferences,
   type UserPreferences,
@@ -11,6 +12,7 @@ export type AuthUser = {
   email: string;
   imageUrl?: string | null;
   preferences: UserPreferences;
+  mode: AppMode;
 };
 
 type AuthResponse = {
@@ -65,6 +67,7 @@ export async function updateProfile(data: {
   password?: string;
   imageUri?: string | null;
   preferences?: UserPreferences;
+  mode?: AppMode;
 }) {
   const token = await AsyncStorage.getItem('token');
   if (!token) throw new Error('Please log in again');
@@ -76,6 +79,7 @@ export async function updateProfile(data: {
   if (data.preferences) {
     formData.append('preferences', JSON.stringify(data.preferences));
   }
+  if (data.mode) formData.append('mode', data.mode);
 
   if (data.imageUri) {
     formData.append('image', {
@@ -118,6 +122,7 @@ function toAuthUser(user: AuthUser): AuthUser {
     email: user.email,
     imageUrl: user.imageUrl ?? null,
     preferences: normalizePreferences(user.preferences),
+    mode: normalizeMode(user.mode),
   };
 }
 

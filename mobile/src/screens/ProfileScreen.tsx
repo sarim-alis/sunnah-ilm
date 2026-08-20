@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -12,13 +12,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
-import { colors } from '@/constants/colors';
+import type { ThemeColors } from '@/constants/colors';
 import { PencilIcon } from '@/components/PencilIcon';
 import { EditPreferencesModal } from '@/modals/EditPreferencesModal';
 import { EditProfileModal } from '@/modals/EditProfileModal';
 import { PhotoSheetModal } from '@/modals/PhotoSheetModal';
 import { ViewPhotoModal } from '@/modals/ViewPhotoModal';
 import { errorMessage } from '@/services/auth';
+import { useTheme } from '@/theme/ThemeProvider';
 import { useCurrentUser, useUpdateProfile } from '@/users/hooks';
 import {
   normalizePreferences,
@@ -31,6 +32,8 @@ type ProfileScreenProps = {
 };
 
 export default function ProfileScreen({ onBack }: ProfileScreenProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { data: user } = useCurrentUser();
   const updateProfileMutation = useUpdateProfile();
   const [previewUri, setPreviewUri] = useState<string | null>(null);
@@ -336,7 +339,8 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   screen: {
     backgroundColor: colors.background,
     flex: 1,

@@ -25,6 +25,7 @@ export class AuthService {
     email: string;
     imageUrl?: string | null;
     preferences?: UserPreferences | null;
+    mode?: 'light' | 'dark' | null;
   }) {
     return {
       id: user.id,
@@ -32,6 +33,7 @@ export class AuthService {
       email: user.email,
       imageUrl: user.imageUrl ?? null,
       preferences: normalizePreferences(user.preferences),
+      mode: user.mode === 'dark' ? 'dark' : 'light',
     };
   }
 
@@ -112,6 +114,7 @@ export class AuthService {
       preferences: dto.preferences
         ? normalizePreferences(dto.preferences)
         : undefined,
+      mode: dto.mode,
     });
     if (!updated) {
       throw new NotFoundException('User not found');

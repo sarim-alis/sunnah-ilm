@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -12,8 +12,9 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/constants/colors';
+import type { ThemeColors } from '@/constants/colors';
 import type { AuthUser } from '@/services/auth';
+import { useTheme } from '@/theme/ThemeProvider';
 
 type EditProfileModalProps = {
   visible: boolean;
@@ -30,6 +31,8 @@ export function EditProfileModal({
   onClose,
   onSave,
 }: EditProfileModalProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState('');
@@ -180,7 +183,8 @@ export function EditProfileModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   backdrop: {
     backgroundColor: 'rgba(21, 21, 21, 0.45)',
     flex: 1,

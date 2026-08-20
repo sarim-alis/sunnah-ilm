@@ -40,6 +40,28 @@ export function useLogout() {
   });
 }
 
+export function useToggleMode() {
+  const client = useQueryClient();
+  const { data: user } = useCurrentUser();
+  const updateProfileMutation = useUpdateProfile();
+
+  return async () => {
+    if (!user) return;
+    const next = user.mode === 'dark' ? 'light' : 'dark';
+    client.setQueryData(userKeys.me(), { ...user, mode: next });
+    try {
+      await updateProfileMutation.mutateAsync({
+        name: user.name,
+        email: user.email,
+        mode: next,
+      });
+    } catch (err) {
+      client.setQueryData(userKeys.me(), user);
+      throw err;
+    }
+  };
+}
+
 export async function hydrateCurrentUser() {
   const user = await getUser();
   queryClient.setQueryData(userKeys.me(), user);

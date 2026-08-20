@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Modal,
@@ -10,7 +10,8 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/constants/colors';
+import type { ThemeColors } from '@/constants/colors';
+import { useTheme } from '@/theme/ThemeProvider';
 import {
   HADITH_TOPICS,
   MAX_PREFERENCE_TOPICS,
@@ -34,6 +35,8 @@ export function EditPreferencesModal({
   onClose,
   onSave,
 }: EditPreferencesModalProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [topics, setTopics] = useState<HadithTopic[]>(
     normalizePreferences(preferences).topics,
   );
@@ -155,7 +158,8 @@ export function EditPreferencesModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   backdrop: {
     backgroundColor: 'rgba(21, 21, 21, 0.45)',
     flex: 1,

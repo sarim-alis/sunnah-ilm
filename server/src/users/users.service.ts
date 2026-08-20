@@ -26,6 +26,7 @@ export class UsersService {
       imageUrl?: string;
       password?: string;
       preferences?: UserPreferences;
+      mode?: 'light' | 'dark';
     },
   ) {
     return this.usersRepository.update(id, data);

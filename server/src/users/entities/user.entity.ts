@@ -27,6 +27,9 @@ export class User {
   @Column({ type: 'jsonb', nullable: true })
   preferences!: UserPreferences | null;
 
+  @Column({ type: 'varchar', default: 'light' })
+  mode!: 'light' | 'dark';
+
   @CreateDateColumn()
   createdAt!: Date;
 

@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '@/constants/colors';
+import type { ThemeColors } from '@/constants/colors';
+import { useTheme } from '@/theme/ThemeProvider';
 
 type CategoryCardProps = {
   title: string;
@@ -7,6 +9,9 @@ type CategoryCardProps = {
 };
 
 export function CategoryCard({ title, count }: CategoryCardProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>{title}</Text>
@@ -15,22 +20,24 @@ export function CategoryCard({ title, count }: CategoryCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 4,
-    padding: 16,
-  },
-  title: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  count: {
-    color: colors.textMuted,
-    fontSize: 13,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderRadius: 12,
+      borderWidth: 1,
+      gap: 4,
+      padding: 16,
+    },
+    title: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    count: {
+      color: colors.textMuted,
+      fontSize: 13,
+    },
+  });
+}

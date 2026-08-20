@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { colors } from '@/constants/colors';
+import type { ThemeColors } from '@/constants/colors';
+import { useTheme } from '@/theme/ThemeProvider';
 
 type SearchBarProps = {
   value: string;
@@ -12,6 +14,9 @@ export function SearchBar({
   onChangeText,
   placeholder = 'Search hadith...',
 }: SearchBarProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.wrap}>
       <TextInput
@@ -25,17 +30,19 @@ export function SearchBar({
   );
 }
 
-const styles = StyleSheet.create({
-  wrap: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  input: {
-    color: colors.text,
-    fontSize: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-});
+function createStyles(colors: ThemeColors) {
+  return StyleSheet.create({
+    wrap: {
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderRadius: 12,
+      borderWidth: 1,
+    },
+    input: {
+      color: colors.text,
+      fontSize: 16,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+    },
+  });
+}

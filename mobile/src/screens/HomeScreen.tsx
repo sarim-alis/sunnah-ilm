@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -8,8 +8,9 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/constants/colors';
-import { useCurrentUser } from '@/users/hooks';
+import type { ThemeColors } from '@/constants/colors';
+import { useTheme } from '@/theme/ThemeProvider';
+import { useCurrentUser, useToggleMode } from '@/users/hooks';
 
 type HomeScreenProps = {
   onOpenProfile?: () => void;
@@ -32,7 +33,10 @@ export default function HomeScreen({
   onOpenAsk,
   onOpenSaved,
 }: HomeScreenProps) {
+  const { colors, mode } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { data: user } = useCurrentUser();
+  const toggleMode = useToggleMode();
   const [hideSetup, setHideSetup] = useState(false);
   const firstName = user?.name?.split(' ')[0] ?? 'friend';
   const initial = firstName.charAt(0).toUpperCase();
@@ -78,9 +82,24 @@ export default function HomeScreen({
             <Text style={styles.subtitle}>Seek knowledge · {today}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={onOpenSearch} style={styles.headerIcon}>
-          <Ionicons name="search-outline" size={20} color={colors.primary} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={() => {
+              void toggleMode();
+            }}
+            style={styles.headerIcon}
+            accessibilityLabel={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <Ionicons
+              name={mode === 'dark' ? 'sunny-outline' : 'moon-outline'}
+              size={20}
+              color={colors.primary}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onOpenSearch} style={styles.headerIcon}>
+            <Ionicons name="search-outline" size={20} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TouchableOpacity
@@ -168,7 +187,8 @@ export default function HomeScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
   screen: {
     backgroundColor: colors.background,
     flex: 1,
@@ -234,6 +254,10 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     width: 40,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 8,
   },
   hero: {
     backgroundColor: colors.accent,
