@@ -14,6 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 import type { ThemeColors } from '@/constants/colors';
 import { PencilIcon } from '@/components/PencilIcon';
+import { PreferenceScroller } from '@/components/PreferenceScroller';
 import { EditPreferencesModal } from '@/modals/EditPreferencesModal';
 import { EditProfileModal } from '@/modals/EditProfileModal';
 import { PhotoSheetModal } from '@/modals/PhotoSheetModal';
@@ -278,17 +279,7 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
         </View>
 
         <View style={styles.prefBlock}>
-          <View style={styles.chips}>
-            {preferences.length ? (
-              preferences.map((pref) => (
-                <View key={pref.id} style={styles.chip}>
-                  <Text style={styles.chipText}>{pref.name}</Text>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.rowValue}>No topics selected yet</Text>
-            )}
-          </View>
+          <PreferenceScroller preferences={preferences} />
         </View>
       </ScrollView>
 
@@ -469,27 +460,7 @@ const createStyles = (colors: ThemeColors) =>
     marginTop: 2,
   },
   prefBlock: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 8,
-  },
-  chip: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  chipText: {
-    color: colors.text,
-    fontSize: 13,
-    fontWeight: '600',
+    paddingVertical: 10,
   },
 });
