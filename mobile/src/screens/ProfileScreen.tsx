@@ -14,11 +14,16 @@ import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
 import { PencilIcon } from '@/components/PencilIcon';
+import { EditPreferencesModal } from '@/modals/EditPreferencesModal';
 import { EditProfileModal } from '@/modals/EditProfileModal';
 import { PhotoSheetModal } from '@/modals/PhotoSheetModal';
 import { ViewPhotoModal } from '@/modals/ViewPhotoModal';
 import { errorMessage } from '@/services/auth';
 import { useCurrentUser, useUpdateProfile } from '@/users/hooks';
+import {
+  normalizePreferences,
+  type UserPreferences,
+} from '@/users/preferences';
 
 type ProfileScreenProps = {
   onBack: () => void;
@@ -34,8 +39,10 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [prefsOpen, setPrefsOpen] = useState(false);
 
   const imageUri = previewUri ?? user?.imageUrl ?? null;
+  const preferences = normalizePreferences(user?.preferences);
 
   const saveImage = async (uri: string) => {
     if (!user) return;
@@ -151,6 +158,35 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
     }
   };
 
+  const savePreferences = async (next: UserPreferences, message = 'Preferences saved') => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      await updateProfileMutation.mutateAsync({
+        name: user.name,
+        email: user.email,
+        preferences: next,
+      });
+      setPrefsOpen(false);
+      Toast.show({ type: 'success', text1: 'Success', text2: message });
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Update failed',
+        text2: errorMessage(err, 'Could not save preferences'),
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeTopic = (topic: string) => {
+    void savePreferences(
+      { topics: preferences.topics.filter((item) => item !== topic) },
+      'Topic removed',
+    );
+  };
+
   if (!user) return null;
 
   return (
@@ -202,6 +238,7 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
         <View style={styles.divider} />
 
         <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>Account</Text>
           <TouchableOpacity
             onPress={() => setEditOpen(true)}
             style={styles.editIcon}
@@ -231,6 +268,42 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
             <Text style={styles.rowValue}>{user.email}</Text>
           </View>
         </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.sectionHead}>
+          <Text style={styles.sectionTitle}>Preferences</Text>
+          <TouchableOpacity
+            onPress={() => setPrefsOpen(true)}
+            style={styles.editIcon}
+            hitSlop={8}
+            accessibilityLabel="Edit preferences"
+          >
+            <PencilIcon size={28} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.prefBlock}>
+          <View style={styles.chips}>
+            {(preferences.topics ?? []).length ? (
+              (preferences.topics ?? []).map((topic) => (
+                <View key={topic} style={styles.chip}>
+                  <Text style={styles.chipText}>{topic}</Text>
+                  <TouchableOpacity
+                    onPress={() => removeTopic(topic)}
+                    hitSlop={8}
+                    disabled={saving}
+                    accessibilityLabel={`Remove ${topic}`}
+                  >
+                    <Ionicons name="close" size={14} color={colors.textMuted} />
+                  </TouchableOpacity>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.rowValue}>No topics selected yet</Text>
+            )}
+          </View>
+        </View>
       </ScrollView>
 
       <PhotoSheetModal
@@ -251,6 +324,13 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
         saving={saving}
         onClose={() => setEditOpen(false)}
         onSave={saveDetails}
+      />
+      <EditPreferencesModal
+        visible={prefsOpen}
+        preferences={preferences}
+        saving={saving}
+        onClose={() => setPrefsOpen(false)}
+        onSave={savePreferences}
       />
     </View>
   );
@@ -353,9 +433,16 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sectionHead: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 4,
+  },
+  sectionTitle: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '700',
   },
   editIcon: {
     alignItems: 'center',
@@ -389,5 +476,31 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
     fontSize: 14,
     marginTop: 2,
+  },
+  prefBlock: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 8,
+  },
+  chip: {
+    alignItems: 'center',
+    backgroundColor: colors.background,
+    borderColor: colors.border,
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  chipText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

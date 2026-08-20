@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './repositories/users.repository';
+import type { UserPreferences } from './preferences';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +20,13 @@ export class UsersService {
 
   update(
     id: string,
-    data: { name?: string; email?: string; imageUrl?: string; password?: string },
+    data: {
+      name?: string;
+      email?: string;
+      imageUrl?: string;
+      password?: string;
+      preferences?: UserPreferences;
+    },
   ) {
     return this.usersRepository.update(id, data);
   }

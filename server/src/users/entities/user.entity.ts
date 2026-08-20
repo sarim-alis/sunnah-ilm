@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { UserPreferences } from '../preferences';
 
 @Entity('users')
 export class User {
@@ -22,6 +23,9 @@ export class User {
 
   @Column({ type: 'varchar', nullable: true })
   imageUrl!: string | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  preferences!: UserPreferences | null;
 
   @CreateDateColumn()
   createdAt!: Date;

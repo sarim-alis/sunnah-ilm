@@ -3,6 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
 import { UsersService } from '../users/users.service';
+import {
+  normalizePreferences,
+  type UserPreferences,
+} from '../users/preferences';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -20,12 +24,14 @@ export class AuthService {
     name: string;
     email: string;
     imageUrl?: string | null;
+    preferences?: UserPreferences | null;
   }) {
     return {
       id: user.id,
       name: user.name,
       email: user.email,
       imageUrl: user.imageUrl ?? null,
+      preferences: normalizePreferences(user.preferences),
     };
   }
 
@@ -103,6 +109,9 @@ export class AuthService {
       email: dto.email,
       imageUrl,
       password,
+      preferences: dto.preferences
+        ? normalizePreferences(dto.preferences)
+        : undefined,
     });
     if (!updated) {
       throw new NotFoundException('User not found');

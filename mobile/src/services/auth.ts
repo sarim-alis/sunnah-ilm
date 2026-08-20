@@ -1,11 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiConfig } from '@/configs/api';
+import {
+  normalizePreferences,
+  type UserPreferences,
+} from '@/users/preferences';
 
 export type AuthUser = {
   id: string;
   name: string;
   email: string;
   imageUrl?: string | null;
+  preferences: UserPreferences;
 };
 
 type AuthResponse = {
@@ -37,9 +42,10 @@ export async function login(email: string, password: string) {
   const data = (await response.json()) as AuthResponse;
   if (!response.ok) throw new Error(messageFrom(data));
   if (!data.token) throw new Error('Login failed');
+  const user = toAuthUser(data.user);
   await AsyncStorage.setItem('token', data.token);
-  await AsyncStorage.setItem('user', JSON.stringify(data.user));
-  return data;
+  await AsyncStorage.setItem('user', JSON.stringify(user));
+  return { ...data, user };
 }
 
 export async function register(name: string, email: string, password: string) {
@@ -58,6 +64,7 @@ export async function updateProfile(data: {
   email: string;
   password?: string;
   imageUri?: string | null;
+  preferences?: UserPreferences;
 }) {
   const token = await AsyncStorage.getItem('token');
   if (!token) throw new Error('Please log in again');
@@ -66,6 +73,9 @@ export async function updateProfile(data: {
   formData.append('name', data.name);
   formData.append('email', data.email);
   if (data.password) formData.append('password', data.password);
+  if (data.preferences) {
+    formData.append('preferences', JSON.stringify(data.preferences));
+  }
 
   if (data.imageUri) {
     formData.append('image', {
@@ -82,8 +92,9 @@ export async function updateProfile(data: {
   });
   const payload = (await response.json()) as AuthResponse;
   if (!response.ok) throw new Error(messageFrom(payload));
-  await AsyncStorage.setItem('user', JSON.stringify(payload.user));
-  return payload.user;
+  const user = toAuthUser(payload.user);
+  await AsyncStorage.setItem('user', JSON.stringify(user));
+  return user;
 }
 
 export async function logout() {
@@ -97,7 +108,7 @@ export async function getToken() {
 
 export async function getUser(): Promise<AuthUser | null> {
   const raw = await AsyncStorage.getItem('user');
-  return raw ? (JSON.parse(raw) as AuthUser) : null;
+  return raw ? toAuthUser(JSON.parse(raw) as AuthUser) : null;
 }
 
 function toAuthUser(user: AuthUser): AuthUser {
@@ -106,6 +117,7 @@ function toAuthUser(user: AuthUser): AuthUser {
     name: user.name,
     email: user.email,
     imageUrl: user.imageUrl ?? null,
+    preferences: normalizePreferences(user.preferences),
   };
 }
 

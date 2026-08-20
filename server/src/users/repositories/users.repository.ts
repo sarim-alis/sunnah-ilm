@@ -4,6 +4,7 @@ import { QueryClient } from '@tanstack/query-core';
 import { Repository } from 'typeorm';
 import { QUERY_CLIENT } from '../../common/query/query-client.provider';
 import { User } from '../entities/user.entity';
+import { defaultPreferences, type UserPreferences } from '../preferences';
 import { userKeys } from '../query/keys';
 
 @Injectable()
@@ -32,6 +33,7 @@ export class UsersRepository {
             name: true,
             email: true,
             imageUrl: true,
+            preferences: true,
             createdAt: true,
             updatedAt: true,
           },
@@ -45,6 +47,7 @@ export class UsersRepository {
       email: data.email.toLowerCase(),
       password: data.password,
       imageUrl: null,
+      preferences: defaultPreferences,
     });
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -53,7 +56,13 @@ export class UsersRepository {
 
   async update(
     id: string,
-    data: { name?: string; email?: string; imageUrl?: string; password?: string },
+    data: {
+      name?: string;
+      email?: string;
+      imageUrl?: string;
+      password?: string;
+      preferences?: UserPreferences;
+    },
   ) {
     const user = await this.users.findOne({ where: { id } });
     if (!user) return null;
@@ -62,6 +71,7 @@ export class UsersRepository {
     if (data.email) user.email = data.email.toLowerCase();
     if (data.imageUrl !== undefined) user.imageUrl = data.imageUrl;
     if (data.password) user.password = data.password;
+    if (data.preferences) user.preferences = data.preferences;
 
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });
@@ -70,6 +80,7 @@ export class UsersRepository {
       name: saved.name,
       email: saved.email,
       imageUrl: saved.imageUrl,
+      preferences: saved.preferences ?? defaultPreferences,
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
     };
