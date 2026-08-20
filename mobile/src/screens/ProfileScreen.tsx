@@ -428,8 +428,12 @@ const createStyles = (colors: ThemeColors) =>
   },
   sectionTitle: {
     color: colors.text,
+    flexShrink: 0,
     fontSize: 16,
     fontWeight: '700',
+    includeFontPadding: false,
+    lineHeight: 22,
+    paddingRight: 8,
   },
   editIcon: {
     alignItems: 'center',

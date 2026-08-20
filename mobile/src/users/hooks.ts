@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getUser, login, logout, updateProfile } from '@/services/auth';
+import { getUser, login, logout, updateProfile, type AuthUser } from '@/services/auth';
 import { queryClient } from '@/query/client';
 import { userKeys } from './query/keys';
 import { currentUserQuery } from './query/profile';
@@ -12,6 +13,29 @@ export function useUpdateProfile() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: updateProfile,
+    onMutate: async (data) => {
+      void client.cancelQueries({ queryKey: userKeys.me() });
+      const previous = client.getQueryData<AuthUser | null>(userKeys.me());
+      if (!previous) return { previous };
+
+      const next: AuthUser = {
+        ...previous,
+        name: data.name,
+        email: data.email,
+        mode: data.mode ?? previous.mode,
+        preferences: data.preferences
+          ? data.preferences.topics.map((name) => ({ id: name, name }))
+          : previous.preferences,
+      };
+      client.setQueryData(userKeys.me(), next);
+      void AsyncStorage.setItem('user', JSON.stringify(next));
+      return { previous };
+    },
+    onError: async (_err, _data, context) => {
+      if (!context?.previous) return;
+      client.setQueryData(userKeys.me(), context.previous);
+      await AsyncStorage.setItem('user', JSON.stringify(context.previous));
+    },
     onSuccess: (user) => {
       client.setQueryData(userKeys.me(), user);
     },

@@ -46,7 +46,12 @@ export function EditPreferencesModal({
     if (!visible) return;
     setTopics(uniqueTopicNames(preferences));
     setError('');
-  }, [visible, preferences]);
+  }, [visible]);
+
+  const close = () => {
+    if (saving) return;
+    onClose();
+  };
 
   const handleSave = () => {
     const next = (topics ?? []).slice(0, MAX_PREFERENCE_TOPICS);
@@ -74,17 +79,18 @@ export function EditPreferencesModal({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={close}
       statusBarTranslucent
     >
       <View style={styles.backdrop}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        <Pressable style={StyleSheet.absoluteFill} onPress={close} />
         <View style={styles.sheet}>
           <View style={styles.header}>
             <View style={styles.headerSide} />
             <Text style={styles.title}>Topics</Text>
             <TouchableOpacity
-              onPress={onClose}
+              onPress={close}
+              disabled={saving}
               style={styles.headerSide}
               hitSlop={8}
               accessibilityLabel="Close"
