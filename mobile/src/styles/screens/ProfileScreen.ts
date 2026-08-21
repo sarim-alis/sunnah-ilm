@@ -34,6 +34,16 @@ export const createStyles = (colors: ThemeColors) =>
     topBarSpacer: {
       width: 40,
     },
+    logoutButton: {
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderRadius: 20,
+      borderWidth: 1,
+      height: 40,
+      justifyContent: 'center',
+      width: 40,
+    },
     content: {
       paddingBottom: 32,
       paddingTop: 16,

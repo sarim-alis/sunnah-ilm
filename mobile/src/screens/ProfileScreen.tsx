@@ -3,10 +3,12 @@ import { ActivityIndicator, Image, Platform, ScrollView, Text, TouchableOpacity,
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
+import { LogoutIcon } from '@/components/LogoutIcon';
 import { PencilIcon } from '@/components/PencilIcon';
 import { PreferenceScroller } from '@/components/PreferenceScroller';
 import { EditPreferencesModal } from '@/modals/EditPreferencesModal';
 import { EditProfileModal } from '@/modals/EditProfileModal';
+import { LogoutModal } from '@/modals/LogoutModal';
 import { PhotoSheetModal } from '@/modals/PhotoSheetModal';
 import { ViewPhotoModal } from '@/modals/ViewPhotoModal';
 import { errorMessage } from '@/services/auth';
@@ -18,10 +20,10 @@ import type { HadithTopic } from '@/users/preferences';
 
 type ProfileScreenProps = {
   onBack: () => void;
-  onLogout?: () => void;
+  onLogout?: () => void | Promise<void>;
 };
 
-export default function ProfileScreen({ onBack }: ProfileScreenProps) {
+export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { data: user } = useCurrentUser();
@@ -33,6 +35,8 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const imageUri = previewUri ?? user?.imageUrl ?? null;
   const preferences = normalizePreferences(user?.preferences);
@@ -173,6 +177,21 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
     }
   };
 
+  const confirmLogout = async () => {
+    if (!onLogout) return;
+    setLoggingOut(true);
+    try {
+      await onLogout();
+    } catch (err) {
+      setLoggingOut(false);
+      Toast.show({
+        type: 'error',
+        text1: 'Logout failed',
+        text2: errorMessage(err, 'Cannot log out'),
+      });
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -182,7 +201,18 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
           <Ionicons name="chevron-back" size={22} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.title}>Profile</Text>
-        <View style={styles.topBarSpacer} />
+        {onLogout ? (
+          <TouchableOpacity
+            onPress={() => setLogoutOpen(true)}
+            style={styles.logoutButton}
+            activeOpacity={0.8}
+            accessibilityLabel="Logout"
+          >
+            <LogoutIcon size={20} color={colors.text} />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.topBarSpacer} />
+        )}
       </View>
 
       <ScrollView
@@ -299,6 +329,16 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
         saving={saving}
         onClose={() => setPrefsOpen(false)}
         onSave={savePreferences}
+      />
+      <LogoutModal
+        visible={logoutOpen}
+        confirming={loggingOut}
+        onClose={() => {
+          if (!loggingOut) setLogoutOpen(false);
+        }}
+        onConfirm={() => {
+          void confirmLogout();
+        }}
       />
     </View>
   );
