@@ -1,4 +1,5 @@
-import { Image, Modal, Pressable, StyleSheet } from 'react-native';
+import { Image, Modal, Pressable } from 'react-native';
+import { styles } from '@/styles/modals/ViewPhotoModal';
 
 type ViewPhotoModalProps = {
   visible: boolean;
@@ -15,18 +16,3 @@ export function ViewPhotoModal({ visible, uri, onClose }: ViewPhotoModalProps) {
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  backdrop: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(21, 21, 21, 0.88)',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  image: {
-    borderRadius: 16,
-    height: '70%',
-    width: '100%',
-  },
-});

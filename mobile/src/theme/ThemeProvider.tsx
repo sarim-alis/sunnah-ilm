@@ -1,10 +1,5 @@
 import { createContext, useContext, type ReactNode } from 'react';
-import {
-  normalizeMode,
-  palettes,
-  type AppMode,
-  type ThemeColors,
-} from '@/constants/colors';
+import { normalizeMode, palettes, type AppMode, type ThemeColors } from '@/constants/colors';
 import { useCurrentUser } from '@/users/hooks';
 
 type ThemeValue = {

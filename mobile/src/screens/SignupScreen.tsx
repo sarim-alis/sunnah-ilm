@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
 import { errorMessage, register } from '@/services/auth';
-import { authStyles as styles } from './authStyles';
+import { authStyles as styles } from '@/styles/screens/authStyles';
 
 type SignupScreenProps = {
   onSuccess: () => void;

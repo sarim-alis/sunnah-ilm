@@ -15,7 +15,7 @@ import Toast from 'react-native-toast-message';
 import { colors } from '@/constants/colors';
 import { errorMessage } from '@/services/auth';
 import { useLogin } from '@/users/hooks';
-import { authStyles as styles } from './authStyles';
+import { authStyles as styles } from '@/styles/screens/authStyles';
 
 type LoginScreenProps = {
   onGoSignup: () => void;

@@ -1,0 +1,154 @@
+import { StyleSheet } from 'react-native';
+import type { ThemeColors } from '@/constants/colors';
+
+export const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    screen: {
+      backgroundColor: colors.background,
+      flex: 1,
+    },
+    topBar: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      paddingHorizontal: 20,
+      paddingBottom: 8,
+      paddingTop: 24,
+    },
+    backButton: {
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderRadius: 20,
+      borderWidth: 1,
+      height: 40,
+      justifyContent: 'center',
+      width: 40,
+    },
+    title: {
+      color: colors.text,
+      flex: 1,
+      fontSize: 18,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    topBarSpacer: {
+      width: 40,
+    },
+    content: {
+      paddingBottom: 32,
+      paddingTop: 16,
+    },
+    avatarWrap: {
+      alignSelf: 'center',
+      height: 112,
+      width: 112,
+    },
+    avatarInner: {
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderRadius: 22,
+      borderWidth: 3,
+      height: 112,
+      overflow: 'hidden',
+      width: 112,
+    },
+    avatarImage: {
+      height: '100%',
+      width: '100%',
+    },
+    avatarFallback: {
+      alignItems: 'center',
+      backgroundColor: colors.accent,
+      flex: 1,
+      justifyContent: 'center',
+    },
+    avatarInitial: {
+      color: colors.primary,
+      fontSize: 32,
+      fontWeight: '700',
+    },
+    avatarBadge: {
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderRadius: 14,
+      borderWidth: 1,
+      bottom: 2,
+      height: 28,
+      justifyContent: 'center',
+      position: 'absolute',
+      right: 2,
+      width: 28,
+    },
+    identity: {
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingTop: 16,
+    },
+    name: {
+      color: colors.text,
+      fontSize: 24,
+      fontWeight: '700',
+      textAlign: 'center',
+    },
+    divider: {
+      backgroundColor: colors.border,
+      height: 1,
+      marginHorizontal: 20,
+      marginTop: 18,
+      marginBottom: 8,
+    },
+    sectionHead: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      paddingBottom: 4,
+    },
+    sectionTitle: {
+      color: colors.text,
+      flexShrink: 0,
+      fontSize: 16,
+      fontWeight: '700',
+      includeFontPadding: false,
+      lineHeight: 22,
+      paddingRight: 8,
+    },
+    editIcon: {
+      alignItems: 'center',
+      height: 36,
+      justifyContent: 'center',
+      width: 36,
+    },
+    row: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      gap: 14,
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+    },
+    rowIcon: {
+      alignItems: 'center',
+      borderRadius: 22,
+      height: 44,
+      justifyContent: 'center',
+      width: 44,
+    },
+    rowCopy: {
+      flex: 1,
+    },
+    rowLabel: {
+      color: colors.text,
+      fontSize: 15,
+      fontWeight: '700',
+    },
+    rowValue: {
+      color: colors.textMuted,
+      fontSize: 14,
+      marginTop: 2,
+    },
+    prefBlock: {
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+    },
+  });

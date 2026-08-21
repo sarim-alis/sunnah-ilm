@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SearchBar } from '@/components/SearchBar';
-import type { ThemeColors } from '@/constants/colors';
+import { createStyles } from '@/styles/screens/SearchScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 
 export default function SearchScreen() {
@@ -14,20 +14,4 @@ export default function SearchScreen() {
       <SearchBar value="" onChangeText={() => {}} />
     </View>
   );
-}
-
-function createStyles(colors: ThemeColors) {
-  return StyleSheet.create({
-    screen: {
-      backgroundColor: colors.background,
-      flex: 1,
-      gap: 12,
-      padding: 20,
-    },
-    title: {
-      color: colors.primary,
-      fontSize: 24,
-      fontWeight: '700',
-    },
-  });
 }

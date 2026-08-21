@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { ThemeColors } from '@/constants/colors';
+import { Text, View } from 'react-native';
+import { createStyles } from '@/styles/screens/HadithDetailScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 
 export default function HadithDetailScreen() {
@@ -12,19 +12,4 @@ export default function HadithDetailScreen() {
       <Text style={styles.title}>Hadith</Text>
     </View>
   );
-}
-
-function createStyles(colors: ThemeColors) {
-  return StyleSheet.create({
-    screen: {
-      backgroundColor: colors.background,
-      flex: 1,
-      padding: 20,
-    },
-    title: {
-      color: colors.primary,
-      fontSize: 24,
-      fontWeight: '700',
-    },
-  });
 }

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import type { ThemeColors } from '@/constants/colors';
+import { Text, View } from 'react-native';
+import { createStyles } from '@/styles/components/HadithCard';
 import { useTheme } from '@/theme/ThemeProvider';
 import type { Hadith } from '@/services/hadith';
 
@@ -22,36 +22,4 @@ export function HadithCard({ hadith }: HadithCardProps) {
       <Text style={styles.narrator}>{hadith.narrator}</Text>
     </View>
   );
-}
-
-function createStyles(colors: ThemeColors) {
-  return StyleSheet.create({
-    card: {
-      backgroundColor: colors.card,
-      borderColor: colors.border,
-      borderRadius: 12,
-      borderWidth: 1,
-      gap: 8,
-      padding: 16,
-    },
-    meta: {
-      color: colors.primary,
-      fontSize: 13,
-      fontWeight: '600',
-    },
-    arabic: {
-      color: colors.text,
-      fontSize: 20,
-      textAlign: 'right',
-    },
-    english: {
-      color: colors.text,
-      fontSize: 15,
-      lineHeight: 22,
-    },
-    narrator: {
-      color: colors.textMuted,
-      fontSize: 13,
-    },
-  });
 }
