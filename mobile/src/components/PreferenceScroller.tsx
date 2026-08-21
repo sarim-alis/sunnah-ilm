@@ -1,19 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Image,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ARROW, createStyles } from '@/styles/components/PreferenceScroller';
 import { useTheme } from '@/theme/ThemeProvider';
 import { preferenceImage } from '@/users/preferenceImages';
 import type { UserPreference } from '@/users/preferences';
-
 const VISIBLE = 2;
 
 type PreferenceScrollerProps = {

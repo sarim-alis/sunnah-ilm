@@ -1,22 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createStyles } from '@/styles/modals/EditPreferencesModal';
 import { useTheme } from '@/theme/ThemeProvider';
-import {
-  HADITH_TOPICS,
-  MAX_PREFERENCE_TOPICS,
-  uniqueTopicNames,
-} from '@/users/preferences';
+import { HADITH_TOPICS, MAX_PREFERENCE_TOPICS, uniqueTopicNames } from '@/users/preferences';
 import type { HadithTopic, UserPreference } from '@/users/preferences';
 
 type EditPreferencesModalProps = {

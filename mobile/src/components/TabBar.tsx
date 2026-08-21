@@ -3,7 +3,6 @@ import { TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { createStyles } from '@/styles/components/TabBar';
 import { useTheme } from '@/theme/ThemeProvider';
-
 export type AppTab = 'home' | 'search' | 'ask' | 'saved' | 'profile';
 
 type TabBarProps = {

@@ -20,12 +20,7 @@ const quickActions = [
   { key: 'books', label: 'Books', icon: 'library-outline' },
 ] as const;
 
-export default function HomeScreen({
-  onOpenProfile,
-  onOpenSearch,
-  onOpenAsk,
-  onOpenSaved,
-}: HomeScreenProps) {
+export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOpenSaved}: HomeScreenProps) {
   const { colors, mode } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { data: user } = useCurrentUser();
