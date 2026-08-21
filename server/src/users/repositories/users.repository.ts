@@ -6,6 +6,7 @@ import { QUERY_CLIENT } from '../../common/query/query-client.provider';
 import { Preference } from '../entities/preference.entity';
 import { User } from '../entities/user.entity';
 import { uniqueTopicNames, type HadithTopic } from '../preferences';
+import type { UserRole } from '../roles';
 import { userKeys } from '../query/keys';
 
 @Injectable()
@@ -39,7 +40,12 @@ export class UsersRepository {
     });
   }
 
-  async create(data: { name: string; email: string; password: string }) {
+  async create(data: {
+    name: string;
+    email: string;
+    password: string;
+    role?: UserRole;
+  }) {
     const user = this.users.create({
       name: data.name,
       email: data.email.toLowerCase(),
@@ -47,6 +53,7 @@ export class UsersRepository {
       imageUrl: null,
       preferences: [],
       mode: 'light',
+      role: data.role ?? 'user',
     });
     const saved = await this.users.save(user);
     await this.queryClient.invalidateQueries({ queryKey: userKeys.all });

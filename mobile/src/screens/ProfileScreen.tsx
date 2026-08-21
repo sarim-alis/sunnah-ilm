@@ -208,7 +208,7 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
             activeOpacity={0.8}
             accessibilityLabel="Logout"
           >
-            <LogoutIcon size={20} color={colors.text} />
+            <LogoutIcon size={22} color={colors.text} />
           </TouchableOpacity>
         ) : (
           <View style={styles.topBarSpacer} />

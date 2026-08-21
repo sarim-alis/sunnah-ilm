@@ -20,8 +20,10 @@ export const createStyles = (colors: ThemeColors) =>
       borderColor: colors.border,
       borderRadius: 20,
       borderWidth: 1,
+      flexShrink: 0,
       height: 40,
       justifyContent: 'center',
+      overflow: 'hidden',
       width: 40,
     },
     title: {
@@ -40,8 +42,10 @@ export const createStyles = (colors: ThemeColors) =>
       borderColor: colors.border,
       borderRadius: 20,
       borderWidth: 1,
+      flexShrink: 0,
       height: 40,
       justifyContent: 'center',
+      overflow: 'hidden',
       width: 40,
     },
     content: {

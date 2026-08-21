@@ -40,55 +40,80 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
     if (key === 'saved') onOpenSaved?.();
   };
 
+  const isAdmin = user?.role === 'admin';
+
+  const header = (
+    <View style={styles.header}>
+      <TouchableOpacity
+        onPress={onOpenProfile}
+        disabled={!onOpenProfile}
+        style={styles.profileRow}
+      >
+        {user?.imageUrl ? (
+          <View style={styles.avatar}>
+            <Image
+              source={{ uri: user.imageUrl }}
+              style={styles.avatarImage}
+              resizeMode="cover"
+            />
+          </View>
+        ) : (
+          <View style={styles.avatarFallback}>
+            <Text style={styles.avatarInitial}>{initial}</Text>
+          </View>
+        )}
+        <View style={styles.headerCopy}>
+          <Text style={styles.greeting}>Salaam, {firstName}</Text>
+          <Text style={styles.subtitle}>
+            {isAdmin ? 'Admin' : `Seek knowledge · ${today}`}
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.headerActions}>
+        <TouchableOpacity
+          onPress={() => {
+            void toggleMode();
+          }}
+          style={styles.headerIcon}
+          accessibilityLabel={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          <Ionicons
+            name={mode === 'dark' ? 'sunny-outline' : 'moon-outline'}
+            size={20}
+            color={colors.primary}
+          />
+        </TouchableOpacity>
+        {isAdmin ? null : (
+          <TouchableOpacity onPress={onOpenSearch} style={styles.headerIcon}>
+            <Ionicons name="search-outline" size={20} color={colors.primary} />
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+
+  if (isAdmin) {
+    return (
+      <View style={styles.adminScreen}>
+        {header}
+        <View style={styles.adminBody}>
+          <Image
+            source={require('../../assets/sunnah.png')}
+            style={styles.adminLogo}
+            accessibilityLabel="Sunnah-Ilm"
+          />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={onOpenProfile}
-          disabled={!onOpenProfile}
-          style={styles.profileRow}
-        >
-          {user?.imageUrl ? (
-            <View style={styles.avatar}>
-              <Image
-                source={{ uri: user.imageUrl }}
-                style={styles.avatarImage}
-                resizeMode="cover"
-              />
-            </View>
-          ) : (
-            <View style={styles.avatarFallback}>
-              <Text style={styles.avatarInitial}>{initial}</Text>
-            </View>
-          )}
-          <View style={styles.headerCopy}>
-            <Text style={styles.greeting}>Salaam, {firstName}</Text>
-            <Text style={styles.subtitle}>Seek knowledge · {today}</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            onPress={() => {
-              void toggleMode();
-            }}
-            style={styles.headerIcon}
-            accessibilityLabel={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            <Ionicons
-              name={mode === 'dark' ? 'sunny-outline' : 'moon-outline'}
-              size={20}
-              color={colors.primary}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onOpenSearch} style={styles.headerIcon}>
-            <Ionicons name="search-outline" size={20} color={colors.primary} />
-          </TouchableOpacity>
-        </View>
-      </View>
+      {header}
 
       <TouchableOpacity
         onPress={onOpenAsk}

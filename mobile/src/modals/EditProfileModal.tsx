@@ -146,7 +146,7 @@ export function EditProfileModal({
               >
                 <Ionicons
                   name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                  size={22}
+                  size={24}
                   color={colors.textMuted}
                 />
               </TouchableOpacity>

@@ -27,6 +27,8 @@ function AppContent() {
   const [tab, setTab] = useState<AppTab>('home');
   const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
+  const isAdmin = user?.role === 'admin';
+  const screen = isAdmin && tab !== 'home' && tab !== 'profile' ? 'home' : tab;
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
@@ -39,7 +41,7 @@ function AppContent() {
       style={{
         backgroundColor: colors.background,
         flex: 1,
-        paddingBottom: user ? 0 : insets.bottom,
+        paddingBottom: user && !isAdmin ? 0 : insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
         paddingTop: insets.top,
@@ -48,7 +50,7 @@ function AppContent() {
       {user ? (
         <>
           <View style={{ flex: 1 }}>
-            {tab === 'home' ? (
+            {screen === 'home' ? (
               <HomeScreen
                 onOpenProfile={() => setTab('profile')}
                 onOpenSearch={() => setTab('search')}
@@ -56,19 +58,21 @@ function AppContent() {
                 onOpenSaved={() => setTab('saved')}
               />
             ) : null}
-            {tab === 'search' ? <SearchScreen /> : null}
-            {tab === 'ask' ? <AskScreen /> : null}
-            {tab === 'saved' ? <SavedScreen /> : null}
-            {tab === 'profile' ? (
+            {screen === 'search' ? <SearchScreen /> : null}
+            {screen === 'ask' ? <AskScreen /> : null}
+            {screen === 'saved' ? <SavedScreen /> : null}
+            {screen === 'profile' ? (
               <ProfileScreen
                 onBack={() => setTab('home')}
                 onLogout={handleLogout}
               />
             ) : null}
           </View>
-          <View style={{ paddingBottom: insets.bottom }}>
-            <TabBar tab={tab} onChange={setTab} />
-          </View>
+          {isAdmin ? null : (
+            <View style={{ paddingBottom: insets.bottom }}>
+              <TabBar tab={tab} onChange={setTab} />
+            </View>
+          )}
         </>
       ) : authScreen === 'login' ? (
         <LoginScreen onGoSignup={() => setAuthScreen('signup')} />

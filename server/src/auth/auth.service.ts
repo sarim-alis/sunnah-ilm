@@ -7,6 +7,7 @@ import {
   toPublicPreferences,
   uniqueTopicNames,
 } from '../users/preferences';
+import { normalizeRole } from '../users/roles';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -26,6 +27,7 @@ export class AuthService {
     imageUrl?: string | null;
     preferences?: { id?: string; name: string }[] | null;
     mode?: 'light' | 'dark' | null;
+    role?: string | null;
   }) {
     return {
       id: user.id,
@@ -34,6 +36,7 @@ export class AuthService {
       imageUrl: user.imageUrl ?? null,
       preferences: toPublicPreferences(user.preferences),
       mode: user.mode === 'dark' ? 'dark' : 'light',
+      role: normalizeRole(user.role),
     };
   }
 
@@ -48,6 +51,7 @@ export class AuthService {
       name: dto.name,
       email: dto.email,
       password,
+      role: 'user',
     });
 
     return {
@@ -70,6 +74,7 @@ export class AuthService {
     const token = await this.jwtService.signAsync({
       id: user.id,
       email: user.email,
+      role: normalizeRole(user.role),
     });
 
     return {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './repositories/users.repository';
 import type { HadithTopic } from './preferences';
+import type { UserRole } from './roles';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +15,7 @@ export class UsersService {
     return this.usersRepository.findById(id);
   }
 
-  create(data: { name: string; email: string; password: string }) {
+  create(data: { name: string; email: string; password: string; role?: UserRole }) {
     return this.usersRepository.create(data);
   }
 

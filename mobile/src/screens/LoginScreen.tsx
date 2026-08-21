@@ -101,7 +101,7 @@ export default function LoginScreen({ onGoSignup }: LoginScreenProps) {
                 >
                   <Ionicons
                     name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                    size={32}
+                    size={24}
                     color={colors.textMuted}
                   />
                 </TouchableOpacity>

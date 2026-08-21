@@ -4,6 +4,8 @@ import { normalizeMode } from '@/constants/colors';
 import type { AppMode } from '@/constants/colors';
 import { normalizePreferences } from '@/users/preferences';
 import type { UserPreference } from '@/users/preferences';
+import { normalizeRole } from '@/users/roles';
+import type { UserRole } from '@/users/roles';
 
 export type AuthUser = {
   id: string;
@@ -12,6 +14,7 @@ export type AuthUser = {
   imageUrl?: string | null;
   preferences: UserPreference[];
   mode: AppMode;
+  role: UserRole;
 };
 
 type AuthResponse = {
@@ -122,6 +125,7 @@ function toAuthUser(user: AuthUser): AuthUser {
     imageUrl: user.imageUrl ?? null,
     preferences: normalizePreferences(user.preferences),
     mode: normalizeMode(user.mode),
+    role: normalizeRole(user.role),
   };
 }
 

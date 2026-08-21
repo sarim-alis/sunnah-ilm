@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Preference } from './preference.entity';
+import type { UserRole } from '../roles';
 
 @Entity('users')
 export class User {
@@ -25,6 +26,9 @@ export class User {
 
   @Column({ type: 'varchar', default: 'light' })
   mode!: 'light' | 'dark';
+
+  @Column({ type: 'varchar', default: 'user' })
+  role!: UserRole;
 
   @CreateDateColumn()
   createdAt!: Date;
