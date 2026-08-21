@@ -37,7 +37,6 @@ export class UpdateProfileDto {
   @IsOptional()
   @Transform(emptyToUndefined)
   @IsString()
-  @MinLength(6)
   password?: string;
 
   @IsOptional()

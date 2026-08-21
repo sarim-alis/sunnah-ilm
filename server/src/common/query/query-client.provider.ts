@@ -1,5 +1,4 @@
 import { QueryClient } from '@tanstack/query-core';
-
 export const QUERY_CLIENT = 'QUERY_CLIENT';
 
 export const queryClientProvider = {
