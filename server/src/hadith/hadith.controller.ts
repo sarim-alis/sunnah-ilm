@@ -48,8 +48,8 @@ export class HadithController {
 
   @Get()
   @UseGuards(JwtGuard, AdminGuard)
-  list(@Query('q') q?: string) {
-    return this.hadithService.list(q);
+  list(@Query('q') q?: string, @Query('topic') topic?: string) {
+    return this.hadithService.list(q, topic);
   }
 
   @Patch(':id')

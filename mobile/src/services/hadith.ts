@@ -71,11 +71,13 @@ async function authHeaders() {
   return { Authorization: `Bearer ${token}` };
 }
 
-export async function listHadiths(query = '') {
+export async function listHadiths(query = '', topic = '') {
   const headers = await authHeaders();
-  const url = query.trim()
-    ? `${apiConfig.baseUrl}/hadith?q=${encodeURIComponent(query.trim())}`
-    : `${apiConfig.baseUrl}/hadith`;
+  const search = new URLSearchParams();
+  if (query.trim()) search.set('q', query.trim());
+  if (topic.trim()) search.set('topic', topic.trim());
+  const qs = search.toString();
+  const url = qs ? `${apiConfig.baseUrl}/hadith?${qs}` : `${apiConfig.baseUrl}/hadith`;
   const response = await fetch(url, { headers });
   const data = (await response.json()) as HadithResponse;
   if (!response.ok) throw new Error(messageFrom(data));

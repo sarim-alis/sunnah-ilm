@@ -12,11 +12,38 @@ export const createStyles = (colors: ThemeColors) =>
       paddingTop: 16,
       paddingBottom: 8,
     },
+    titleRow: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
     title: {
       color: colors.text,
       fontSize: 24,
       fontWeight: '700',
       marginBottom: 16,
+    },
+    titleInRow: {
+      flex: 1,
+      marginBottom: 0,
+      marginRight: 12,
+    },
+    filterBtn: {
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderColor: colors.border,
+      borderRadius: 12,
+      borderWidth: 1,
+      flexDirection: 'row',
+      gap: 6,
+      minHeight: 36,
+      paddingHorizontal: 12,
+    },
+    filterBtnText: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: '600',
     },
     searchWrap: {
       alignItems: 'center',

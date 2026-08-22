@@ -88,8 +88,8 @@ export class HadithService {
     };
   }
 
-  async list(query?: string) {
-    const hadiths = await this.hadithRepository.findAll(query);
+  async list(query?: string, topic?: string) {
+    const hadiths = await this.hadithRepository.findAll(query, topic);
     return { hadiths };
   }
 

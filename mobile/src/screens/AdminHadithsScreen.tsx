@@ -19,6 +19,7 @@ import { PencilIcon } from '@/components/PencilIcon';
 import { SearchIcon } from '@/components/SearchIcon';
 import { TrashIcon } from '@/components/TrashIcon';
 import { DeleteHadithModal } from '@/modals/DeleteHadithModal';
+import { FilterTopicsModal } from '@/modals/FilterTopicsModal';
 import AddHadithScreen from '@/screens/AddHadithScreen';
 import HadithDetailScreen from '@/screens/HadithDetailScreen';
 import { queryKeys } from '@/query/keys';
@@ -26,6 +27,7 @@ import { deleteHadith, errorMessage, listHadiths } from '@/services/hadith';
 import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/adminHadiths';
 import { useTheme } from '@/theme/ThemeProvider';
+import type { HadithTopic } from '@/users/preferences';
 
 const PAGE_SIZE = 3;
 
@@ -62,6 +64,8 @@ export default function AdminHadithsScreen() {
   const [editing, setEditing] = useState<HadithRecord | null>(null);
   const [viewing, setViewing] = useState<HadithRecord | null>(null);
   const [page, setPage] = useState(1);
+  const [topic, setTopic] = useState('');
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebounced(search.trim()), 500);
@@ -70,11 +74,11 @@ export default function AdminHadithsScreen() {
 
   useEffect(() => {
     setPage(1);
-  }, [debounced]);
+  }, [debounced, topic]);
 
   const listQuery = useQuery({
-    queryKey: queryKeys.hadiths.admin,
-    queryFn: () => listHadiths(),
+    queryKey: [...queryKeys.hadiths.admin, topic],
+    queryFn: () => listHadiths('', topic),
   });
 
   const hadiths = useMemo(() => {
@@ -159,7 +163,27 @@ export default function AdminHadithsScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.title}>Hadiths</Text>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, styles.titleInRow]}>Hadiths</Text>
+          {topic ? (
+            <TouchableOpacity
+              onPress={() => setTopic('')}
+              style={styles.filterBtn}
+              accessibilityLabel="Clear filter"
+            >
+              <Text style={styles.filterBtnText}>Clear</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => setFilterOpen(true)}
+              style={styles.filterBtn}
+              accessibilityLabel="Filter by topic"
+            >
+              <Ionicons name="filter-outline" size={16} color={colors.text} />
+              <Text style={styles.filterBtnText}>Filter</Text>
+            </TouchableOpacity>
+          )}
+        </View>
         <View style={styles.searchWrap}>
           <SearchIcon size={18} color={colors.textMuted} />
           <TextInput
@@ -196,10 +220,16 @@ export default function AdminHadithsScreen() {
           data={pageItems}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          extraData={`${debounced}-${currentPage}`}
+          extraData={`${debounced}-${topic}-${currentPage}`}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.list}
-          ListEmptyComponent={<Text style={styles.empty}>No Hadith found</Text>}
+          ListEmptyComponent={
+            <Text style={styles.empty}>
+              {topic && !debounced
+                ? `Hadith related to ${topic} does not exist`
+                : 'No Hadith found'}
+            </Text>
+          }
         />
       )}
 
@@ -247,6 +277,15 @@ export default function AdminHadithsScreen() {
         </View>
       )}
 
+      <FilterTopicsModal
+        visible={filterOpen}
+        selected={topic}
+        onClose={() => setFilterOpen(false)}
+        onSelect={(next: HadithTopic) => {
+          setTopic(next);
+          setFilterOpen(false);
+        }}
+      />
       <DeleteHadithModal
         visible={Boolean(pendingId)}
         confirming={deleteMutation.isPending}

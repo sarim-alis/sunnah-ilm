@@ -25,7 +25,7 @@ export class HadithRepository {
     return this.hadiths.findOne({ where: { book, hadithNumber } });
   }
 
-  findAll(query?: string) {
+  findAll(query?: string, topic?: string) {
     const qb = this.hadiths
       .createQueryBuilder('hadith')
       .orderBy('hadith.book', 'ASC')
@@ -33,7 +33,7 @@ export class HadithRepository {
 
     const term = query?.trim();
     if (term) {
-      qb.where(
+      qb.andWhere(
         `(
           hadith.topic ILIKE :q
           OR hadith.narrator ILIKE :q
@@ -44,6 +44,11 @@ export class HadithRepository {
         )`,
         { q: `%${term}%` },
       );
+    }
+
+    const topicName = topic?.trim();
+    if (topicName) {
+      qb.andWhere('hadith.topic = :topic', { topic: topicName });
     }
 
     return qb.getMany();
