@@ -10,26 +10,6 @@ type HadithDetailScreenProps = {
   onBack: () => void;
 };
 
-function DetailSection({
-  label,
-  value,
-  styles,
-  rtl,
-}: {
-  label: string;
-  value?: string;
-  styles: ReturnType<typeof createStyles>;
-  rtl?: boolean;
-}) {
-  if (!value) return null;
-  return (
-    <View style={styles.section}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={[styles.body, rtl ? styles.arabic : null]}>{value}</Text>
-    </View>
-  );
-}
-
 export default function HadithDetailScreen({
   hadith,
   onBack,
@@ -37,76 +17,105 @@ export default function HadithDetailScreen({
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const grades = hadith.grade?.filter(Boolean) ?? [];
-  const reference =
-    hadith.reference?.book || hadith.reference?.hadith
-      ? `Book ${hadith.reference.book}, Hadith ${hadith.reference.hadith}`
-      : '';
+
+  const Field = ({
+    label,
+    value,
+    rtl,
+    grow,
+  }: {
+    label: string;
+    value?: string | number | null;
+    rtl?: boolean;
+    grow?: boolean;
+  }) => {
+    const text = value === 0 || value ? String(value) : '';
+    return (
+      <View style={grow ? styles.fieldFlex : styles.field}>
+        <Text style={styles.label}>{label}</Text>
+        <View style={styles.valueBox}>
+          <Text
+            style={[
+              styles.value,
+              rtl ? styles.valueRtl : null,
+              text ? null : styles.empty,
+            ]}
+          >
+            {text || '—'}
+          </Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}>
+      <View style={styles.topBar}>
         <TouchableOpacity
           onPress={onBack}
-          style={styles.headerBack}
+          style={styles.backButton}
           accessibilityLabel="Back"
         >
-          <Ionicons name="chevron-back" size={24} color={colors.text} />
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Hadith</Text>
+        <Text style={styles.title} numberOfLines={1}>
+          {hadith.book || 'Hadith'}
+        </Text>
+        <View style={styles.topBarSpacer} />
       </View>
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.meta}>
-          {hadith.book} {hadith.hadithNumber}
-          {hadith.arabicNumber ? ` · Arabic ${hadith.arabicNumber}` : ''}
-        </Text>
-        <Text style={styles.narrator}>{hadith.narrator}</Text>
-        {hadith.chapter ? (
-          <Text style={styles.chapter}>{hadith.chapter}</Text>
-        ) : null}
+        <View style={styles.row}>
+          <Field label="Hadith no" value={hadith.hadithNumber} grow />
+          <Field label="Arabic no" value={hadith.arabicNumber} grow />
+        </View>
 
-        {hadith.topic || grades.length ? (
-          <View style={styles.chips}>
-            {hadith.topic ? (
+        <Field label="Chapter" value={hadith.chapter} />
+        <Field label="Narration" value={hadith.narrator} />
+
+        <View style={styles.field}>
+          <Text style={styles.label}>Topic</Text>
+          {hadith.topic ? (
+            <View style={styles.chips}>
               <View style={styles.chip}>
                 <Text style={styles.chipText}>{hadith.topic}</Text>
               </View>
-            ) : null}
-            {grades.map((grade) => (
-              <View key={grade} style={styles.chip}>
-                <Text style={styles.chipText}>{grade}</Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
+            </View>
+          ) : (
+            <View style={styles.valueBox}>
+              <Text style={[styles.value, styles.empty]}>—</Text>
+            </View>
+          )}
+        </View>
 
-        <DetailSection label="Text" value={hadith.text} styles={styles} />
-        <DetailSection
-          label="English"
-          value={hadith.translation?.english}
-          styles={styles}
-        />
-        <DetailSection
-          label="Urdu"
-          value={hadith.translation?.urdu}
-          styles={styles}
-          rtl
-        />
-        <DetailSection
-          label="Arabic"
-          value={hadith.translation?.arabic}
-          styles={styles}
-          rtl
-        />
-        <DetailSection label="Reference" value={reference} styles={styles} />
-        <DetailSection
-          label="Description"
-          value={hadith.description}
-          styles={styles}
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>Grade</Text>
+          {grades.length ? (
+            <View style={styles.chips}>
+              {grades.map((grade) => (
+                <View key={grade} style={styles.chip}>
+                  <Text style={styles.chipText}>{grade}</Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.valueBox}>
+              <Text style={[styles.value, styles.empty]}>—</Text>
+            </View>
+          )}
+        </View>
+
+        <Text style={styles.heading}>Translation</Text>
+        <Field label="English" value={hadith.translation?.english} />
+        <Field label="Urdu" value={hadith.translation?.urdu} rtl />
+        <Field label="Arabic" value={hadith.translation?.arabic} rtl />
+
+        <Field label="Text" value={hadith.text} />
+        <Field label="Description" value={hadith.description} />
       </ScrollView>
     </View>
   );
