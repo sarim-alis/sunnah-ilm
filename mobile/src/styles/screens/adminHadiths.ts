@@ -45,18 +45,20 @@ export const createStyles = (colors: ThemeColors) =>
       paddingBottom: 24,
     },
     card: {
-      alignItems: 'center',
+      alignItems: 'flex-start',
       backgroundColor: colors.card,
       borderColor: colors.border,
       borderRadius: 16,
       borderWidth: 1,
       flexDirection: 'row',
-      gap: 12,
       marginBottom: 12,
       padding: 16,
     },
     cardCopy: {
       flex: 1,
+      flexShrink: 1,
+      marginRight: 12,
+      minWidth: 0,
     },
     cardMeta: {
       color: colors.primary,
@@ -69,11 +71,19 @@ export const createStyles = (colors: ThemeColors) =>
       fontWeight: '700',
       marginTop: 4,
     },
+    cardChapter: {
+      color: colors.text,
+      flexShrink: 1,
+      fontSize: 13,
+      marginTop: 4,
+    },
     cardText: {
       color: colors.textMuted,
+      flexShrink: 1,
       fontSize: 14,
       lineHeight: 20,
       marginTop: 6,
+      width: '100%',
     },
     deleteButton: {
       alignItems: 'center',
@@ -81,8 +91,10 @@ export const createStyles = (colors: ThemeColors) =>
       borderColor: colors.border,
       borderRadius: 18,
       borderWidth: 1,
+      flexShrink: 0,
       height: 36,
       justifyContent: 'center',
+      marginTop: 4,
       width: 36,
     },
     empty: {

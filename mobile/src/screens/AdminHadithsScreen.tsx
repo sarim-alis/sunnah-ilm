@@ -89,7 +89,12 @@ export default function AdminHadithsScreen() {
             {item.topic ? ` · ${item.topic}` : ''}
           </Text>
           <Text style={styles.cardNarrator}>{item.narrator}</Text>
-          <Text style={styles.cardText} numberOfLines={2}>
+          {item.chapter ? (
+            <Text style={styles.cardChapter} numberOfLines={1} ellipsizeMode="tail">
+              {item.chapter}
+            </Text>
+          ) : null}
+          <Text style={styles.cardText} numberOfLines={2} ellipsizeMode="tail">
             {snippet}
           </Text>
         </View>
