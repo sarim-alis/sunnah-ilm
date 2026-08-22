@@ -84,7 +84,12 @@ export default function SavedScreen() {
   const renderItem = ({ item }: { item: HadithRecord }) => {
     const snippet = item.translation?.english || item.text;
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => setViewing(item)}
+        activeOpacity={0.85}
+        accessibilityLabel="View Hadith"
+      >
         <View style={styles.cardCopy}>
           <Text style={styles.cardMeta}>
             {item.book} {item.hadithNumber}
@@ -116,7 +121,7 @@ export default function SavedScreen() {
             <Ionicons name="bookmark" size={16} color={colors.primary} />
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 

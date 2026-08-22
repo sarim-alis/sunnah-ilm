@@ -114,7 +114,12 @@ export default function AdminHadithsScreen() {
   const renderItem = ({ item }: { item: HadithRecord }) => {
     const snippet = item.translation?.english || item.text;
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => setViewing(item)}
+        activeOpacity={0.85}
+        accessibilityLabel="View Hadith"
+      >
         <View style={styles.cardCopy}>
           <Text style={styles.cardMeta}>
             {item.book} {item.hadithNumber}
@@ -153,7 +158,7 @@ export default function AdminHadithsScreen() {
             <TrashIcon size={18} color={colors.error} />
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -180,7 +185,7 @@ export default function AdminHadithsScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Hadiths</Text>
         <View style={styles.searchWrap}>
-          <SearchIcon size={14} color={colors.textMuted} />
+          <SearchIcon size={18} color={colors.textMuted} />
           <TextInput
             value={search}
             onChangeText={setSearch}
