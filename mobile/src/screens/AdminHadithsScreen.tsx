@@ -10,8 +10,11 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { CrossIcon } from '@/components/CrossIcon';
+import { PencilIcon } from '@/components/PencilIcon';
 import { SearchIcon } from '@/components/SearchIcon';
+import { TrashIcon } from '@/components/TrashIcon';
 import { DeleteHadithModal } from '@/modals/DeleteHadithModal';
+import AddHadithScreen from '@/screens/AddHadithScreen';
 import { queryKeys } from '@/query/keys';
 import { deleteHadith, errorMessage, listHadiths } from '@/services/hadith';
 import type { HadithRecord } from '@/services/hadith';
@@ -41,6 +44,7 @@ export default function AdminHadithsScreen() {
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<HadithRecord | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebounced(search.trim()), 500);
@@ -98,16 +102,34 @@ export default function AdminHadithsScreen() {
             {snippet}
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => setPendingId(item.id)}
-          style={styles.deleteButton}
-          accessibilityLabel="Delete Hadith"
-        >
-          <CrossIcon size={18} />
-        </TouchableOpacity>
+        <View style={styles.cardActions}>
+          <TouchableOpacity
+            onPress={() => setEditing(item)}
+            style={styles.deleteButton}
+            accessibilityLabel="Edit Hadith"
+          >
+            <PencilIcon size={16} color={colors.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setPendingId(item.id)}
+            style={styles.deleteButton}
+            accessibilityLabel="Delete Hadith"
+          >
+            <TrashIcon size={18} color={colors.error} />
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
+
+  if (editing) {
+    return (
+      <AddHadithScreen
+        hadith={editing}
+        onDone={() => setEditing(null)}
+      />
+    );
+  }
 
   return (
     <View style={styles.screen}>

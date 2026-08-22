@@ -6,6 +6,8 @@ import { useTheme } from '@/theme/ThemeProvider';
 type AddHadithModalProps = {
   visible: boolean;
   confirming?: boolean;
+  title?: string;
+  message?: string;
   onClose: () => void;
   onConfirm: () => void;
 };
@@ -13,6 +15,8 @@ type AddHadithModalProps = {
 export function AddHadithModal({
   visible,
   confirming = false,
+  title = 'Add Hadith',
+  message = 'Are you sure you want to add this Hadith?',
   onClose,
   onConfirm,
 }: AddHadithModalProps) {
@@ -30,8 +34,8 @@ export function AddHadithModal({
       <View style={styles.backdrop}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={styles.sheet}>
-          <Text style={styles.title}>Add Hadith</Text>
-          <Text style={styles.message}>Are you sure you want to add this Hadith?</Text>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.message}>{message}</Text>
           <View style={styles.actions}>
             <TouchableOpacity
               onPress={onClose}

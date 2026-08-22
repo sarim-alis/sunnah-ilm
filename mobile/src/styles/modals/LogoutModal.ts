@@ -41,6 +41,8 @@ export function createStyles(colors: ThemeColors) {
       flex: 1,
       justifyContent: 'center',
       minHeight: 48,
+      overflow: 'visible',
+      paddingHorizontal: 12,
     },
     cancelButton: {
       backgroundColor: colors.background,
@@ -54,11 +56,17 @@ export function createStyles(colors: ThemeColors) {
       color: colors.text,
       fontSize: 16,
       fontWeight: '600',
+      includeFontPadding: false,
+      paddingHorizontal: 2,
+      textAlign: 'center',
     },
     confirmText: {
       color: colors.onPrimary,
       fontSize: 16,
       fontWeight: '700',
+      includeFontPadding: false,
+      paddingHorizontal: 2,
+      textAlign: 'center',
     },
   });
 }

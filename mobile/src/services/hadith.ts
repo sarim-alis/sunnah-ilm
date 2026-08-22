@@ -82,6 +82,23 @@ export async function listHadiths(query = '') {
   return data.hadiths ?? [];
 }
 
+export async function updateHadith(id: string, input: CreateHadithInput) {
+  const token = await AsyncStorage.getItem('token');
+  if (!token) throw new Error('Please log in again');
+
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+  const data = (await response.json()) as HadithResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
+  return data.hadith;
+}
+
 export async function deleteHadith(id: string) {
   const headers = await authHeaders();
   const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}`, {

@@ -3,6 +3,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Hadith } from '../entities/hadith.entity';
 
+type HadithPayload = {
+  book: string;
+  hadithNumber: number;
+  arabicNumber: number;
+  translation: Hadith['translation'];
+  narrator: string;
+  grade: string[];
+  topic: string;
+  chapter: string;
+  reference: Hadith['reference'];
+  text: string;
+  description: string;
+};
+
 @Injectable()
 export class HadithRepository {
   constructor(@InjectRepository(Hadith) private hadiths: Repository<Hadith>) {}
@@ -43,19 +57,11 @@ export class HadithRepository {
     return this.hadiths.delete(id);
   }
 
-  create(data: {
-    book: string;
-    hadithNumber: number;
-    arabicNumber: number;
-    translation: Hadith['translation'];
-    narrator: string;
-    grade: string[];
-    topic: string;
-    chapter: string;
-    reference: Hadith['reference'];
-    text: string;
-    description: string;
-  }) {
+  create(data: HadithPayload) {
     return this.hadiths.save(this.hadiths.create(data));
+  }
+
+  save(id: string, data: HadithPayload) {
+    return this.hadiths.save({ id, ...data });
   }
 }

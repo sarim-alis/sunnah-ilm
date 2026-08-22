@@ -94,8 +94,12 @@ export const createStyles = (colors: ThemeColors) =>
       flexShrink: 0,
       height: 36,
       justifyContent: 'center',
-      marginTop: 4,
       width: 36,
+    },
+    cardActions: {
+      flexShrink: 0,
+      gap: 8,
+      marginTop: 4,
     },
     empty: {
       color: colors.textMuted,

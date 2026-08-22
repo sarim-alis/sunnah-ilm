@@ -12,8 +12,15 @@ export const createStyles = (colors: ThemeColors) =>
       borderBottomColor: colors.border,
       borderBottomWidth: 1,
       justifyContent: 'center',
+      minHeight: 56,
       paddingHorizontal: 20,
       paddingVertical: 16,
+    },
+    headerBack: {
+      left: 12,
+      padding: 8,
+      position: 'absolute',
+      zIndex: 1,
     },
     headerTitle: {
       color: colors.text,

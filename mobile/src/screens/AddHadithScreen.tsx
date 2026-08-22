@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,7 +13,8 @@ import Toast from 'react-native-toast-message';
 import { useQueryClient } from '@tanstack/react-query';
 import { AddHadithModal } from '@/modals/AddHadithModal';
 import { queryKeys } from '@/query/keys';
-import { createHadith, errorMessage } from '@/services/hadith';
+import { createHadith, errorMessage, updateHadith } from '@/services/hadith';
+import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/addHadith';
 import { useTheme } from '@/theme/ThemeProvider';
 import { HADITH_TOPICS } from '@/users/preferences';
@@ -40,14 +41,47 @@ const emptyForm = {
   description: '',
 };
 
-export default function AddHadithScreen() {
+function toForm(hadith: HadithRecord): typeof emptyForm {
+  return {
+    book: hadith.book,
+    hadithNumber: String(hadith.hadithNumber ?? ''),
+    arabicNumber: String(hadith.arabicNumber ?? ''),
+    chapter: hadith.chapter ?? '',
+    referenceBook: String(hadith.reference?.book ?? ''),
+    referenceHadith: String(hadith.reference?.hadith ?? ''),
+    narrator: hadith.narrator ?? '',
+    topic: hadith.topic ?? '',
+    grade: hadith.grade ?? [],
+    text: hadith.text ?? '',
+    english: hadith.translation?.english ?? '',
+    urdu: hadith.translation?.urdu ?? '',
+    arabic: hadith.translation?.arabic ?? '',
+    description: hadith.description ?? '',
+  };
+}
+
+type AddHadithScreenProps = {
+  hadith?: HadithRecord | null;
+  onDone?: () => void;
+};
+
+export default function AddHadithScreen({
+  hadith = null,
+  onDone,
+}: AddHadithScreenProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const client = useQueryClient();
+  const isEdit = Boolean(hadith);
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState(emptyForm);
+  const [formData, setFormData] = useState(hadith ? toForm(hadith) : emptyForm);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setCurrentStep(1);
+    setFormData(hadith ? toForm(hadith) : emptyForm);
+  }, [hadith?.id]);
 
   const updateFormData = <K extends keyof typeof emptyForm>(
     field: K,
@@ -110,27 +144,32 @@ export default function AddHadithScreen() {
 
   const confirmAdd = async () => {
     setSaving(true);
+    const payload = {
+      book: formData.book,
+      hadithNumber: Number(formData.hadithNumber),
+      arabicNumber: Number(formData.arabicNumber),
+      translation: {
+        english: formData.english.trim(),
+        urdu: formData.urdu.trim(),
+        arabic: formData.arabic.trim(),
+      },
+      narrator: formData.narrator.trim(),
+      grade: formData.grade,
+      topic: formData.topic,
+      chapter: formData.chapter.trim(),
+      reference: {
+        book: Number(formData.referenceBook) || 0,
+        hadith: Number(formData.referenceHadith) || 0,
+      },
+      text: formData.text.trim(),
+      description: formData.description.trim(),
+    };
     try {
-      await createHadith({
-        book: formData.book,
-        hadithNumber: Number(formData.hadithNumber),
-        arabicNumber: Number(formData.arabicNumber),
-        translation: {
-          english: formData.english.trim(),
-          urdu: formData.urdu.trim(),
-          arabic: formData.arabic.trim(),
-        },
-        narrator: formData.narrator.trim(),
-        grade: formData.grade,
-        topic: formData.topic,
-        chapter: formData.chapter.trim(),
-        reference: {
-          book: Number(formData.referenceBook) || 0,
-          hadith: Number(formData.referenceHadith) || 0,
-        },
-        text: formData.text.trim(),
-        description: formData.description.trim(),
-      });
+      if (hadith) {
+        await updateHadith(hadith.id, payload);
+      } else {
+        await createHadith(payload);
+      }
       await client.invalidateQueries({ queryKey: queryKeys.hadiths.all });
       setConfirmOpen(false);
       setCurrentStep(1);
@@ -138,13 +177,14 @@ export default function AddHadithScreen() {
       Toast.show({
         type: 'success',
         text1: 'Success',
-        text2: 'Hadith added successfully',
+        text2: hadith ? 'Hadith updated successfully' : 'Hadith added successfully',
       });
+      onDone?.();
     } catch (err) {
       Toast.show({
         type: 'error',
-        text1: 'Add failed',
-        text2: errorMessage(err, 'Could not add Hadith'),
+        text1: hadith ? 'Update failed' : 'Add failed',
+        text2: errorMessage(err, hadith ? 'Could not update Hadith' : 'Could not add Hadith'),
       });
     } finally {
       setSaving(false);
@@ -161,7 +201,16 @@ export default function AddHadithScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Add Hadith</Text>
+        {onDone ? (
+          <TouchableOpacity
+            onPress={onDone}
+            style={styles.headerBack}
+            accessibilityLabel="Back"
+          >
+            <Ionicons name="chevron-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        ) : null}
+        <Text style={styles.headerTitle}>{isEdit ? 'Edit Hadith' : 'Add Hadith'}</Text>
       </View>
 
       <View style={styles.stepIndicator}>
@@ -419,7 +468,7 @@ export default function AddHadithScreen() {
           onPress={handleNext}
         >
           <Text style={styles.nextButtonText}>
-            {currentStep === TOTAL_STEPS ? 'Add Hadith' : 'Next'}
+            {currentStep === TOTAL_STEPS ? (isEdit ? 'Save Hadith' : 'Add Hadith') : 'Next'}
           </Text>
           {currentStep < TOTAL_STEPS ? (
             <Ionicons name="chevron-forward" size={20} color={colors.onPrimary} />
@@ -429,6 +478,12 @@ export default function AddHadithScreen() {
       <AddHadithModal
         visible={confirmOpen}
         confirming={saving}
+        title={isEdit ? 'Edit Hadith' : 'Add Hadith'}
+        message={
+          isEdit
+            ? 'Are you sure you want to save these changes?'
+            : 'Are you sure you want to add this Hadith?'
+        }
         onClose={() => {
           if (!saving) setConfirmOpen(false);
         }}
