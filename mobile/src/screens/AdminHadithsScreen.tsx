@@ -10,11 +10,13 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { CrossIcon } from '@/components/CrossIcon';
+import { EyeIcon } from '@/components/EyeIcon';
 import { PencilIcon } from '@/components/PencilIcon';
 import { SearchIcon } from '@/components/SearchIcon';
 import { TrashIcon } from '@/components/TrashIcon';
 import { DeleteHadithModal } from '@/modals/DeleteHadithModal';
 import AddHadithScreen from '@/screens/AddHadithScreen';
+import HadithDetailScreen from '@/screens/HadithDetailScreen';
 import { queryKeys } from '@/query/keys';
 import { deleteHadith, errorMessage, listHadiths } from '@/services/hadith';
 import type { HadithRecord } from '@/services/hadith';
@@ -45,6 +47,7 @@ export default function AdminHadithsScreen() {
   const [debounced, setDebounced] = useState('');
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [editing, setEditing] = useState<HadithRecord | null>(null);
+  const [viewing, setViewing] = useState<HadithRecord | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebounced(search.trim()), 500);
@@ -104,6 +107,13 @@ export default function AdminHadithsScreen() {
         </View>
         <View style={styles.cardActions}>
           <TouchableOpacity
+            onPress={() => setViewing(item)}
+            style={styles.deleteButton}
+            accessibilityLabel="View Hadith"
+          >
+            <EyeIcon size={16} color={colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => setEditing(item)}
             style={styles.deleteButton}
             accessibilityLabel="Edit Hadith"
@@ -121,6 +131,15 @@ export default function AdminHadithsScreen() {
       </View>
     );
   };
+
+  if (viewing) {
+    return (
+      <HadithDetailScreen
+        hadith={viewing}
+        onBack={() => setViewing(null)}
+      />
+    );
+  }
 
   if (editing) {
     return (
