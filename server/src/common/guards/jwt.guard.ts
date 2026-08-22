@@ -8,7 +8,7 @@ export class JwtGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<{
       headers: { authorization?: string };
-      user?: { id: string; email: string };
+      user?: { id: string; email: string; role?: string };
     }>();
     const header = request.headers.authorization;
     if (!header?.startsWith('Bearer ')) {
@@ -19,6 +19,7 @@ export class JwtGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync<{
         id: string;
         email: string;
+        role?: string;
       }>(header.slice(7));
       request.user = payload;
       return true;

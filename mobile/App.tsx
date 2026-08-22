@@ -10,6 +10,7 @@ import {
 import { TabBar, type AppTab } from '@/components/TabBar';
 import { queryClient } from '@/query/client';
 import AddHadithScreen from '@/screens/AddHadithScreen';
+import AdminHadithsScreen from '@/screens/AdminHadithsScreen';
 import AskScreen from '@/screens/AskScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import LoginScreen from '@/screens/LoginScreen';
@@ -29,7 +30,9 @@ function AppContent() {
   const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
   const isAdmin = user?.role === 'admin';
-  const screen = isAdmin && tab !== 'home' && tab !== 'profile' && tab !== 'add' ? 'home' : tab;
+  const adminTabs: AppTab[] = ['home', 'profile', 'add', 'hadiths'];
+  const screen =
+    isAdmin && !adminTabs.includes(tab) ? 'home' : tab;
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
@@ -63,6 +66,7 @@ function AppContent() {
             {screen === 'ask' ? <AskScreen /> : null}
             {screen === 'saved' ? <SavedScreen /> : null}
             {screen === 'add' ? <AddHadithScreen /> : null}
+            {screen === 'hadiths' ? <AdminHadithsScreen /> : null}
             {screen === 'profile' ? (
               <ProfileScreen
                 onBack={() => setTab('home')}

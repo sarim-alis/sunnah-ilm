@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createStyles } from '@/styles/components/TabBar';
 import { useTheme } from '@/theme/ThemeProvider';
 
-export type AppTab = 'home' | 'search' | 'ask' | 'saved' | 'profile' | 'add';
+export type AppTab = 'home' | 'search' | 'ask' | 'saved' | 'profile' | 'add' | 'hadiths';
 
 type TabBarProps = {
   tab: AppTab;
@@ -27,6 +27,7 @@ const userTabs: {
 
 const adminTabs: typeof userTabs = [
   { key: 'home', idle: 'home-outline', active: 'home' },
+  { key: 'hadiths', idle: 'book-outline', active: 'book' },
   { key: 'add', idle: 'add', active: 'add', center: true },
   { key: 'profile', idle: 'person-outline', active: 'person' },
 ];
