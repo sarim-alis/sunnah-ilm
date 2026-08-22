@@ -92,18 +92,38 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
     </View>
   );
 
-  if (isAdmin) {
-    return (
-      <View style={styles.adminScreen}>
-        {header}
-        <View style={styles.adminBody}>
-          <Image
-            source={require('../../assets/sunnah.png')}
-            style={styles.adminLogo}
-            accessibilityLabel="Sunnah-Ilm"
-          />
+  const heroInner = (
+    <>
+      <View style={styles.heroDecorOne} />
+      <View style={styles.heroDecorTwo} />
+      <View style={styles.heroCopy}>
+        <View style={styles.heroIcon}>
+          <Ionicons name="book" size={22} color={colors.onPrimary} />
+        </View>
+        <Text style={styles.heroLabel}>Ask Hadith</Text>
+        <Text style={styles.heroTitle}>What does{'\n'}Islam say?</Text>
+        <View style={styles.heroMeta}>
+          <Ionicons name="library-outline" size={14} color={colors.primary} />
+          <Text style={styles.heroMetaText}>Authentic sources</Text>
         </View>
       </View>
+      <Image
+        source={require('../../assets/sunnah.png')}
+        style={styles.heroArt}
+      />
+    </>
+  );
+
+  if (isAdmin) {
+    return (
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {header}
+        <View style={styles.hero}>{heroInner}</View>
+      </ScrollView>
     );
   }
 
@@ -120,23 +140,7 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
         activeOpacity={0.9}
         style={styles.hero}
       >
-        <View style={styles.heroDecorOne} />
-        <View style={styles.heroDecorTwo} />
-        <View style={styles.heroCopy}>
-          <View style={styles.heroIcon}>
-            <Ionicons name="book" size={22} color={colors.onPrimary} />
-          </View>
-          <Text style={styles.heroLabel}>Ask Hadith</Text>
-          <Text style={styles.heroTitle}>What does{'\n'}Islam say?</Text>
-          <View style={styles.heroMeta}>
-            <Ionicons name="library-outline" size={14} color={colors.primary} />
-            <Text style={styles.heroMetaText}>Authentic sources</Text>
-          </View>
-        </View>
-        <Image
-          source={require('../../assets/sunnah.png')}
-          style={styles.heroArt}
-        />
+        {heroInner}
       </TouchableOpacity>
 
       <View style={styles.actions}>

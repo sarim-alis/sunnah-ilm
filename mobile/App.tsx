@@ -9,6 +9,7 @@ import {
 } from 'react-native-safe-area-context';
 import { TabBar, type AppTab } from '@/components/TabBar';
 import { queryClient } from '@/query/client';
+import AddHadithScreen from '@/screens/AddHadithScreen';
 import AskScreen from '@/screens/AskScreen';
 import HomeScreen from '@/screens/HomeScreen';
 import LoginScreen from '@/screens/LoginScreen';
@@ -28,7 +29,7 @@ function AppContent() {
   const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
   const isAdmin = user?.role === 'admin';
-  const screen = isAdmin && tab !== 'home' && tab !== 'profile' ? 'home' : tab;
+  const screen = isAdmin && tab !== 'home' && tab !== 'profile' && tab !== 'add' ? 'home' : tab;
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
@@ -41,7 +42,7 @@ function AppContent() {
       style={{
         backgroundColor: colors.background,
         flex: 1,
-        paddingBottom: user && !isAdmin ? 0 : insets.bottom,
+        paddingBottom: user ? 0 : insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
         paddingTop: insets.top,
@@ -61,6 +62,7 @@ function AppContent() {
             {screen === 'search' ? <SearchScreen /> : null}
             {screen === 'ask' ? <AskScreen /> : null}
             {screen === 'saved' ? <SavedScreen /> : null}
+            {screen === 'add' ? <AddHadithScreen /> : null}
             {screen === 'profile' ? (
               <ProfileScreen
                 onBack={() => setTab('home')}
@@ -68,11 +70,13 @@ function AppContent() {
               />
             ) : null}
           </View>
-          {isAdmin ? null : (
-            <View style={{ paddingBottom: insets.bottom }}>
-              <TabBar tab={tab} onChange={setTab} />
-            </View>
-          )}
+          <View style={{ paddingBottom: insets.bottom }}>
+            <TabBar
+              tab={tab}
+              onChange={setTab}
+              variant={isAdmin ? 'admin' : 'user'}
+            />
+          </View>
         </>
       ) : authScreen === 'login' ? (
         <LoginScreen onGoSignup={() => setAuthScreen('signup')} />

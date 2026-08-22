@@ -252,20 +252,4 @@ export const createStyles = (colors: ThemeColors) =>
       justifyContent: 'center',
       width: 36,
     },
-    adminScreen: {
-      backgroundColor: colors.background,
-      flex: 1,
-      paddingHorizontal: 20,
-      paddingTop: 24,
-    },
-    adminBody: {
-      alignItems: 'center',
-      flex: 1,
-      justifyContent: 'center',
-    },
-    adminLogo: {
-      borderRadius: 36,
-      height: 180,
-      width: 180,
-    },
   });

@@ -285,23 +285,27 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
           </View>
         </View>
 
-        <View style={styles.divider} />
+        {user.role === 'admin' ? null : (
+          <>
+            <View style={styles.divider} />
 
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
-          <TouchableOpacity
-            onPress={() => setPrefsOpen(true)}
-            style={styles.editIcon}
-            hitSlop={8}
-            accessibilityLabel="Edit preferences"
-          >
-            <PencilIcon size={28} />
-          </TouchableOpacity>
-        </View>
+            <View style={styles.sectionHead}>
+              <Text style={styles.sectionTitle}>Preferences</Text>
+              <TouchableOpacity
+                onPress={() => setPrefsOpen(true)}
+                style={styles.editIcon}
+                hitSlop={8}
+                accessibilityLabel="Edit preferences"
+              >
+                <PencilIcon size={28} />
+              </TouchableOpacity>
+            </View>
 
-        <View style={styles.prefBlock}>
-          <PreferenceScroller preferences={preferences} />
-        </View>
+            <View style={styles.prefBlock}>
+              <PreferenceScroller preferences={preferences} />
+            </View>
+          </>
+        )}
       </ScrollView>
 
       <PhotoSheetModal
@@ -323,13 +327,15 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
         onClose={() => setEditOpen(false)}
         onSave={saveDetails}
       />
-      <EditPreferencesModal
-        visible={prefsOpen}
-        preferences={preferences}
-        saving={saving}
-        onClose={() => setPrefsOpen(false)}
-        onSave={savePreferences}
-      />
+      {user.role === 'admin' ? null : (
+        <EditPreferencesModal
+          visible={prefsOpen}
+          preferences={preferences}
+          saving={saving}
+          onClose={() => setPrefsOpen(false)}
+          onSave={savePreferences}
+        />
+      )}
       <LogoutModal
         visible={logoutOpen}
         confirming={loggingOut}

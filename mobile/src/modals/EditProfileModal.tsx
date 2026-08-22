@@ -22,6 +22,7 @@ export function EditProfileModal({
 }: EditProfileModalProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const isAdmin = user.role === 'admin';
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState('');
@@ -42,7 +43,7 @@ export function EditProfileModal({
       setError('Name and email are required');
       return;
     }
-    if (password && password.length < 6) {
+    if (!isAdmin && password && password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
     }
@@ -50,7 +51,7 @@ export function EditProfileModal({
     onSave({
       name: name.trim(),
       email: email.trim(),
-      password: password || undefined,
+      password: isAdmin ? undefined : password || undefined,
     });
   };
 
@@ -119,38 +120,42 @@ export function EditProfileModal({
               </View>
             </View>
 
-            <Text style={styles.label}>Password</Text>
-            <View style={styles.inputWrap}>
-              <View style={styles.leadingIcon}>
-                <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />
-              </View>
-              <View style={styles.inputField}>
-                <TextInput
-                  style={styles.input}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="Enter password"
-                  placeholderTextColor={colors.textMuted}
-                  secureTextEntry={!showPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  textContentType="password"
-                  underlineColorAndroid="transparent"
-                />
-              </View>
-              <TouchableOpacity
-                onPress={() => setShowPassword((value) => !value)}
-                style={styles.eyeButton}
-                hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
-                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-              >
-                <Ionicons
-                  name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                  size={24}
-                  color={colors.textMuted}
-                />
-              </TouchableOpacity>
-            </View>
+            {isAdmin ? null : (
+              <>
+                <Text style={styles.label}>Password</Text>
+                <View style={styles.inputWrap}>
+                  <View style={styles.leadingIcon}>
+                    <Ionicons name="lock-closed-outline" size={20} color={colors.textMuted} />
+                  </View>
+                  <View style={styles.inputField}>
+                    <TextInput
+                      style={styles.input}
+                      value={password}
+                      onChangeText={setPassword}
+                      placeholder="Enter password"
+                      placeholderTextColor={colors.textMuted}
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      textContentType="password"
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setShowPassword((value) => !value)}
+                    style={styles.eyeButton}
+                    hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+                    accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    <Ionicons
+                      name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                      size={24}
+                      color={colors.textMuted}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
 
             {error ? <Text style={styles.error}>{error}</Text> : null}
 
