@@ -29,6 +29,7 @@ const adminTabs: typeof userTabs = [
   { key: 'home', idle: 'home-outline', active: 'home' },
   { key: 'hadiths', idle: 'book-outline', active: 'book' },
   { key: 'add', idle: 'add', active: 'add', center: true },
+  { key: 'saved', idle: 'bookmark-outline', active: 'bookmark' },
   { key: 'profile', idle: 'person-outline', active: 'person' },
 ];
 

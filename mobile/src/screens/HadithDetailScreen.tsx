@@ -1,6 +1,15 @@
 import { useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
+import { queryKeys } from '@/query/keys';
+import {
+  errorMessage,
+  getSavedHadiths,
+  saveHadith,
+  unsaveHadith,
+} from '@/services/hadith';
 import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/HadithDetailScreen';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -16,7 +25,33 @@ export default function HadithDetailScreen({
 }: HadithDetailScreenProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const client = useQueryClient();
   const grades = hadith.grade?.filter(Boolean) ?? [];
+  const savedQuery = useQuery({
+    queryKey: queryKeys.hadiths.saved,
+    queryFn: getSavedHadiths,
+  });
+  const isSaved = savedQuery.data?.some((item) => item.id === hadith.id) ?? false;
+
+  const saveMutation = useMutation({
+    mutationFn: () =>
+      isSaved ? unsaveHadith(hadith.id) : saveHadith(hadith.id),
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: queryKeys.hadiths.saved });
+      Toast.show({
+        type: 'success',
+        text1: isSaved ? 'Removed' : 'Saved',
+        text2: isSaved ? 'Hadith removed from saved' : 'Hadith saved',
+      });
+    },
+    onError: (err) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed',
+        text2: errorMessage(err, 'Could not update saved Hadith'),
+      });
+    },
+  });
 
   const Field = ({
     label,
@@ -61,7 +96,17 @@ export default function HadithDetailScreen({
         <Text style={styles.title} numberOfLines={1}>
           {hadith.book || 'Hadith'}
         </Text>
-        <View style={styles.topBarSpacer} />
+        <TouchableOpacity
+          onPress={() => saveMutation.mutate()}
+          style={styles.backButton}
+          accessibilityLabel={isSaved ? 'Remove from saved' : 'Save Hadith'}
+        >
+          <Ionicons
+            name={isSaved ? 'bookmark' : 'bookmark-outline'}
+            size={20}
+            color={colors.primary}
+          />
+        </TouchableOpacity>
       </View>
 
       <ScrollView

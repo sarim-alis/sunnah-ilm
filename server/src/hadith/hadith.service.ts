@@ -1,10 +1,14 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHadithDto } from './dto/create-hadith.dto';
 import { HadithRepository } from './repositories/hadith.repository';
+import { SavedHadithRepository } from './repositories/saved-hadith.repository';
 
 @Injectable()
 export class HadithService {
-  constructor(private hadithRepository: HadithRepository) {}
+  constructor(
+    private hadithRepository: HadithRepository,
+    private savedHadithRepository: SavedHadithRepository,
+  ) {}
 
   async create(dto: CreateHadithDto) {
     const existing = await this.hadithRepository.findByBookAndNumber(
@@ -96,5 +100,28 @@ export class HadithService {
     }
     await this.hadithRepository.remove(id);
     return { message: 'Hadith deleted successfully' };
+  }
+
+  async listSaved(userId: string) {
+    const rows = await this.savedHadithRepository.findByUser(userId);
+    return { hadiths: rows.map((row) => row.hadith) };
+  }
+
+  async save(userId: string, hadithId: string) {
+    const hadith = await this.hadithRepository.findById(hadithId);
+    if (!hadith) {
+      throw new NotFoundException('Hadith not found');
+    }
+    const existing = await this.savedHadithRepository.findOne(userId, hadithId);
+    if (existing) {
+      return { message: 'Hadith already saved', hadith };
+    }
+    await this.savedHadithRepository.create(userId, hadithId);
+    return { message: 'Hadith saved', hadith };
+  }
+
+  async unsave(userId: string, hadithId: string) {
+    await this.savedHadithRepository.remove(userId, hadithId);
+    return { message: 'Hadith removed from saved' };
   }
 }

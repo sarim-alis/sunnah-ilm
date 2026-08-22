@@ -30,7 +30,7 @@ function AppContent() {
   const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
   const isAdmin = user?.role === 'admin';
-  const adminTabs: AppTab[] = ['home', 'profile', 'add', 'hadiths'];
+  const adminTabs: AppTab[] = ['home', 'profile', 'add', 'hadiths', 'saved'];
   const screen =
     isAdmin && !adminTabs.includes(tab) ? 'home' : tab;
 

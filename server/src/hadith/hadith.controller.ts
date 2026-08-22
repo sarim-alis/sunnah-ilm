@@ -1,8 +1,22 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminGuard } from '../common/guards/admin.guard';
 import { JwtGuard } from '../common/guards/jwt.guard';
 import { CreateHadithDto } from './dto/create-hadith.dto';
 import { HadithService } from './hadith.service';
+
+type AuthedRequest = { user: { id: string } };
 
 @Controller('hadith')
 export class HadithController {
@@ -12,6 +26,24 @@ export class HadithController {
   @UseGuards(JwtGuard, AdminGuard)
   create(@Body() dto: CreateHadithDto) {
     return this.hadithService.create(dto);
+  }
+
+  @Get('saved')
+  @UseGuards(JwtGuard)
+  listSaved(@Req() req: AuthedRequest) {
+    return this.hadithService.listSaved(req.user.id);
+  }
+
+  @Post(':id/save')
+  @UseGuards(JwtGuard)
+  save(@Req() req: AuthedRequest, @Param('id', ParseUUIDPipe) id: string) {
+    return this.hadithService.save(req.user.id, id);
+  }
+
+  @Delete(':id/save')
+  @UseGuards(JwtGuard)
+  unsave(@Req() req: AuthedRequest, @Param('id', ParseUUIDPipe) id: string) {
+    return this.hadithService.unsave(req.user.id, id);
   }
 
   @Get()

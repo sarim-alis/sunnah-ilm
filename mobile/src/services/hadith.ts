@@ -117,8 +117,32 @@ export async function getHadithById(_id: string): Promise<Hadith | null> {
   return null;
 }
 
-export async function getSavedHadiths(): Promise<Hadith[]> {
-  return [];
+export async function getSavedHadiths(): Promise<HadithRecord[]> {
+  const headers = await authHeaders();
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/saved`, { headers });
+  const data = (await response.json()) as HadithResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
+  return data.hadiths ?? [];
+}
+
+export async function saveHadith(id: string) {
+  const headers = await authHeaders();
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}/save`, {
+    method: 'POST',
+    headers,
+  });
+  const data = (await response.json()) as HadithResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
+}
+
+export async function unsaveHadith(id: string) {
+  const headers = await authHeaders();
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}/save`, {
+    method: 'DELETE',
+    headers,
+  });
+  const data = (await response.json()) as HadithResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
 }
 
 export { errorMessage };
