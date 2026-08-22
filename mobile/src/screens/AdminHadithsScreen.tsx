@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { CrossIcon } from '@/components/CrossIcon';
 import { EyeIcon } from '@/components/EyeIcon';
@@ -22,6 +23,14 @@ import { deleteHadith, errorMessage, listHadiths } from '@/services/hadith';
 import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/adminHadiths';
 import { useTheme } from '@/theme/ThemeProvider';
+
+const PAGE_SIZE = 3;
+
+function pageWindow(current: number, total: number) {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  const start = Math.max(1, Math.min(current - 2, total - 4));
+  return Array.from({ length: 5 }, (_, i) => start + i);
+}
 
 function matchesHadith(item: HadithRecord, term: string) {
   const haystack = [
@@ -48,11 +57,16 @@ export default function AdminHadithsScreen() {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [editing, setEditing] = useState<HadithRecord | null>(null);
   const [viewing, setViewing] = useState<HadithRecord | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebounced(search.trim()), 500);
     return () => clearTimeout(timer);
   }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debounced]);
 
   const listQuery = useQuery({
     queryKey: queryKeys.hadiths.admin,
@@ -65,6 +79,17 @@ export default function AdminHadithsScreen() {
     if (!term) return items;
     return items.filter((item) => matchesHadith(item, term));
   }, [listQuery.data, debounced]);
+
+  const totalPages = Math.max(1, Math.ceil(hadiths.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = hadiths.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
   const deleteMutation = useMutation({
     mutationFn: deleteHadith,
@@ -155,7 +180,7 @@ export default function AdminHadithsScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Hadiths</Text>
         <View style={styles.searchWrap}>
-          <SearchIcon size={18} color={colors.textMuted} />
+          <SearchIcon size={14} color={colors.textMuted} />
           <TextInput
             value={search}
             onChangeText={setSearch}
@@ -168,6 +193,7 @@ export default function AdminHadithsScreen() {
               onPress={() => {
                 setSearch('');
                 setDebounced('');
+                setPage(1);
               }}
               style={styles.searchCross}
               accessibilityLabel="Clear search"
@@ -186,14 +212,58 @@ export default function AdminHadithsScreen() {
         </Text>
       ) : (
         <FlatList
-          data={hadiths}
+          data={pageItems}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          extraData={debounced}
+          extraData={`${debounced}-${currentPage}`}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.list}
           ListEmptyComponent={<Text style={styles.empty}>No Hadith found</Text>}
         />
+      )}
+
+      {listQuery.isLoading || listQuery.isError || hadiths.length === 0 ? null : (
+        <View style={styles.pager}>
+          <TouchableOpacity
+            onPress={() => setPage((value) => Math.max(1, value - 1))}
+            disabled={currentPage === 1}
+            style={[
+              styles.pagerBtn,
+              currentPage === 1 ? styles.pagerBtnDisabled : null,
+            ]}
+            accessibilityLabel="Previous page"
+          >
+            <Ionicons name="chevron-back" size={18} color={colors.text} />
+          </TouchableOpacity>
+          <View style={styles.pagerPages}>
+            {pageWindow(currentPage, totalPages).map((number) => {
+              const active = number === currentPage;
+              return (
+                <TouchableOpacity
+                  key={number}
+                  onPress={() => setPage(number)}
+                  style={[styles.pagerBtn, active ? styles.pagerBtnActive : null]}
+                  accessibilityLabel={`Page ${number}`}
+                >
+                  <Text style={[styles.pagerNum, active ? styles.pagerNumActive : null]}>
+                    {number}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <TouchableOpacity
+            onPress={() => setPage((value) => Math.min(totalPages, value + 1))}
+            disabled={currentPage === totalPages}
+            style={[
+              styles.pagerBtn,
+              currentPage === totalPages ? styles.pagerBtnDisabled : null,
+            ]}
+            accessibilityLabel="Next page"
+          >
+            <Ionicons name="chevron-forward" size={18} color={colors.text} />
+          </TouchableOpacity>
+        </View>
       )}
 
       <DeleteHadithModal
