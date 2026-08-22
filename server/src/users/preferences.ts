@@ -1,5 +1,4 @@
 export const HADITH_TOPICS = [
-  'Namaz',
   'Quran',
   'Parents',
   'Marriage',

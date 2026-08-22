@@ -34,9 +34,9 @@ Create a `hadiths` table and seed a small verified set.
 | urdu | Translation only |
 | narrator | Chain / narrator label from the source |
 | grade | Sahih, Hasan, … from the corpus |
-| topics | Tags aligned with app topics (Namaz, Anger, Parents, …) |
+| topics | Tags aligned with app topics (Prayer, Anger, Parents, …) |
 
-Seed enough rows to hit the preference topics (Namaz, Quran, Parents, Marriage, Prayer, Love, Health, Anger, Death, Education). Quality over volume. Every row must be a real, citable narration.
+Seed enough rows to hit the preference topics (Quran, Parents, Marriage, Prayer, Love, Health, Anger, Death, Education). Quality over volume. Every row must be a real, citable narration.
 
 ### 2. Search API
 

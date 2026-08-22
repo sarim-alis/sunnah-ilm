@@ -2,7 +2,6 @@ import type { ImageSourcePropType } from 'react-native';
 import type { HadithTopic } from './preferences';
 
 export const PREFERENCE_IMAGES: Record<HadithTopic, ImageSourcePropType> = {
-  Namaz: require('../../public/preferences/namaz.png'),
   Quran: require('../../public/preferences/quran.png'),
   Parents: require('../../public/preferences/parents.png'),
   Marriage: require('../../public/preferences/marriage.png'),

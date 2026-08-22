@@ -70,7 +70,7 @@ Request an API key via a GitHub issue on sunnah-com/api if we need their officia
 | grade | `grades[]` or `Sahih` for Bukhari/Muslim when empty |
 | sourceUrl | `https://sunnah.com/{collection}:{number}` |
 | source | `fawazahmed0/hadith-api@1` |
-| topics | Our tags only (Namaz, Anger, Parents, …) — not in the CDN |
+| topics | Our tags only (Prayer, Anger, Parents, …) — not in the CDN |
 
 ---
 
@@ -99,10 +99,10 @@ Fine to read about; do not depend on them in the app.
 
 ---
 
-## Tagging (our 10 topics)
+## Tagging (our 9 topics)
 
 CDN has no topic chips. After import, search English text, confirm on sunnah.com, then set `topics`.
 
-Preference topics: Namaz, Quran, Parents, Marriage, Prayer, Love, Health, Anger, Death, Education.
+Preference topics: Quran, Parents, Marriage, Prayer, Love, Health, Anger, Death, Education.
 
 Example to confirm first: Anger → Bukhari 6116 → https://sunnah.com/bukhari:6116
