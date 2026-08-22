@@ -54,6 +54,7 @@ export const createStyles = (colors: ThemeColors) =>
       borderWidth: 1,
       flexDirection: 'row',
       marginBottom: 12,
+      overflow: 'hidden',
       padding: 16,
     },
     cardCopy: {

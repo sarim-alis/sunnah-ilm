@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Modal,
   Text,
   TouchableOpacity,
   View,
@@ -9,7 +10,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EyeIcon } from '@/components/EyeIcon';
+import { HadithListCard } from '@/components/HadithListCard';
 import HadithDetailScreen from '@/screens/HadithDetailScreen';
 import { queryKeys } from '@/query/keys';
 import {
@@ -30,6 +33,7 @@ function pageWindow(current: number, total: number) {
 }
 
 export default function SavedScreen() {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const client = useQueryClient();
@@ -60,7 +64,7 @@ export default function SavedScreen() {
       Toast.show({
         type: 'success',
         text1: 'Removed',
-        text2: 'Hadith removed from saved',
+        text2: 'Hadith removed from bookmarks',
       });
     },
     onError: (err) => {
@@ -72,40 +76,12 @@ export default function SavedScreen() {
     },
   });
 
-  if (viewing) {
-    return (
-      <HadithDetailScreen
-        hadith={viewing}
-        onBack={() => setViewing(null)}
-      />
-    );
-  }
-
-  const renderItem = ({ item }: { item: HadithRecord }) => {
-    const snippet = item.translation?.english || item.text;
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => setViewing(item)}
-        activeOpacity={0.85}
-        accessibilityLabel="View Hadith"
-      >
-        <View style={styles.cardCopy}>
-          <Text style={styles.cardMeta}>
-            {item.book} {item.hadithNumber}
-            {item.topic ? ` · ${item.topic}` : ''}
-          </Text>
-          <Text style={styles.cardNarrator}>{item.narrator}</Text>
-          {item.chapter ? (
-            <Text style={styles.cardChapter} numberOfLines={1} ellipsizeMode="tail">
-              {item.chapter}
-            </Text>
-          ) : null}
-          <Text style={styles.cardText} numberOfLines={2} ellipsizeMode="tail">
-            {snippet}
-          </Text>
-        </View>
-        <View style={styles.cardActions}>
+  const renderItem = ({ item }: { item: HadithRecord }) => (
+    <HadithListCard
+      item={item}
+      onPress={() => setViewing(item)}
+      actions={
+        <>
           <TouchableOpacity
             onPress={() => setViewing(item)}
             style={styles.deleteButton}
@@ -120,10 +96,10 @@ export default function SavedScreen() {
           >
             <Ionicons name="bookmark" size={16} color={colors.primary} />
           </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+        </>
+      }
+    />
+  );
 
   return (
     <View style={styles.screen}>
@@ -193,6 +169,26 @@ export default function SavedScreen() {
           </TouchableOpacity>
         </View>
       )}
+      <Modal
+        visible={Boolean(viewing)}
+        animationType="slide"
+        onRequestClose={() => setViewing(null)}
+      >
+        <View
+          style={{
+            backgroundColor: colors.background,
+            flex: 1,
+            paddingTop: insets.top,
+          }}
+        >
+          {viewing ? (
+            <HadithDetailScreen
+              hadith={viewing}
+              onBack={() => setViewing(null)}
+            />
+          ) : null}
+        </View>
+      </Modal>
     </View>
   );
 }

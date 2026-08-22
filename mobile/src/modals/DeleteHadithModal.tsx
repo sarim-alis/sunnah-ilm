@@ -30,7 +30,7 @@ export function DeleteHadithModal({
       <View style={styles.backdrop}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <View style={styles.sheet}>
-          <Text style={styles.title}>Hadith</Text>
+          <Text style={styles.title}>Delete Hadith</Text>
           <Text style={styles.message}>Are you sure you want to delete this Hadith?</Text>
           <View style={styles.actions}>
             <TouchableOpacity

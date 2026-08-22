@@ -2,16 +2,19 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  Modal,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CrossIcon } from '@/components/CrossIcon';
 import { EyeIcon } from '@/components/EyeIcon';
+import { HadithListCard } from '@/components/HadithListCard';
 import { PencilIcon } from '@/components/PencilIcon';
 import { SearchIcon } from '@/components/SearchIcon';
 import { TrashIcon } from '@/components/TrashIcon';
@@ -49,6 +52,7 @@ function matchesHadith(item: HadithRecord, term: string) {
 }
 
 export default function AdminHadithsScreen() {
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const client = useQueryClient();
@@ -111,31 +115,12 @@ export default function AdminHadithsScreen() {
     },
   });
 
-  const renderItem = ({ item }: { item: HadithRecord }) => {
-    const snippet = item.translation?.english || item.text;
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => setViewing(item)}
-        activeOpacity={0.85}
-        accessibilityLabel="View Hadith"
-      >
-        <View style={styles.cardCopy}>
-          <Text style={styles.cardMeta}>
-            {item.book} {item.hadithNumber}
-            {item.topic ? ` · ${item.topic}` : ''}
-          </Text>
-          <Text style={styles.cardNarrator}>{item.narrator}</Text>
-          {item.chapter ? (
-            <Text style={styles.cardChapter} numberOfLines={1} ellipsizeMode="tail">
-              {item.chapter}
-            </Text>
-          ) : null}
-          <Text style={styles.cardText} numberOfLines={2} ellipsizeMode="tail">
-            {snippet}
-          </Text>
-        </View>
-        <View style={styles.cardActions}>
+  const renderItem = ({ item }: { item: HadithRecord }) => (
+    <HadithListCard
+      item={item}
+      onPress={() => setViewing(item)}
+      actions={
+        <>
           <TouchableOpacity
             onPress={() => setViewing(item)}
             style={styles.deleteButton}
@@ -157,19 +142,10 @@ export default function AdminHadithsScreen() {
           >
             <TrashIcon size={18} color={colors.error} />
           </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  if (viewing) {
-    return (
-      <HadithDetailScreen
-        hadith={viewing}
-        onBack={() => setViewing(null)}
-      />
-    );
-  }
+        </>
+      }
+    />
+  );
 
   if (editing) {
     return (
@@ -281,6 +257,26 @@ export default function AdminHadithsScreen() {
           if (pendingId) void deleteMutation.mutateAsync(pendingId);
         }}
       />
+      <Modal
+        visible={Boolean(viewing)}
+        animationType="slide"
+        onRequestClose={() => setViewing(null)}
+      >
+        <View
+          style={{
+            backgroundColor: colors.background,
+            flex: 1,
+            paddingTop: insets.top,
+          }}
+        >
+          {viewing ? (
+            <HadithDetailScreen
+              hadith={viewing}
+              onBack={() => setViewing(null)}
+            />
+          ) : null}
+        </View>
+      </Modal>
     </View>
   );
 }

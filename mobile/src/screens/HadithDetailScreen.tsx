@@ -41,7 +41,9 @@ export default function HadithDetailScreen({
       Toast.show({
         type: 'success',
         text1: isSaved ? 'Removed' : 'Saved',
-        text2: isSaved ? 'Hadith removed from saved' : 'Hadith saved',
+        text2: isSaved
+          ? 'Hadith removed from bookmarks'
+          : 'Hadith saved to bookmarks',
       });
     },
     onError: (err) => {
