@@ -17,7 +17,7 @@ import { UsersModule } from './users/users.module';
         url: config.getOrThrow<string>('DATABASE_URL'),
         ssl: { rejectUnauthorized: false },
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
       }),
     }),
     CommonModule,
