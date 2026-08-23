@@ -40,8 +40,7 @@ export default function DeleteAccountPage() {
         <article className="rounded-3xl border border-border bg-card px-5 py-6 shadow-sm">
           <p className="text-base leading-7 text-text">
             This page is for <strong>Sunnah-Ilm</strong>, published on Google
-            Play by developer <strong>Sarim Ali</strong> (package{" "}
-            <code>com.sunnahilm.app</code>). Use the steps below to request that
+            Play by developer <strong>Sarim Ali</strong>. Use the steps below to request that
             your account and associated personal data are deleted.
           </p>
 
@@ -57,9 +56,15 @@ export default function DeleteAccountPage() {
           </ol>
           <p className="mt-4 text-base leading-7 text-text">
             If you cannot open the app, email developer <strong>Sarim Ali</strong>{" "}
-            using the contact email on the Sunnah-Ilm Google Play listing, from
-            the same email as your account, and ask to delete it. Sarim Ali will
-            process that request.
+            at{" "}
+            <a
+              className="font-semibold text-primary underline"
+              href="mailto:sarimslayerali786@gmail.com"
+            >
+              sarimslayerali786@gmail.com
+            </a>{" "}
+            from the same email as your account, and ask to delete it. Sarim Ali
+            will process that request.
           </p>
 
           <h2 className="mt-8 text-lg font-bold text-primary">

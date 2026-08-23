@@ -152,8 +152,14 @@ const sections: { title: string; body: ReactNode }[] = [
     body: (
       <p>
         For privacy questions, access, or deletion requests, contact developer{" "}
-        <strong>Sarim Ali</strong> using the email on the Sunnah-Ilm Google Play
-        listing, and include the email address on your account.
+        <strong>Sarim Ali</strong> at{" "}
+        <a
+          className="font-semibold text-primary underline"
+          href="mailto:sarimslayerali786@gmail.com"
+        >
+          sarimslayerali786@gmail.com
+        </a>
+        , and include the email address on your account.
       </p>
     ),
   },
