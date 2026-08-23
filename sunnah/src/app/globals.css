@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --sunnah-primary: #596028;
+  --sunnah-secondary: #9bb954;
+  --sunnah-accent: #d7ec91;
+  --sunnah-background: #fffcf5;
+  --sunnah-card: #ffffff;
+  --sunnah-text: #151515;
+  --sunnah-text-muted: #77776b;
+  --sunnah-border: #e6e4d4;
+  --sunnah-error: #b42318;
+  --sunnah-on-primary: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sunnah-primary: #9bb954;
+    --sunnah-secondary: #c5dd7a;
+    --sunnah-accent: #2a3018;
+    --sunnah-background: #14160f;
+    --sunnah-card: #1e2116;
+    --sunnah-text: #f5f2e8;
+    --sunnah-text-muted: #9a9a88;
+    --sunnah-border: #323628;
+    --sunnah-error: #e25a4e;
+    --sunnah-on-primary: #14160f;
+  }
+}
+
+@theme inline {
+  --color-primary: var(--sunnah-primary);
+  --color-secondary: var(--sunnah-secondary);
+  --color-accent: var(--sunnah-accent);
+  --color-background: var(--sunnah-background);
+  --color-card: var(--sunnah-card);
+  --color-text: var(--sunnah-text);
+  --color-muted: var(--sunnah-text-muted);
+  --color-border: var(--sunnah-border);
+  --color-error: var(--sunnah-error);
+  --color-on-primary: var(--sunnah-on-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--sunnah-background);
+  color: var(--sunnah-text);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
