@@ -32,4 +32,8 @@ export class UsersService {
   ) {
     return this.usersRepository.update(id, data);
   }
+
+  softDelete(id: string, passwordHash: string) {
+    return this.usersRepository.softDelete(id, passwordHash);
+  }
 }

@@ -30,6 +30,9 @@ export class User {
   @Column({ type: 'varchar', default: 'user' })
   role!: UserRole;
 
+  @Column({ type: 'boolean', default: false })
+  isDeleted!: boolean;
+
   @CreateDateColumn()
   createdAt!: Date;
 

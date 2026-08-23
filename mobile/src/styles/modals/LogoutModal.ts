@@ -52,6 +52,9 @@ export function createStyles(colors: ThemeColors) {
     confirmButton: {
       backgroundColor: colors.primary,
     },
+    destructiveButton: {
+      backgroundColor: colors.error,
+    },
     cancelText: {
       color: colors.text,
       fontSize: 16,

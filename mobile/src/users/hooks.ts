@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getUser, login, logout, updateProfile, type AuthUser } from '@/services/auth';
+import { getUser, login, logout, deleteAccount, updateProfile, type AuthUser } from '@/services/auth';
 import { queryClient } from '@/query/client';
 import { userKeys } from './query/keys';
 import { currentUserQuery } from './query/profile';
@@ -57,6 +57,17 @@ export function useLogout() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: logout,
+    onSuccess: () => {
+      client.setQueryData(userKeys.me(), null);
+      client.removeQueries({ queryKey: userKeys.all });
+    },
+  });
+}
+
+export function useDeleteAccount() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: deleteAccount,
     onSuccess: () => {
       client.setQueryData(userKeys.me(), null);
       client.removeQueries({ queryKey: userKeys.all });

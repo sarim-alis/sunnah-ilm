@@ -104,13 +104,16 @@ const sections: { title: string; body: ReactNode }[] = [
     title: "Retention and deletion",
     body: (
       <p>
-        We keep your account data while your account exists. You can log out at
-        any time, which removes the token stored on your device. To correct or
-        delete your account and associated data (profile, photo, preferences,
-        and saved Ahadees), contact us using the email address on the Sunnah-Ilm
-        Google Play store listing and tell us the email used to register. We
-        will delete that data unless we must keep a limited record to comply
-        with law.
+        We keep your account data while your account exists. You can delete
+        your account in the app: open <strong>Profile</strong>, scroll to the
+        bottom, and tap <strong>Delete account</strong>. That immediately
+        removes your name, email, password, profile photo, preferences, and
+        saved Ahadees. Step-by-step instructions are on the{" "}
+        <a className="font-semibold text-primary underline" href="/delete-account">
+          Delete your account
+        </a>{" "}
+        page. If you cannot use the app, contact us using the email on the Sunnah-Ilm Google Play
+        listing.
       </p>
     ),
   },
@@ -148,9 +151,9 @@ const sections: { title: string; body: ReactNode }[] = [
     title: "Contact",
     body: (
       <p>
-        For privacy questions, access, or deletion requests, use the developer
-        contact email on the Sunnah-Ilm listing on Google Play, and include the
-        email address on your account.
+        For privacy questions, access, or deletion requests, contact developer{" "}
+        <strong>Sarim Ali</strong> using the email on the Sunnah-Ilm Google Play
+        listing, and include the email address on your account.
       </p>
     ),
   },
@@ -166,7 +169,7 @@ export default function PrivacyPage() {
           </span>
           <div>
             <p className="text-base font-bold text-text">Sunnah-Ilm</p>
-            <p className="text-xs text-muted">Ask &amp; discover Ahadees</p>
+            <p className="text-xs text-muted">Developer: Sarim Ali</p>
           </div>
         </div>
       </header>

@@ -8,13 +8,14 @@ import { PencilIcon } from '@/components/PencilIcon';
 import { PreferenceScroller } from '@/components/PreferenceScroller';
 import { EditPreferencesModal } from '@/modals/EditPreferencesModal';
 import { EditProfileModal } from '@/modals/EditProfileModal';
+import { DeleteAccountModal } from '@/modals/DeleteAccountModal';
 import { LogoutModal } from '@/modals/LogoutModal';
 import { PhotoSheetModal } from '@/modals/PhotoSheetModal';
 import { ViewPhotoModal } from '@/modals/ViewPhotoModal';
 import { errorMessage } from '@/services/auth';
 import { createStyles } from '@/styles/screens/ProfileScreen';
 import { useTheme } from '@/theme/ThemeProvider';
-import { useCurrentUser, useUpdateProfile } from '@/users/hooks';
+import { useCurrentUser, useDeleteAccount, useUpdateProfile } from '@/users/hooks';
 import { normalizePreferences } from '@/users/preferences';
 import type { HadithTopic } from '@/users/preferences';
 
@@ -28,6 +29,7 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { data: user } = useCurrentUser();
   const updateProfileMutation = useUpdateProfile();
+  const deleteAccountMutation = useDeleteAccount();
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -37,6 +39,7 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const imageUri = previewUri ?? user?.imageUrl ?? null;
   const preferences = normalizePreferences(user?.preferences);
@@ -177,6 +180,20 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
     }
   };
 
+  const confirmDeleteAccount = async () => {
+    try {
+      await deleteAccountMutation.mutateAsync();
+      setDeleteOpen(false);
+      if (onLogout) await onLogout();
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Delete failed',
+        text2: errorMessage(err, 'Could not delete account'),
+      });
+    }
+  };
+
   const confirmLogout = async () => {
     if (!onLogout) return;
     setLoggingOut(true);
@@ -306,6 +323,22 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
             </View>
           </>
         )}
+
+        <View style={styles.dangerBlock}>
+          <Text style={styles.dangerTitle}>Delete account</Text>
+          <Text style={styles.dangerCopy}>
+            Remove your Sunnah-Ilm account, profile photo, preferences, and saved
+            Ahadees. This cannot be undone.
+          </Text>
+          <TouchableOpacity
+            onPress={() => setDeleteOpen(true)}
+            style={styles.dangerButton}
+            activeOpacity={0.85}
+            accessibilityLabel="Delete account"
+          >
+            <Text style={styles.dangerButtonText}>Delete account</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       <PhotoSheetModal
@@ -344,6 +377,16 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
         }}
         onConfirm={() => {
           void confirmLogout();
+        }}
+      />
+      <DeleteAccountModal
+        visible={deleteOpen}
+        confirming={deleteAccountMutation.isPending}
+        onClose={() => {
+          if (!deleteAccountMutation.isPending) setDeleteOpen(false);
+        }}
+        onConfirm={() => {
+          void confirmDeleteAccount();
         }}
       />
     </View>

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from '../common/guards/jwt.guard';
 import { imageUploadOptions } from '../common/cloudinary/image-upload';
@@ -40,5 +40,11 @@ export class AuthController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.authService.updateProfile(req.user.id, dto, file);
+  }
+
+  @Delete('account')
+  @UseGuards(JwtGuard)
+  deleteAccount(@Req() req: { user: { id: string } }) {
+    return this.authService.deleteAccount(req.user.id);
   }
 }

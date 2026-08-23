@@ -1,9 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../../users/users.service';
 
 @Injectable()
 export class JwtGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private usersService: UsersService,
+  ) {}
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<{
@@ -21,9 +25,14 @@ export class JwtGuard implements CanActivate {
         email: string;
         role?: string;
       }>(header.slice(7));
+      const user = await this.usersService.findById(payload.id);
+      if (!user) {
+        throw new UnauthorizedException('Token is not valid');
+      }
       request.user = payload;
       return true;
-    } catch {
+    } catch (err) {
+      if (err instanceof UnauthorizedException) throw err;
       throw new UnauthorizedException('Token is not valid');
     }
   }

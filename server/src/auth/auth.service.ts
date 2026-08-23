@@ -1,6 +1,7 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { randomUUID } from 'crypto';
 import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
 import { UsersService } from '../users/users.service';
 import {
@@ -129,5 +130,20 @@ export class AuthService {
       message: 'Profile updated successfully',
       user: this.publicUser(updated),
     };
+  }
+
+  async deleteAccount(userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordHash = await bcrypt.hash(randomUUID(), 10);
+    const deleted = await this.usersService.softDelete(userId, passwordHash);
+    if (!deleted) {
+      throw new NotFoundException('User not found');
+    }
+
+    return { message: 'Account deleted' };
   }
 }

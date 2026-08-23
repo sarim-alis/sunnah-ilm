@@ -165,4 +165,36 @@ export const createStyles = (colors: ThemeColors) =>
       paddingHorizontal: 12,
       paddingVertical: 10,
     },
+    dangerBlock: {
+      marginHorizontal: 20,
+      marginTop: 28,
+      paddingBottom: 8,
+    },
+    dangerTitle: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '700',
+      marginBottom: 8,
+    },
+    dangerCopy: {
+      color: colors.textMuted,
+      fontSize: 14,
+      lineHeight: 20,
+      marginBottom: 14,
+    },
+    dangerButton: {
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderColor: colors.error,
+      borderRadius: 14,
+      borderWidth: 1,
+      justifyContent: 'center',
+      minHeight: 48,
+      paddingHorizontal: 16,
+    },
+    dangerButtonText: {
+      color: colors.error,
+      fontSize: 16,
+      fontWeight: '700',
+    },
   });

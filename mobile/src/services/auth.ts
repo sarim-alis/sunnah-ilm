@@ -109,6 +109,25 @@ export async function logout() {
   await AsyncStorage.removeItem('user');
 }
 
+export async function deleteAccount() {
+  const token = await getToken();
+  if (!token) throw new Error('Please log in again');
+
+  const response = await fetch(`${apiConfig.baseUrl}/users/account`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = (await response.json()) as { message?: string | string[] };
+  if (!response.ok) {
+    throw new Error(
+      Array.isArray(data.message)
+        ? data.message[0]
+        : (data.message ?? 'Could not delete account'),
+    );
+  }
+  await logout();
+}
+
 export async function getToken() {
   return AsyncStorage.getItem('token');
 }
