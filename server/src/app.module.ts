@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { QueryModule } from './common/query/query.module';
 import { HadithModule } from './hadith/hadith.module';
+import { HealthController } from './health.controller';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -26,5 +27,6 @@ import { UsersModule } from './users/users.module';
     HadithModule,
     AuthModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}
