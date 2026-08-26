@@ -16,6 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Sunnah-Ilm",
   description: "Admin panel for Sunnah-Ilm.",
+  icons: {
+    icon: [{ url: "/sunnah.png", type: "image/png" }],
+    apple: [{ url: "/sunnah.png", type: "image/png" }],
+    shortcut: "/sunnah.png",
+  },
 };
 
 export default function RootLayout({

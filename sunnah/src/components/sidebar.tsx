@@ -40,7 +40,7 @@ export function Sidebar() {
         <img src="/sunnah.png" alt="" className="h-10 w-10 rounded-xl object-cover" />
         <div>
           <p className="text-sm font-bold text-text">Sunnah-Ilm</p>
-          <p className="text-xs text-muted">Admin console</p>
+          <p className="text-xs text-muted">Admin</p>
         </div>
       </div>
 

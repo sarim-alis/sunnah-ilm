@@ -13,13 +13,13 @@ const actions = [
   },
   {
     href: "/hadiths",
-    title: "Manage corpus",
+    title: "Manage Hadiths",
     copy: "Search, edit, and delete existing rows.",
     icon: "book" as const,
   },
   {
     href: "/saved",
-    title: "Saved",
+    title: "Saved Hadiths",
     copy: "Bookmarks you have already opened.",
     icon: "bookmark" as const,
   },
@@ -51,7 +51,7 @@ export function HomeScreen() {
       <section className="relative mb-8 overflow-hidden rounded-2xl border border-border bg-accent px-8 py-10">
         <div className="absolute -top-16 -right-10 h-56 w-56 rounded-full bg-secondary/25" />
         <div className="relative max-w-xl">
-          <p className="text-sm font-semibold text-primary">Corpus</p>
+          <p className="text-sm font-semibold text-primary">Hadiths</p>
           <h2 className="mt-2 text-3xl font-bold text-text">
             Add authentic Ahadees from the website
           </h2>

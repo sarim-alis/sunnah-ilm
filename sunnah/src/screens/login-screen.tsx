@@ -50,7 +50,7 @@ export function LoginScreen() {
         <div className="relative">
           <img src="/sunnah.png" alt="" className="h-16 w-16 rounded-2xl object-cover" />
           <p className="mt-8 text-sm font-semibold uppercase tracking-widest text-accent">
-            Admin console
+            Admin
           </p>
           <h1 className="mt-3 max-w-md text-4xl font-bold leading-tight">
             Enter verified Ahadees for Sunnah-Ilm
