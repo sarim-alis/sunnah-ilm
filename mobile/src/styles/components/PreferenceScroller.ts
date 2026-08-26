@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native';
 import type { ThemeColors } from '@/constants/colors';
 
 export const ARROW = 36;
+export const PREF_ICON = 88;
 
 export const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
@@ -24,16 +25,20 @@ export const createStyles = (colors: ThemeColors) =>
     },
     item: {
       alignItems: 'center',
+      justifyContent: 'center',
       paddingHorizontal: 8,
     },
     ring: {
+      alignItems: 'center',
       backgroundColor: colors.card,
       borderColor: colors.primary,
-      borderRadius: 48,
+      borderRadius: 22,
       borderWidth: 2,
-      height: 88,
+      height: PREF_ICON,
+      justifyContent: 'center',
       overflow: 'hidden',
-      width: 88,
+      padding: 8,
+      width: PREF_ICON,
     },
     image: {
       height: '100%',
@@ -42,8 +47,10 @@ export const createStyles = (colors: ThemeColors) =>
     fallback: {
       alignItems: 'center',
       backgroundColor: colors.accent,
-      flex: 1,
+      borderRadius: 14,
+      height: '100%',
       justifyContent: 'center',
+      width: '100%',
     },
     fallbackText: {
       color: colors.primary,

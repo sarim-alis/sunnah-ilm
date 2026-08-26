@@ -87,7 +87,7 @@ export function PreferenceScroller({ preferences }: PreferenceScrollerProps) {
             <View key={pref.id} style={[styles.item, { width: itemWidth || undefined }]}>
               <View style={styles.ring}>
                 {source ? (
-                  <Image source={source} style={styles.image} resizeMode="cover" />
+                  <Image source={source} style={styles.image} resizeMode="contain" />
                 ) : (
                   <View style={styles.fallback}>
                     <Text style={styles.fallbackText}>
