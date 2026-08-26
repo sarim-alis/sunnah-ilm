@@ -88,9 +88,22 @@ export class HadithService {
     };
   }
 
-  async list(query?: string, topic?: string) {
-    const hadiths = await this.hadithRepository.findAll(query, topic);
-    return { hadiths };
+  async list(query?: string, topic?: string, page = 1, limit = 3) {
+    const currentPage = Math.max(1, page);
+    const pageSize = Math.min(50, Math.max(1, limit));
+    const { hadiths, total } = await this.hadithRepository.findPage(
+      query,
+      topic,
+      currentPage,
+      pageSize,
+    );
+    return {
+      hadiths,
+      total,
+      page: currentPage,
+      limit: pageSize,
+      totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    };
   }
 
   async remove(id: string) {

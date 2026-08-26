@@ -13,19 +13,17 @@
   --sunnah-on-primary: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --sunnah-primary: #9bb954;
-    --sunnah-secondary: #c5dd7a;
-    --sunnah-accent: #2a3018;
-    --sunnah-background: #14160f;
-    --sunnah-card: #1e2116;
-    --sunnah-text: #f5f2e8;
-    --sunnah-text-muted: #9a9a88;
-    --sunnah-border: #323628;
-    --sunnah-error: #e25a4e;
-    --sunnah-on-primary: #14160f;
-  }
+html.dark {
+  --sunnah-primary: #9bb954;
+  --sunnah-secondary: #c5dd7a;
+  --sunnah-accent: #2a3018;
+  --sunnah-background: #14160f;
+  --sunnah-card: #1e2116;
+  --sunnah-text: #f5f2e8;
+  --sunnah-text-muted: #9a9a88;
+  --sunnah-border: #323628;
+  --sunnah-error: #e25a4e;
+  --sunnah-on-primary: #14160f;
 }
 
 @theme inline {

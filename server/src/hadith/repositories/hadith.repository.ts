@@ -54,6 +54,40 @@ export class HadithRepository {
     return qb.getMany();
   }
 
+  async findPage(query?: string, topic?: string, page = 1, limit = 3) {
+    const qb = this.hadiths
+      .createQueryBuilder('hadith')
+      .orderBy('hadith.book', 'ASC')
+      .addOrderBy('hadith.hadithNumber', 'ASC');
+
+    const term = query?.trim();
+    if (term) {
+      qb.andWhere(
+        `(
+          hadith.topic ILIKE :q
+          OR hadith.narrator ILIKE :q
+          OR hadith.book ILIKE :q
+          OR CAST(hadith.hadithNumber AS text) ILIKE :q
+          OR CAST(hadith.arabicNumber AS text) ILIKE :q
+          OR hadith.chapter ILIKE :q
+        )`,
+        { q: `%${term}%` },
+      );
+    }
+
+    const topicName = topic?.trim();
+    if (topicName) {
+      qb.andWhere('hadith.topic = :topic', { topic: topicName });
+    }
+
+    const [hadiths, total] = await qb
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return { hadiths, total };
+  }
+
   findById(id: string) {
     return this.hadiths.findOne({ where: { id } });
   }

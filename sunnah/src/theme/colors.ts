@@ -24,3 +24,5 @@ export const palettes = {
     onPrimary: "#14160F",
   },
 } as const;
+
+export type ThemeColors = (typeof palettes)[keyof typeof palettes];

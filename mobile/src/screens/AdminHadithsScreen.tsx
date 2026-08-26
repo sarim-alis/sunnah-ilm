@@ -37,22 +37,6 @@ function pageWindow(current: number, total: number) {
   return Array.from({ length: 5 }, (_, i) => start + i);
 }
 
-function matchesHadith(item: HadithRecord, term: string) {
-  const haystack = [
-    item.topic,
-    item.narrator,
-    item.book,
-    String(item.hadithNumber),
-    String(item.arabicNumber),
-    item.chapter,
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
-
-  return haystack.includes(term);
-}
-
 export default function AdminHadithsScreen() {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -77,23 +61,13 @@ export default function AdminHadithsScreen() {
   }, [debounced, topic]);
 
   const listQuery = useQuery({
-    queryKey: [...queryKeys.hadiths.admin, topic],
-    queryFn: () => listHadiths('', topic),
+    queryKey: [...queryKeys.hadiths.admin, topic, debounced, page],
+    queryFn: () => listHadiths(debounced, topic, page, PAGE_SIZE),
   });
 
-  const hadiths = useMemo(() => {
-    const items = listQuery.data ?? [];
-    const term = debounced.toLowerCase();
-    if (!term) return items;
-    return items.filter((item) => matchesHadith(item, term));
-  }, [listQuery.data, debounced]);
-
-  const totalPages = Math.max(1, Math.ceil(hadiths.length / PAGE_SIZE));
+  const pageItems = listQuery.data?.hadiths ?? [];
+  const totalPages = listQuery.data?.totalPages ?? 1;
   const currentPage = Math.min(page, totalPages);
-  const pageItems = hadiths.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
@@ -233,7 +207,7 @@ export default function AdminHadithsScreen() {
         />
       )}
 
-      {listQuery.isLoading || listQuery.isError || hadiths.length === 0 ? null : (
+      {listQuery.isLoading || listQuery.isError || (listQuery.data?.total ?? 0) === 0 ? null : (
         <View style={styles.pager}>
           <TouchableOpacity
             onPress={() => setPage((value) => Math.max(1, value - 1))}

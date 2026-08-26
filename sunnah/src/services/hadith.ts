@@ -1,16 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { apiConfig } from '@/configs/api';
-import { errorMessage } from '@/services/auth';
-
-export type Hadith = {
-  id: string;
-  collection: string;
-  number: string;
-  arabic: string;
-  english: string;
-  narrator: string;
-  grade?: string;
-};
+import { apiConfig } from "@/lib/config";
+import { getToken } from "@/lib/storage";
 
 export type CreateHadithInput = {
   book: string;
@@ -55,11 +44,6 @@ export type HadithPage = {
   totalPages: number;
 };
 
-function messageFrom(data: HadithResponse) {
-  if (Array.isArray(data.message)) return data.message[0];
-  return data.message ?? 'Request failed';
-}
-
 function toHadithPage(
   data: HadithResponse,
   page: number,
@@ -90,15 +74,23 @@ function toHadithPage(
   };
 }
 
-export async function createHadith(input: CreateHadithInput) {
-  const token = await AsyncStorage.getItem('token');
-  if (!token) throw new Error('Please log in again');
+function messageFrom(data: HadithResponse) {
+  if (Array.isArray(data.message)) return data.message[0];
+  return data.message ?? "Request failed";
+}
 
+function authHeaders() {
+  const token = getToken();
+  if (!token) throw new Error("Please log in again");
+  return { Authorization: `Bearer ${token}` };
+}
+
+export async function createHadith(input: CreateHadithInput) {
   const response = await fetch(`${apiConfig.baseUrl}/hadith`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      ...authHeaders(),
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
   });
@@ -107,39 +99,31 @@ export async function createHadith(input: CreateHadithInput) {
   return data.hadith;
 }
 
-async function authHeaders() {
-  const token = await AsyncStorage.getItem('token');
-  if (!token) throw new Error('Please log in again');
-  return { Authorization: `Bearer ${token}` };
-}
-
 export async function listHadiths(
-  query = '',
-  topic = '',
+  query = "",
+  topic = "",
   page = 1,
   limit = 3,
 ): Promise<HadithPage> {
-  const headers = await authHeaders();
   const search = new URLSearchParams();
-  if (query.trim()) search.set('q', query.trim());
-  if (topic.trim()) search.set('topic', topic.trim());
-  search.set('page', String(page));
-  search.set('limit', String(limit));
-  const response = await fetch(`${apiConfig.baseUrl}/hadith?${search}`, { headers });
+  if (query.trim()) search.set("q", query.trim());
+  if (topic.trim()) search.set("topic", topic.trim());
+  search.set("page", String(page));
+  search.set("limit", String(limit));
+  const response = await fetch(`${apiConfig.baseUrl}/hadith?${search}`, {
+    headers: authHeaders(),
+  });
   const data = (await response.json()) as HadithResponse;
   if (!response.ok) throw new Error(messageFrom(data));
   return toHadithPage(data, page, limit);
 }
 
 export async function updateHadith(id: string, input: CreateHadithInput) {
-  const token = await AsyncStorage.getItem('token');
-  if (!token) throw new Error('Please log in again');
-
   const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+      ...authHeaders(),
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
   });
@@ -149,49 +133,37 @@ export async function updateHadith(id: string, input: CreateHadithInput) {
 }
 
 export async function deleteHadith(id: string) {
-  const headers = await authHeaders();
   const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}`, {
-    method: 'DELETE',
-    headers,
+    method: "DELETE",
+    headers: authHeaders(),
   });
   const data = (await response.json()) as HadithResponse;
   if (!response.ok) throw new Error(messageFrom(data));
 }
 
-export async function searchHadiths(_query: string): Promise<Hadith[]> {
-  return [];
-}
-
-export async function getHadithById(_id: string): Promise<Hadith | null> {
-  return null;
-}
-
-export async function getSavedHadiths(): Promise<HadithRecord[]> {
-  const headers = await authHeaders();
-  const response = await fetch(`${apiConfig.baseUrl}/hadith/saved`, { headers });
+export async function getSavedHadiths() {
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/saved`, {
+    headers: authHeaders(),
+  });
   const data = (await response.json()) as HadithResponse;
   if (!response.ok) throw new Error(messageFrom(data));
   return data.hadiths ?? [];
 }
 
 export async function saveHadith(id: string) {
-  const headers = await authHeaders();
   const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}/save`, {
-    method: 'POST',
-    headers,
+    method: "POST",
+    headers: authHeaders(),
   });
   const data = (await response.json()) as HadithResponse;
   if (!response.ok) throw new Error(messageFrom(data));
 }
 
 export async function unsaveHadith(id: string) {
-  const headers = await authHeaders();
   const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}/save`, {
-    method: 'DELETE',
-    headers,
+    method: "DELETE",
+    headers: authHeaders(),
   });
   const data = (await response.json()) as HadithResponse;
   if (!response.ok) throw new Error(messageFrom(data));
 }
-
-export { errorMessage };
