@@ -34,6 +34,42 @@ export class HadithController {
     return this.hadithService.listSaved(req.user.id);
   }
 
+  @Get('user/saved')
+  @UseGuards(JwtGuard)
+  listUserSaved(
+    @Req() req: AuthedRequest,
+    @Query('q') q?: string,
+    @Query('topic') topic?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.hadithService.listSavedPage(
+      req.user.id,
+      q,
+      topic,
+      Number(page) || 1,
+      Number(limit) || 3,
+    );
+  }
+
+  @Get('user')
+  @UseGuards(JwtGuard)
+  listUser(
+    @Req() req: AuthedRequest,
+    @Query('q') q?: string,
+    @Query('topic') topic?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.hadithService.listForUser(
+      req.user.id,
+      q,
+      topic,
+      Number(page) || 1,
+      Number(limit) || 3,
+    );
+  }
+
   @Post(':id/save')
   @UseGuards(JwtGuard)
   save(@Req() req: AuthedRequest, @Param('id', ParseUUIDPipe) id: string) {

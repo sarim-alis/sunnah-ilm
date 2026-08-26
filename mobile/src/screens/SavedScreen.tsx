@@ -4,6 +4,7 @@ import {
   FlatList,
   Modal,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -11,18 +12,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CrossIcon } from '@/components/CrossIcon';
 import { EyeIcon } from '@/components/EyeIcon';
 import { HadithListCard } from '@/components/HadithListCard';
+import { SearchIcon } from '@/components/SearchIcon';
+import { FilterTopicsModal } from '@/modals/FilterTopicsModal';
 import HadithDetailScreen from '@/screens/HadithDetailScreen';
 import { queryKeys } from '@/query/keys';
-import {
-  errorMessage,
-  getSavedHadiths,
-  unsaveHadith,
-} from '@/services/hadith';
+import { errorMessage, listUserSavedHadiths, unsaveHadith } from '@/services/hadith';
 import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/adminHadiths';
 import { useTheme } from '@/theme/ThemeProvider';
+import { useCurrentUser } from '@/users/hooks';
+import { preferenceNames } from '@/users/preferences';
+import type { HadithTopic } from '@/users/preferences';
 
 const PAGE_SIZE = 3;
 
@@ -37,21 +40,37 @@ export default function SavedScreen() {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const client = useQueryClient();
-  const [viewing, setViewing] = useState<HadithRecord | null>(null);
+  const { data: user } = useCurrentUser();
+  const prefs = preferenceNames(user?.preferences ?? []);
+  const [search, setSearch] = useState('');
+  const [debounced, setDebounced] = useState('');
+  const [topic, setTopic] = useState('');
   const [page, setPage] = useState(1);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [viewing, setViewing] = useState<HadithRecord | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(search.trim()), 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debounced, topic]);
+
+  useEffect(() => {
+    if (topic && !prefs.includes(topic as HadithTopic)) setTopic('');
+  }, [prefs.join('|')]);
 
   const listQuery = useQuery({
-    queryKey: queryKeys.hadiths.saved,
-    queryFn: getSavedHadiths,
+    queryKey: queryKeys.hadiths.userSaved(topic, debounced, page),
+    queryFn: () => listUserSavedHadiths(debounced, topic, page, PAGE_SIZE),
+    enabled: Boolean(user),
   });
 
-  const hadiths = listQuery.data ?? [];
-  const totalPages = Math.max(1, Math.ceil(hadiths.length / PAGE_SIZE));
+  const pageItems = listQuery.data?.hadiths ?? [];
+  const totalPages = listQuery.data?.totalPages ?? 1;
   const currentPage = Math.min(page, totalPages);
-  const pageItems = hadiths.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE,
-  );
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
@@ -60,7 +79,7 @@ export default function SavedScreen() {
   const unsaveMutation = useMutation({
     mutationFn: unsaveHadith,
     onSuccess: async () => {
-      await client.invalidateQueries({ queryKey: queryKeys.hadiths.saved });
+      await client.invalidateQueries({ queryKey: queryKeys.hadiths.all });
       Toast.show({
         type: 'success',
         text1: 'Removed',
@@ -104,7 +123,50 @@ export default function SavedScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.title}>Saved</Text>
+        <View style={styles.titleRow}>
+          <Text style={[styles.title, styles.titleInRow]}>Saved</Text>
+          {topic ? (
+            <TouchableOpacity
+              onPress={() => setTopic('')}
+              style={styles.filterBtn}
+              accessibilityLabel="Clear filter"
+            >
+              <Text style={styles.filterBtnText}>Clear</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => prefs.length && setFilterOpen(true)}
+              style={styles.filterBtn}
+              accessibilityLabel="Filter by topic"
+            >
+              <Ionicons name="filter-outline" size={16} color={colors.text} />
+              <Text style={styles.filterBtnText}>Filter</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <View style={styles.searchWrap}>
+          <SearchIcon size={18} color={colors.textMuted} />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Search"
+            placeholderTextColor={colors.textMuted}
+            style={styles.searchInput}
+          />
+          {search ? (
+            <TouchableOpacity
+              onPress={() => {
+                setSearch('');
+                setDebounced('');
+                setPage(1);
+              }}
+              style={styles.searchCross}
+              accessibilityLabel="Clear search"
+            >
+              <CrossIcon size={18} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
 
       {listQuery.isLoading ? (
@@ -118,15 +180,22 @@ export default function SavedScreen() {
           data={pageItems}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          extraData={currentPage}
+          extraData={`${debounced}-${topic}-${currentPage}`}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.list}
           ListEmptyComponent={
-            <Text style={styles.empty}>No saved Hadiths yet</Text>
+            <Text style={styles.empty}>
+              {topic && !debounced
+                ? `No saved Hadiths for ${topic}`
+                : 'No saved Hadiths yet'}
+            </Text>
           }
         />
       )}
 
-      {listQuery.isLoading || listQuery.isError || hadiths.length === 0 ? null : (
+      {listQuery.isLoading ||
+      listQuery.isError ||
+      (listQuery.data?.total ?? 0) === 0 ? null : (
         <View style={styles.pager}>
           <TouchableOpacity
             onPress={() => setPage((value) => Math.max(1, value - 1))}
@@ -149,7 +218,9 @@ export default function SavedScreen() {
                   style={[styles.pagerBtn, active ? styles.pagerBtnActive : null]}
                   accessibilityLabel={`Page ${number}`}
                 >
-                  <Text style={[styles.pagerNum, active ? styles.pagerNumActive : null]}>
+                  <Text
+                    style={[styles.pagerNum, active ? styles.pagerNumActive : null]}
+                  >
                     {number}
                   </Text>
                 </TouchableOpacity>
@@ -169,6 +240,17 @@ export default function SavedScreen() {
           </TouchableOpacity>
         </View>
       )}
+
+      <FilterTopicsModal
+        visible={filterOpen}
+        selected={topic}
+        topics={prefs}
+        onClose={() => setFilterOpen(false)}
+        onSelect={(next: HadithTopic) => {
+          setTopic(next);
+          setFilterOpen(false);
+        }}
+      />
       <Modal
         visible={Boolean(viewing)}
         animationType="slide"

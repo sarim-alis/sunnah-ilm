@@ -1,4 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { uniqueTopicNames } from '../users/preferences';
+import { UsersService } from '../users/users.service';
 import { CreateHadithDto } from './dto/create-hadith.dto';
 import { HadithRepository } from './repositories/hadith.repository';
 import { SavedHadithRepository } from './repositories/saved-hadith.repository';
@@ -8,6 +10,7 @@ export class HadithService {
   constructor(
     private hadithRepository: HadithRepository,
     private savedHadithRepository: SavedHadithRepository,
+    private usersService: UsersService,
   ) {}
 
   async create(dto: CreateHadithDto) {
@@ -103,6 +106,84 @@ export class HadithService {
       page: currentPage,
       limit: pageSize,
       totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    };
+  }
+
+  async listForUser(
+    userId: string,
+    query?: string,
+    topic?: string,
+    page = 1,
+    limit = 3,
+  ) {
+    const user = await this.usersService.findById(userId);
+    const topics = uniqueTopicNames(user?.preferences);
+    if (!topics.length) {
+      return {
+        hadiths: [],
+        total: 0,
+        page: 1,
+        limit,
+        totalPages: 1,
+        topics: [],
+      };
+    }
+
+    const requested = topic?.trim();
+    const filter =
+      requested && topics.includes(requested as (typeof topics)[number])
+        ? [requested]
+        : topics;
+
+    const currentPage = Math.max(1, page);
+    const pageSize = Math.min(50, Math.max(1, limit));
+    const { hadiths, total } = await this.hadithRepository.findPage(
+      query,
+      filter,
+      currentPage,
+      pageSize,
+    );
+    return {
+      hadiths,
+      total,
+      page: currentPage,
+      limit: pageSize,
+      totalPages: Math.max(1, Math.ceil(total / pageSize)),
+      topics,
+    };
+  }
+
+  async listSavedPage(
+    userId: string,
+    query?: string,
+    topic?: string,
+    page = 1,
+    limit = 3,
+  ) {
+    const user = await this.usersService.findById(userId);
+    const topics = uniqueTopicNames(user?.preferences);
+    const requested = topic?.trim();
+    const filter =
+      requested && topics.includes(requested as (typeof topics)[number])
+        ? requested
+        : undefined;
+
+    const currentPage = Math.max(1, page);
+    const pageSize = Math.min(50, Math.max(1, limit));
+    const { hadiths, total } = await this.savedHadithRepository.findPage(
+      userId,
+      query,
+      filter,
+      currentPage,
+      pageSize,
+    );
+    return {
+      hadiths,
+      total,
+      page: currentPage,
+      limit: pageSize,
+      totalPages: Math.max(1, Math.ceil(total / pageSize)),
+      topics,
     };
   }
 

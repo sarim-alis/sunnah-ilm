@@ -45,6 +45,7 @@ type HadithResponse = {
   page?: number;
   limit?: number;
   totalPages?: number;
+  topics?: string[];
 };
 
 export type HadithPage = {
@@ -53,6 +54,7 @@ export type HadithPage = {
   page: number;
   limit: number;
   totalPages: number;
+  topics: string[];
 };
 
 function messageFrom(data: HadithResponse) {
@@ -77,6 +79,7 @@ function toHadithPage(
       page: currentPage,
       limit: pageSize,
       totalPages: Math.max(1, Math.ceil(rows.length / pageSize)),
+      topics: data.topics ?? [],
     };
   }
 
@@ -87,6 +90,7 @@ function toHadithPage(
     page: data.page ?? currentPage,
     limit: data.limit ?? pageSize,
     totalPages: data.totalPages ?? Math.max(1, Math.ceil(total / pageSize) || 1),
+    topics: data.topics ?? [],
   };
 }
 
@@ -126,6 +130,47 @@ export async function listHadiths(
   search.set('page', String(page));
   search.set('limit', String(limit));
   const response = await fetch(`${apiConfig.baseUrl}/hadith?${search}`, { headers });
+  const data = (await response.json()) as HadithResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
+  return toHadithPage(data, page, limit);
+}
+
+export async function listUserHadiths(
+  query = '',
+  topic = '',
+  page = 1,
+  limit = 3,
+): Promise<HadithPage> {
+  const headers = await authHeaders();
+  const search = new URLSearchParams();
+  if (query.trim()) search.set('q', query.trim());
+  if (topic.trim()) search.set('topic', topic.trim());
+  search.set('page', String(page));
+  search.set('limit', String(limit));
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/user?${search}`, {
+    headers,
+  });
+  const data = (await response.json()) as HadithResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
+  return toHadithPage(data, page, limit);
+}
+
+export async function listUserSavedHadiths(
+  query = '',
+  topic = '',
+  page = 1,
+  limit = 3,
+): Promise<HadithPage> {
+  const headers = await authHeaders();
+  const search = new URLSearchParams();
+  if (query.trim()) search.set('q', query.trim());
+  if (topic.trim()) search.set('topic', topic.trim());
+  search.set('page', String(page));
+  search.set('limit', String(limit));
+  const response = await fetch(
+    `${apiConfig.baseUrl}/hadith/user/saved?${search}`,
+    { headers },
+  );
   const data = (await response.json()) as HadithResponse;
   if (!response.ok) throw new Error(messageFrom(data));
   return toHadithPage(data, page, limit);

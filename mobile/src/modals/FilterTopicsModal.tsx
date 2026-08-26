@@ -9,6 +9,7 @@ import type { HadithTopic } from '@/users/preferences';
 type FilterTopicsModalProps = {
   visible: boolean;
   selected?: string;
+  topics?: readonly HadithTopic[];
   onClose: () => void;
   onSelect: (topic: HadithTopic) => void;
 };
@@ -16,6 +17,7 @@ type FilterTopicsModalProps = {
 export function FilterTopicsModal({
   visible,
   selected,
+  topics = HADITH_TOPICS,
   onClose,
   onSelect,
 }: FilterTopicsModalProps) {
@@ -52,7 +54,7 @@ export function FilterTopicsModal({
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.chips}>
-              {HADITH_TOPICS.map((topic) => {
+              {topics.map((topic) => {
                 const active = selected === topic;
                 return (
                   <TouchableOpacity

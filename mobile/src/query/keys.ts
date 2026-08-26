@@ -7,6 +7,10 @@ export const queryKeys = {
     detail: (id: string) => ['hadiths', 'detail', id] as const,
     saved: ['hadiths', 'saved'] as const,
     admin: ['hadiths', 'admin'] as const,
+    user: (prefs: string, topic: string, query: string, page: number) =>
+      ['hadiths', 'user', prefs, topic, query, page] as const,
+    userSaved: (topic: string, query: string, page: number) =>
+      ['hadiths', 'user-saved', topic, query, page] as const,
   },
   ask: {
     all: ['ask'] as const,

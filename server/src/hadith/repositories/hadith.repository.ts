@@ -54,7 +54,12 @@ export class HadithRepository {
     return qb.getMany();
   }
 
-  async findPage(query?: string, topic?: string, page = 1, limit = 3) {
+  async findPage(
+    query?: string,
+    topic?: string | string[],
+    page = 1,
+    limit = 3,
+  ) {
     const qb = this.hadiths
       .createQueryBuilder('hadith')
       .orderBy('hadith.book', 'ASC')
@@ -75,9 +80,15 @@ export class HadithRepository {
       );
     }
 
-    const topicName = topic?.trim();
-    if (topicName) {
-      qb.andWhere('hadith.topic = :topic', { topic: topicName });
+    const topics = Array.isArray(topic)
+      ? topic.map((name) => name.trim()).filter(Boolean)
+      : topic?.trim()
+        ? [topic.trim()]
+        : [];
+    if (topics.length === 1) {
+      qb.andWhere('hadith.topic = :topic', { topic: topics[0] });
+    } else if (topics.length > 1) {
+      qb.andWhere('hadith.topic IN (:...topics)', { topics });
     }
 
     const [hadiths, total] = await qb

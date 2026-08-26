@@ -38,6 +38,7 @@ export function useUpdateProfile() {
     },
     onSuccess: (user) => {
       client.setQueryData(userKeys.me(), user);
+      void client.invalidateQueries({ queryKey: ['hadiths'] });
     },
   });
 }

@@ -62,7 +62,9 @@ function AppContent() {
                 onOpenSaved={() => setTab('saved')}
               />
             ) : null}
-            {screen === 'search' ? <SearchScreen /> : null}
+            {screen === 'search' ? (
+              <SearchScreen onOpenProfile={() => setTab('profile')} />
+            ) : null}
             {screen === 'ask' ? <AskScreen /> : null}
             {screen === 'saved' ? <SavedScreen /> : null}
             {screen === 'add' ? <AddHadithScreen /> : null}

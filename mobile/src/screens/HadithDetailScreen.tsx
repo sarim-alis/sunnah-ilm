@@ -37,7 +37,7 @@ export default function HadithDetailScreen({
     mutationFn: () =>
       isSaved ? unsaveHadith(hadith.id) : saveHadith(hadith.id),
     onSuccess: async () => {
-      await client.invalidateQueries({ queryKey: queryKeys.hadiths.saved });
+      await client.invalidateQueries({ queryKey: queryKeys.hadiths.all });
       Toast.show({
         type: 'success',
         text1: isSaved ? 'Removed' : 'Saved',

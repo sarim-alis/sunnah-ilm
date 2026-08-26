@@ -6,8 +6,11 @@ export function createStyles(colors: ThemeColors) {
     screen: {
       backgroundColor: colors.background,
       flex: 1,
+    },
+    content: {
       gap: 12,
       padding: 20,
+      paddingBottom: 32,
     },
     title: {
       color: colors.primary,
