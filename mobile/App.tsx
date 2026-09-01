@@ -3,10 +3,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabBar, type AppTab } from '@/components/TabBar';
 import { queryClient } from '@/query/client';
 import AddHadithScreen from '@/screens/AddHadithScreen';
@@ -31,8 +28,7 @@ function AppContent() {
   const logoutMutation = useLogout();
   const isAdmin = user?.role === 'admin';
   const adminTabs: AppTab[] = ['home', 'profile', 'add', 'hadiths', 'saved'];
-  const screen =
-    isAdmin && !adminTabs.includes(tab) ? 'home' : tab;
+  const screen = isAdmin && !adminTabs.includes(tab) ? 'home' : tab;
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
@@ -41,16 +37,7 @@ function AppContent() {
   };
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.background,
-        flex: 1,
-        paddingBottom: user ? 0 : insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
-        paddingTop: insets.top,
-      }}
-    >
+    <View style={{ backgroundColor: colors.background, flex: 1, paddingBottom: user ? 0 : insets.bottom, paddingLeft: insets.left, paddingRight: insets.right, paddingTop: insets.top }}>
       {user ? (
         <>
           <View style={{ flex: 1 }}>
@@ -77,11 +64,7 @@ function AppContent() {
             ) : null}
           </View>
           <View style={{ paddingBottom: insets.bottom }}>
-            <TabBar
-              tab={tab}
-              onChange={setTab}
-              variant={isAdmin ? 'admin' : 'user'}
-            />
+            <TabBar tab={tab} onChange={setTab} variant={isAdmin ? 'admin' : 'user'} />
           </View>
         </>
       ) : authScreen === 'login' ? (
