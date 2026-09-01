@@ -135,13 +135,7 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
     >
       {header}
 
-      <TouchableOpacity
-        onPress={onOpenAsk}
-        activeOpacity={0.9}
-        style={styles.hero}
-      >
-        {heroInner}
-      </TouchableOpacity>
+      <View style={styles.hero}>{heroInner}</View>
 
       <View style={styles.actions}>
         {quickActions.map((action) => (
@@ -180,11 +174,7 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
         <Ionicons name="ellipsis-horizontal" size={20} color={colors.textMuted} />
       </View>
 
-      <TouchableOpacity
-        onPress={onOpenAsk}
-        activeOpacity={0.9}
-        style={styles.newsCard}
-      >
+      <View style={styles.newsCard}>
         <View style={styles.newsRail}>
           <View style={styles.newsDot} />
           <View style={styles.newsLine} />
@@ -199,7 +189,7 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
         <View style={styles.newsCheck}>
           <Ionicons name="checkmark" size={18} color={colors.primary} />
         </View>
-      </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
