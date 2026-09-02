@@ -52,7 +52,9 @@ function AppContent() {
             {screen === 'search' ? (
               <SearchScreen onOpenProfile={() => setTab('profile')} />
             ) : null}
-            {screen === 'ask' ? <AskScreen /> : null}
+            {screen === 'ask' ? (
+              <AskScreen onOpenProfile={() => setTab('profile')} />
+            ) : null}
             {screen === 'saved' ? <SavedScreen /> : null}
             {screen === 'add' ? <AddHadithScreen /> : null}
             {screen === 'hadiths' ? <AdminHadithsScreen /> : null}

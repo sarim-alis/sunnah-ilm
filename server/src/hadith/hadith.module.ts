@@ -15,6 +15,6 @@ import { SavedHadithRepository } from './repositories/saved-hadith.repository';
   imports: [TypeOrmModule.forFeature([Hadith, SavedHadith]), AuthModule, UsersModule],
   controllers: [HadithController, UserHadithController],
   providers: [HadithRepository, SavedHadithRepository, HadithService, AdminGuard],
-  exports: [HadithService],
+  exports: [HadithService, HadithRepository],
 })
 export class HadithModule {}

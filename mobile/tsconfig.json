@@ -3,9 +3,10 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-native",
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.json"]
 }

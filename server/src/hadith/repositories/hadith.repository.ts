@@ -99,6 +99,31 @@ export class HadithRepository {
     return { hadiths, total };
   }
 
+  findForAsk(topic: string, question: string, limit = 5) {
+    const topicName = topic.trim();
+    const qb = this.hadiths
+      .createQueryBuilder('hadith')
+      .where('hadith.topic = :topic', { topic: topicName })
+      .orderBy('hadith.book', 'ASC')
+      .addOrderBy('hadith.hadithNumber', 'ASC');
+
+    const term = question?.trim();
+    if (term) {
+      qb.andWhere(
+        `(
+          hadith.text ILIKE :q
+          OR hadith.description ILIKE :q
+          OR hadith.narrator ILIKE :q
+          OR hadith.chapter ILIKE :q
+          OR hadith.translation::text ILIKE :q
+        )`,
+        { q: `%${term}%` },
+      );
+    }
+
+    return qb.take(limit).getMany();
+  }
+
   findById(id: string) {
     return this.hadiths.findOne({ where: { id } });
   }
