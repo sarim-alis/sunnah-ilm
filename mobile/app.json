@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sunnah Ilm",
     "slug": "sunnah-ilm",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,7 @@
     },
     "android": {
       "package": "com.sunnahilm.app",
-      "versionCode": 2,
+      "versionCode": 4,
       "adaptiveIcon": {
         "backgroundColor": "#022A20",
         "foregroundImage": "./assets/android-icon-foreground.png",
