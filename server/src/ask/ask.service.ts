@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { HadithRepository } from '../hadith/repositories/hadith.repository';
 import { uniqueTopicNames } from '../users/preferences';
 import { UsersService } from '../users/users.service';
@@ -60,9 +60,14 @@ export class AskService {
         hadiths,
         explanation,
       };
-    } catch (err) {
-      if (err instanceof ServiceUnavailableException) throw err;
-      throw new ServiceUnavailableException('Could not generate explanation');
+    } catch {
+      return {
+        topic: topicName,
+        question: trimmed,
+        hadiths,
+        explanation:
+          'Our AI is busy right now, so we could not write an explanation. Please read the retrieved Ahadees below — they are still verified from our corpus.',
+      };
     }
   }
 }

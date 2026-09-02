@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, Image, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
@@ -8,8 +8,9 @@ import { MarkdownBoldText } from '@/components/MarkdownBoldText';
 import { HadithListCard } from '@/components/HadithListCard';
 import HadithDetailScreen from '@/screens/HadithDetailScreen';
 import { AskHintsModal } from '@/modals/AskHintsModal';
+import { AskLoadingModal } from '@/modals/AskLoadingModal';
 import { errorMessage } from '@/services/auth';
-import { askHadith, type AskHadithResult } from '@/services/ai';
+import { askHadith, friendlyAskError, type AskHadithResult } from '@/services/ai';
 import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/AskScreen';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -49,7 +50,7 @@ export default function AskScreen({ onOpenProfile }: AskScreenProps) {
       Toast.show({
         type: 'error',
         text1: 'Ask failed',
-        text2: errorMessage(err, 'Could not get an answer'),
+        text2: friendlyAskError(errorMessage(err, 'Could not get an answer')),
       });
     },
   });
@@ -167,11 +168,7 @@ export default function AskScreen({ onOpenProfile }: AskScreenProps) {
           ]}
           activeOpacity={0.9}
         >
-          {askMutation.isPending ? (
-            <ActivityIndicator color={colors.onPrimary} />
-          ) : (
-            <Text style={styles.askBtnText}>Ask</Text>
-          )}
+          <Text style={styles.askBtnText}>Ask</Text>
         </TouchableOpacity>
 
         {result ? (
@@ -222,6 +219,8 @@ export default function AskScreen({ onOpenProfile }: AskScreenProps) {
           </>
         ) : null}
       </ScrollView>
+
+      <AskLoadingModal visible={askMutation.isPending} />
 
       {topic && topicHints.length > 0 ? (
         <AskHintsModal

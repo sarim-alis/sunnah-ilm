@@ -23,6 +23,14 @@ Rules:
 - Never invent a chain, grade, wording, or source.
 - Keep it brief: 2–4 short paragraphs with small sentences.`;
 
+const FALLBACK_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash'] as const;
+const MAX_RETRIES = 3;
+
+type GeminiResponse = {
+  error?: { message?: string; status?: string };
+  candidates?: { content?: { parts?: { text?: string }[] } }[];
+};
+
 function stripExplanationLabel(text: string): string {
   return text
     .replace(
@@ -42,9 +50,72 @@ function formatLanguageSpacing(text: string): string {
     .trim();
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryableGeminiError(status: number, message: string) {
+  if (status === 429 || status === 503) return true;
+  return /high demand|overloaded|resource exhausted|try again later|rate limit/i.test(
+    message,
+  );
+}
+
 @Injectable()
 export class GeminiService {
   constructor(private config: ConfigService) {}
+
+  private modelsToTry(): string[] {
+    const configured =
+      this.config.get<string>('GEMINI_MODEL') ?? 'gemini-2.0-flash';
+    return [...new Set([configured, ...FALLBACK_MODELS])];
+  }
+
+  private async generate(
+    model: string,
+    apiKey: string,
+    userPrompt: string,
+  ): Promise<string> {
+    let lastError = 'Gemini request failed';
+
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: SYSTEM_INSTRUCTION }],
+            },
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+          }),
+        },
+      );
+
+      const data = (await response.json()) as GeminiResponse;
+      lastError = data.error?.message ?? 'Gemini request failed';
+
+      if (response.ok) {
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+        if (!text) {
+          throw new ServiceUnavailableException('Empty response from Gemini');
+        }
+        return formatLanguageSpacing(stripExplanationLabel(text));
+      }
+
+      if (
+        !isRetryableGeminiError(response.status, lastError) ||
+        attempt === MAX_RETRIES - 1
+      ) {
+        break;
+      }
+
+      await sleep(1500 * (attempt + 1));
+    }
+
+    throw new ServiceUnavailableException(lastError);
+  }
 
   async explain(
     topic: string,
@@ -52,8 +123,6 @@ export class GeminiService {
     hadiths: Hadith[],
   ): Promise<string> {
     const apiKey = this.config.get<string>('GEMINI_API_KEY');
-    const model =
-      this.config.get<string>('GEMINI_MODEL') ?? 'gemini-2.0-flash';
     if (!apiKey) {
       throw new ServiceUnavailableException('Gemini is not configured');
     }
@@ -80,36 +149,20 @@ ${JSON.stringify(corpus, null, 2)}
 
 Explain what these narrations teach about the user's question. Use simple words and short sentences.`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: SYSTEM_INSTRUCTION }],
-          },
-          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        }),
-      },
-    );
+    let lastError = 'Could not generate explanation';
 
-    const data = (await response.json()) as {
-      error?: { message?: string };
-      candidates?: { content?: { parts?: { text?: string }[] } }[];
-    };
-
-    if (!response.ok) {
-      throw new ServiceUnavailableException(
-        data.error?.message ?? 'Gemini request failed',
-      );
+    for (const model of this.modelsToTry()) {
+      try {
+        return await this.generate(model, apiKey, userPrompt);
+      } catch (err) {
+        if (err instanceof ServiceUnavailableException) {
+          lastError = err.message;
+          continue;
+        }
+        throw err;
+      }
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    if (!text) {
-      throw new ServiceUnavailableException('Empty response from Gemini');
-    }
-
-    return formatLanguageSpacing(stripExplanationLabel(text));
+    throw new ServiceUnavailableException(lastError);
   }
 }

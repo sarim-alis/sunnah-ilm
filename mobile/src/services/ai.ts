@@ -31,6 +31,16 @@ function stripExplanationLabel(text: string): string {
     .trim();
 }
 
+export function friendlyAskError(message: string): string {
+  if (/high demand|overloaded|resource exhausted|rate limit|try again later/i.test(message)) {
+    return 'AI is busy right now. Please wait a moment and try again.';
+  }
+  if (/not configured|api key|permission|invalid/i.test(message)) {
+    return 'AI service is not available right now. Please try again later.';
+  }
+  return message;
+}
+
 export async function askHadith(
   topic: string,
   question: string,
