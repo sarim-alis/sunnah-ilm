@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getUser, login, logout, deleteAccount, updateProfile, type AuthUser } from '@/services/auth';
+import { getUser, login, logout, deleteAccount, updateProfile } from '@/services/auth';
+import type { AuthUser } from '@/types';
 import { queryClient } from '@/query/client';
 import { userKeys } from './query/keys';
 import { currentUserQuery } from './query/profile';

@@ -1,5 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
-import { getProfile, getToken, getUser, type AuthUser } from '@/services/auth';
+import { getProfile, getToken, getUser } from '@/services/auth';
+import type { AuthUser } from '@/types';
 import { userKeys } from './keys';
 
 export async function fetchCurrentUser(): Promise<AuthUser | null> {

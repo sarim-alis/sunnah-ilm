@@ -1,13 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiConfig } from '@/configs/api';
-import type { HadithRecord } from '@/services/hadith';
-
-export type AskHadithResult = {
-  topic: string;
-  question: string;
-  hadiths: HadithRecord[];
-  explanation: string;
-};
+import type { AskHadithResult, HadithRecord } from '@/types';
 
 type AskResponse = {
   message?: string | string[];

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ARROW, createStyles } from '@/styles/components/PreferenceScroller';
 import { useTheme } from '@/theme/ThemeProvider';
 import { preferenceImage } from '@/users/preferenceImages';
-import type { UserPreference } from '@/users/preferences';
+import type { UserPreference } from '@/types';
 const VISIBLE = 2;
 
 type PreferenceScrollerProps = {

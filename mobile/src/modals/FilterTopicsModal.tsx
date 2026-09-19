@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createStyles } from '@/styles/modals/FilterTopicsModal';
 import { useTheme } from '@/theme/ThemeProvider';
 import { HADITH_TOPICS } from '@/users/preferences';
-import type { HadithTopic } from '@/users/preferences';
+import type { HadithTopic } from '@/types';
 
 type FilterTopicsModalProps = {
   visible: boolean;

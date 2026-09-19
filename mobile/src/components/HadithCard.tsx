@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { createStyles } from '@/styles/components/HadithCard';
 import { useTheme } from '@/theme/ThemeProvider';
-import type { Hadith } from '@/services/hadith';
+import type { Hadith } from '@/types';
 
 type HadithCardProps = {
   hadith: Hadith;

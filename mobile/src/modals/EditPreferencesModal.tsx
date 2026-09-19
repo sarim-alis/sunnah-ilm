@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createStyles } from '@/styles/modals/EditPreferencesModal';
 import { useTheme } from '@/theme/ThemeProvider';
 import { HADITH_TOPICS, MAX_PREFERENCE_TOPICS, uniqueTopicNames } from '@/users/preferences';
-import type { HadithTopic, UserPreference } from '@/users/preferences';
+import type { HadithTopic, UserPreference } from '@/types';
 
 type EditPreferencesModalProps = {
   visible: boolean;
