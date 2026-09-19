@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#022A20"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sunnahilm.app"
@@ -26,6 +21,26 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font",
+      "expo-status-bar",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "backgroundColor": "#022A20",
+          "resizeMode": "contain",
+          "imageWidth": 200
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Sunnah-Ilm to access your photos for a profile image.",
+          "cameraPermission": "Allow Sunnah-Ilm to take a profile photo."
+        }
+      ]
+    ]
   }
 }
