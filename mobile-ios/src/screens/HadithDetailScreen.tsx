@@ -10,7 +10,7 @@ import {
   saveHadith,
   unsaveHadith,
 } from '@/services/hadith';
-import type { HadithRecord } from '@/services/hadith';
+import type { HadithRecord } from '@/types';
 import { createStyles } from '@/styles/screens/HadithDetailScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 

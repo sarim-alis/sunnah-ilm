@@ -6,11 +6,8 @@ import { Icon } from "@/components/icon";
 import { useToast } from "@/components/toast";
 import { errorMessage } from "@/lib/errors";
 import { HadithDetail } from "@/screens/hadith-detail";
-import {
-  getSavedHadiths,
-  unsaveHadith,
-  type HadithRecord,
-} from "@/services/hadith";
+import { getSavedHadiths, unsaveHadith } from "@/services/hadith";
+import type { HadithRecord } from "@/types";
 
 const PAGE_SIZE = 10;
 

@@ -1,6 +1,6 @@
 import { useMemo, useRef, type ReactNode } from 'react';
 import { Animated, Pressable, View } from 'react-native';
-import type { HadithRecord } from '@/services/hadith';
+import type { HadithRecord } from '@/types';
 import { createStyles } from '@/styles/screens/adminHadiths';
 import { useTheme } from '@/theme/ThemeProvider';
 

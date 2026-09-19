@@ -1,21 +1,8 @@
-export const HADITH_TOPICS = [
-  "Quran",
-  "Parents",
-  "Marriage",
-  "Prayer",
-  "Love",
-  "Health",
-  "Anger",
-  "Death",
-  "Education",
-] as const;
+import { HADITH_TOPICS } from "@/types";
+import type { HadithTopic, UserPreference } from "@/types";
 
-export type HadithTopic = (typeof HADITH_TOPICS)[number];
-
-export type UserPreference = {
-  id: string;
-  name: string;
-};
+export { HADITH_TOPICS };
+export type { HadithTopic, UserPreference };
 
 export function uniqueTopicNames(values: unknown): HadithTopic[] {
   if (!Array.isArray(values)) return [];

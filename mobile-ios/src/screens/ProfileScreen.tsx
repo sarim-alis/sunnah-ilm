@@ -16,8 +16,8 @@ import { errorMessage } from '@/services/auth';
 import { createStyles } from '@/styles/screens/ProfileScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 import { useCurrentUser, useDeleteAccount, useUpdateProfile } from '@/users/hooks';
+import type { HadithTopic } from '@/types';
 import { normalizePreferences } from '@/users/preferences';
-import type { HadithTopic } from '@/users/preferences';
 
 type ProfileScreenProps = {
   onBack: () => void;

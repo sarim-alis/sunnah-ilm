@@ -2,20 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiConfig } from '@/configs/api';
 import { normalizeMode } from '@/constants/colors';
 import type { AppMode } from '@/constants/colors';
+import type { AuthUser } from '@/types';
 import { normalizePreferences } from '@/users/preferences';
-import type { UserPreference } from '@/users/preferences';
 import { normalizeRole } from '@/users/roles';
-import type { UserRole } from '@/users/roles';
-
-export type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-  imageUrl?: string | null;
-  preferences: UserPreference[];
-  mode: AppMode;
-  role: UserRole;
-};
 
 type AuthResponse = {
   message?: string | string[];

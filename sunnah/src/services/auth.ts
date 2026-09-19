@@ -1,19 +1,10 @@
 import { apiConfig } from "@/lib/config";
 import { errorMessage } from "@/lib/errors";
 import { normalizeMode, type AppMode } from "@/lib/mode";
-import { normalizeRole, type UserRole } from "@/lib/roles";
+import { normalizeRole } from "@/lib/roles";
 import { clearSession, getStoredUser, getToken, setStoredUser, setToken } from "@/lib/storage";
-import { normalizePreferences, type UserPreference } from "@/lib/topics";
-
-export type AuthUser = {
-  id: string;
-  name: string;
-  email: string;
-  imageUrl?: string | null;
-  preferences: UserPreference[];
-  mode: AppMode;
-  role: UserRole;
-};
+import { normalizePreferences } from "@/lib/topics";
+import type { AuthUser } from "@/types";
 
 type AuthResponse = {
   message?: string | string[];

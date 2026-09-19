@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { createStyles } from '@/styles/modals/AskHintsModal';
 import { useTheme } from '@/theme/ThemeProvider';
-import type { HadithTopic } from '@/users/preferences';
+import type { HadithTopic } from '@/types';
 
 type AskHintsModalProps = {
   visible: boolean;

@@ -1,41 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiConfig } from '@/configs/api';
 import { errorMessage } from '@/services/auth';
-
-export type Hadith = {
-  id: string;
-  collection: string;
-  number: string;
-  arabic: string;
-  english: string;
-  narrator: string;
-  grade?: string;
-};
-
-export type CreateHadithInput = {
-  book: string;
-  hadithNumber: number;
-  arabicNumber: number;
-  translation: {
-    english: string;
-    urdu: string;
-    arabic: string;
-  };
-  narrator: string;
-  grade: string[];
-  topic: string;
-  chapter: string;
-  reference: {
-    book: number;
-    hadith: number;
-  };
-  text: string;
-  description: string;
-};
-
-export type HadithRecord = CreateHadithInput & {
-  id: string;
-};
+import type { CreateHadithInput, Hadith, HadithPage, HadithRecord } from '@/types';
 
 type HadithResponse = {
   message?: string | string[];
@@ -46,15 +12,6 @@ type HadithResponse = {
   limit?: number;
   totalPages?: number;
   topics?: string[];
-};
-
-export type HadithPage = {
-  hadiths: HadithRecord[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-  topics: string[];
 };
 
 function messageFrom(data: HadithResponse) {

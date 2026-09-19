@@ -10,15 +10,14 @@ import HadithDetailScreen from '@/screens/HadithDetailScreen';
 import { AskHintsModal } from '@/modals/AskHintsModal';
 import { AskLoadingModal } from '@/modals/AskLoadingModal';
 import { errorMessage } from '@/services/auth';
-import { askHadith, friendlyAskError, type AskHadithResult } from '@/services/ai';
-import type { HadithRecord } from '@/services/hadith';
+import { askHadith, friendlyAskError } from '@/services/ai';
 import { createStyles } from '@/styles/screens/AskScreen';
 import { useTheme } from '@/theme/ThemeProvider';
+import type { AskHadithResult, HadithRecord, HadithTopic } from '@/types';
 import { useCurrentUser } from '@/users/hooks';
 import { preferenceImage } from '@/users/preferenceImages';
 import askTopicHints from '@/data/ask-topic-hints.json';
 import { preferenceNames } from '@/users/preferences';
-import type { HadithTopic } from '@/users/preferences';
 
 const TOPIC_HINTS = askTopicHints as Record<HadithTopic, string[]>;
 

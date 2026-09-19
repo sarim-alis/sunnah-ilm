@@ -24,10 +24,9 @@ import AddHadithScreen from '@/screens/AddHadithScreen';
 import HadithDetailScreen from '@/screens/HadithDetailScreen';
 import { queryKeys } from '@/query/keys';
 import { deleteHadith, errorMessage, listHadiths } from '@/services/hadith';
-import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/adminHadiths';
 import { useTheme } from '@/theme/ThemeProvider';
-import type { HadithTopic } from '@/users/preferences';
+import type { HadithRecord, HadithTopic } from '@/types';
 
 const PAGE_SIZE = 3;
 

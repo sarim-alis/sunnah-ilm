@@ -26,12 +26,11 @@ import {
   saveHadith,
   unsaveHadith,
 } from '@/services/hadith';
-import type { HadithRecord } from '@/services/hadith';
 import { createStyles } from '@/styles/screens/adminHadiths';
 import { useTheme } from '@/theme/ThemeProvider';
+import type { HadithRecord, HadithTopic } from '@/types';
 import { useCurrentUser } from '@/users/hooks';
 import { preferenceNames } from '@/users/preferences';
-import type { HadithTopic } from '@/users/preferences';
 
 const PAGE_SIZE = 3;
 

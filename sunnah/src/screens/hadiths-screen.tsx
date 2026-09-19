@@ -16,8 +16,8 @@ import {
   listHadiths,
   saveHadith,
   unsaveHadith,
-  type HadithRecord,
 } from "@/services/hadith";
+import type { HadithRecord } from "@/types";
 
 const PAGE_SIZE = 3;
 

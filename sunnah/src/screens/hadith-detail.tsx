@@ -1,7 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/icon";
-import type { HadithRecord } from "@/services/hadith";
+import type { HadithRecord } from "@/types";
 
 function Field({
   label,

@@ -1,5 +1,8 @@
-export const USER_ROLES = ['user', 'admin'] as const;
-export type UserRole = (typeof USER_ROLES)[number];
+import { USER_ROLES } from '@/types';
+import type { UserRole } from '@/types';
+
+export { USER_ROLES };
+export type { UserRole };
 
 export function normalizeRole(value: unknown): UserRole {
   return value === 'admin' ? 'admin' : 'user';

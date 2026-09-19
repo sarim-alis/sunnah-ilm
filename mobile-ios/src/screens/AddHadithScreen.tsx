@@ -14,7 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AddHadithModal } from '@/modals/AddHadithModal';
 import { queryKeys } from '@/query/keys';
 import { createHadith, errorMessage, updateHadith } from '@/services/hadith';
-import type { HadithRecord } from '@/services/hadith';
+import type { HadithRecord } from '@/types';
 import { createStyles } from '@/styles/screens/addHadith';
 import { useTheme } from '@/theme/ThemeProvider';
 import { HADITH_TOPICS } from '@/users/preferences';

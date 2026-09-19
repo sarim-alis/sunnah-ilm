@@ -16,8 +16,8 @@ import {
   logout as logoutRequest,
   readCachedUser,
   updateProfile as updateProfileRequest,
-  type AuthUser,
 } from "@/services/auth";
+import type { AuthUser } from "@/types";
 
 type AuthContextValue = {
   user: AuthUser | null;

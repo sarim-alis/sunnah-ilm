@@ -1,30 +1,6 @@
 import { apiConfig } from "@/lib/config";
 import { getToken } from "@/lib/storage";
-
-export type CreateHadithInput = {
-  book: string;
-  hadithNumber: number;
-  arabicNumber: number;
-  translation: {
-    english: string;
-    urdu: string;
-    arabic: string;
-  };
-  narrator: string;
-  grade: string[];
-  topic: string;
-  chapter: string;
-  reference: {
-    book: number;
-    hadith: number;
-  };
-  text: string;
-  description: string;
-};
-
-export type HadithRecord = CreateHadithInput & {
-  id: string;
-};
+import type { CreateHadithInput, HadithPage, HadithRecord } from "@/types";
 
 type HadithResponse = {
   message?: string | string[];
@@ -34,14 +10,6 @@ type HadithResponse = {
   page?: number;
   limit?: number;
   totalPages?: number;
-};
-
-export type HadithPage = {
-  hadiths: HadithRecord[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
 };
 
 function toHadithPage(

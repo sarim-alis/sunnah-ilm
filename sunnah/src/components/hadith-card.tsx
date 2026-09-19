@@ -1,6 +1,6 @@
 "use client";
 
-import type { HadithRecord } from "@/services/hadith";
+import type { HadithRecord } from "@/types";
 
 export function IconButton({
   label,

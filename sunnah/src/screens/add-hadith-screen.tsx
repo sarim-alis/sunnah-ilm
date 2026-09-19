@@ -6,11 +6,8 @@ import { Icon } from "@/components/icon";
 import { useToast } from "@/components/toast";
 import { errorMessage } from "@/lib/errors";
 import { HADITH_TOPICS } from "@/lib/topics";
-import {
-  createHadith,
-  updateHadith,
-  type HadithRecord,
-} from "@/services/hadith";
+import { createHadith, updateHadith } from "@/services/hadith";
+import type { HadithRecord } from "@/types";
 
 const BOOKS = ["Sahih al-Bukhari", "Sahih Muslim"] as const;
 const GRADES = ["Sahih", "Hasan"] as const;
