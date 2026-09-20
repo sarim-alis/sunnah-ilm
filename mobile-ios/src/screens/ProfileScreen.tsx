@@ -44,15 +44,15 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
   const imageUri = previewUri ?? user?.imageUrl ?? null;
   const preferences = normalizePreferences(user?.preferences);
 
-  const saveImage = async (uri: string) => {
+  const saveImage = async (asset: ImagePicker.ImagePickerAsset) => {
     if (!user) return;
-    setPreviewUri(uri);
+    setPreviewUri(asset.uri);
     setLoading(true);
     try {
       await updateProfileMutation.mutateAsync({
         name: user.name,
         email: user.email,
-        imageUri: uri,
+        imageUri: asset.uri,
       });
       setPreviewUri(null);
       Toast.show({ type: 'success', text1: 'Success', text2: 'Photo updated' });
@@ -92,10 +92,12 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
+        preferredAssetRepresentationMode:
+          ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Compatible,
       });
 
       if (result.canceled || !result.assets[0]) return;
-      await saveImage(result.assets[0].uri);
+      await saveImage(result.assets[0]);
     });
   };
 
@@ -114,14 +116,16 @@ export default function ProfileScreen({ onBack, onLogout }: ProfileScreenProps) 
 
         const result = await ImagePicker.launchCameraAsync({
           mediaTypes: ['images'],
-          allowsEditing: Platform.OS === 'ios',
+          allowsEditing: true,
           aspect: [1, 1],
           quality: 0.7,
           cameraType: ImagePicker.CameraType.back,
+          preferredAssetRepresentationMode:
+            ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Compatible,
         });
 
         if (result.canceled || !result.assets[0]) return;
-        await saveImage(result.assets[0].uri);
+        await saveImage(result.assets[0]);
       } catch (err) {
         Toast.show({
           type: 'error',

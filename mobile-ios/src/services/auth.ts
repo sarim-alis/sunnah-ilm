@@ -1,4 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { File } from 'expo-file-system';
+import { fetch } from 'expo/fetch';
 import { apiConfig } from '@/configs/api';
 import { normalizeMode } from '@/constants/colors';
 import type { AppMode } from '@/constants/colors';
@@ -74,11 +76,7 @@ export async function updateProfile(data: {
   if (data.mode) formData.append('mode', data.mode);
 
   if (data.imageUri) {
-    formData.append('image', {
-      uri: data.imageUri,
-      type: 'image/jpeg',
-      name: 'profile.jpg',
-    } as unknown as Blob);
+    formData.append('image', new File(data.imageUri));
   }
 
   const response = await fetch(`${apiConfig.baseUrl}/users/profile`, {
