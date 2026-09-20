@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { NotificationDetailModal } from '@/modals/NotificationDetailModal';
 import { createStyles } from '@/styles/screens/NotificationsScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -43,7 +44,8 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '1',
     title: 'Hadith of the Day',
-    description: 'Today’s narration is ready. Open it and reflect on the Sunnah.',
+    description:
+      'Today’s narration is ready. Open it and reflect on the Sunnah — a short authentic hadith chosen for this day, with its source and meaning so you can read it in full and carry one teaching with you.',
     time: '2h ago',
     group: 'today',
     category: 'daily',
@@ -54,7 +56,8 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '2',
     title: 'Ask a question',
-    description: 'Have you asked a Hadith today? Seek knowledge from authentic sources.',
+    description:
+      'Have you asked a Hadith today? Seek knowledge from authentic sources. Type a question in Ask Hadith and Sunnah Ilm will retrieve narrations with their books, numbers, and topics.',
     time: '3h ago',
     group: 'today',
     category: 'alerts',
@@ -65,7 +68,8 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '3',
     title: 'Saved for later',
-    description: 'A hadith you bookmarked is waiting for you to read again.',
+    description:
+      'A hadith you bookmarked is waiting for you to read again. Open Saved to return to the narration, review its wording, and keep it close for later reflection.',
     time: '5h ago',
     group: 'today',
     category: 'saved',
@@ -76,7 +80,8 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '4',
     title: 'Welcome to Sunnah Ilm',
-    description: 'Your journey of learning the Prophet’s teachings starts here.',
+    description:
+      'Your journey of learning the Prophet’s teachings starts here. Finish setting up your profile, pick the topics you care about, and begin with one authentic hadith at a time.',
     time: '1d ago',
     group: 'yesterday',
     category: 'alerts',
@@ -87,7 +92,8 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '5',
     title: 'Explore topics',
-    description: 'Browse Faith, Prayer, Character, and more authentic collections.',
+    description:
+      'Browse Faith, Prayer, Character, and more authentic collections. Filter by topic to find narrations that match what you want to study today.',
     time: '1d ago',
     group: 'yesterday',
     category: 'alerts',
@@ -98,7 +104,8 @@ const INITIAL_NOTIFICATIONS: NotificationItem[] = [
   {
     id: '6',
     title: 'Keep seeking knowledge',
-    description: 'Even one hadith a day brings barakah to the heart.',
+    description:
+      'Even one hadith a day brings barakah to the heart. Come back tomorrow for a new narration, or reopen today’s hadith and sit with its meaning a little longer.',
     time: '3d ago',
     group: 'earlier',
     category: 'daily',
@@ -119,6 +126,7 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [items, setItems] = useState(INITIAL_NOTIFICATIONS);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const accents = {
     green: '#22C55E',
@@ -145,6 +153,13 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
   });
 
   const hasUnread = items.some((item) => item.unread);
+  const selected = items.find((item) => item.id === selectedId) ?? null;
+
+  const setUnread = (id: string, unread: boolean) => {
+    setItems((current) =>
+      current.map((item) => (item.id === id ? { ...item, unread } : item)),
+    );
+  };
 
   return (
     <View style={styles.screen}>
@@ -209,7 +224,8 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
             onPress={() =>
               setItems((current) => current.map((item) => ({ ...item, unread: false })))
             }
-            hitSlop={8}
+            style={styles.markButton}
+            activeOpacity={0.85}
           >
             <Text style={styles.markText}>Mark all as read</Text>
           </TouchableOpacity>
@@ -231,7 +247,12 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
                 {groupItems.map((item) => {
                   const tint = iconTints[item.accent];
                   return (
-                    <View key={item.id} style={styles.cardShadow}>
+                    <TouchableOpacity
+                      key={item.id}
+                      style={styles.cardShadow}
+                      activeOpacity={0.85}
+                      onPress={() => setSelectedId(item.id)}
+                    >
                       <View style={styles.card}>
                         <View
                           style={[styles.rail, { backgroundColor: accents[item.accent] }]}
@@ -252,12 +273,22 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
                             </Text>
                           </View>
                           <View style={styles.itemMeta}>
+                            <Text
+                              style={[
+                                styles.itemStatus,
+                                item.unread
+                                  ? styles.itemStatusUnread
+                                  : styles.itemStatusRead,
+                              ]}
+                            >
+                              {item.unread ? 'Unread' : 'Read'}
+                            </Text>
                             <Text style={styles.itemTime}>{item.time}</Text>
                             {item.unread ? <View style={styles.unreadDot} /> : null}
                           </View>
                         </View>
                       </View>
-                    </View>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -267,6 +298,17 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
           <Text style={styles.empty}>No notifications yet</Text>
         )}
       </ScrollView>
+
+      <NotificationDetailModal
+        visible={Boolean(selected)}
+        notification={selected}
+        iconColor={selected ? iconTints[selected.accent].color : colors.primary}
+        iconBackground={
+          selected ? iconTints[selected.accent].backgroundColor : colors.accent
+        }
+        onClose={() => setSelectedId(null)}
+        onSetUnread={setUnread}
+      />
     </View>
   );
 }

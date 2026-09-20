@@ -37,6 +37,7 @@ export const createStyles = (colors: ThemeColors) =>
       color: colors.textMuted,
       fontSize: 13,
       marginTop: 2,
+      marginBottom: 16,
     },
     searchBox: {
       backgroundColor: colors.card,
@@ -54,14 +55,17 @@ export const createStyles = (colors: ThemeColors) =>
       flexGrow: 0,
     },
     filters: {
-      gap: 8,
+      gap: 2,
       paddingBottom: 8,
       paddingHorizontal: 20,
     },
     chip: {
+      alignItems: 'center',
       borderRadius: 14,
-      paddingHorizontal: 16,
-      paddingVertical: 10,
+      justifyContent: 'center',
+      minWidth: 88,
+      paddingHorizontal: 22,
+      paddingVertical: 12,
     },
     chipOn: {
       backgroundColor: colors.primary,
@@ -76,13 +80,23 @@ export const createStyles = (colors: ThemeColors) =>
     },
     markRow: {
       alignItems: 'flex-end',
+      marginBottom: 8,
       paddingHorizontal: 20,
       paddingTop: 4,
     },
+    markButton: {
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      justifyContent: 'center',
+      minHeight: 40,
+      paddingHorizontal: 16,
+      paddingVertical: 0,
+    },
     markText: {
-      color: colors.primary,
+      color: colors.onPrimary,
       fontSize: 13,
-      fontWeight: '600',
+      fontWeight: '700',
     },
     scroll: {
       flex: 1,
@@ -149,7 +163,18 @@ export const createStyles = (colors: ThemeColors) =>
     },
     itemMeta: {
       alignItems: 'flex-end',
-      gap: 8,
+      gap: 4,
+      minWidth: 58,
+    },
+    itemStatus: {
+      fontSize: 11,
+      fontWeight: '700',
+    },
+    itemStatusRead: {
+      color: colors.textMuted,
+    },
+    itemStatusUnread: {
+      color: colors.error,
     },
     itemTime: {
       color: colors.textMuted,
@@ -159,6 +184,7 @@ export const createStyles = (colors: ThemeColors) =>
       backgroundColor: colors.primary,
       borderRadius: 4,
       height: 8,
+      marginTop: 2,
       width: 8,
     },
     empty: {
