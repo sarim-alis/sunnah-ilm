@@ -6,6 +6,7 @@ import { ParseJsonFieldsInterceptor } from '../common/interceptors/parse-json-fi
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { SavePushTokenDto } from './dto/save-push-token.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('users')
@@ -40,6 +41,21 @@ export class AuthController {
     @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.authService.updateProfile(req.user.id, dto, file);
+  }
+
+  @Put('push-token')
+  @UseGuards(JwtGuard)
+  savePushToken(
+    @Req() req: { user: { id: string } },
+    @Body() dto: SavePushTokenDto,
+  ) {
+    return this.authService.savePushToken(req.user.id, dto.token);
+  }
+
+  @Delete('push-token')
+  @UseGuards(JwtGuard)
+  clearPushToken(@Req() req: { user: { id: string } }) {
+    return this.authService.clearPushToken(req.user.id);
   }
 
   @Delete('account')

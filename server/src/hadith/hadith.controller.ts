@@ -52,6 +52,18 @@ export class HadithController {
     );
   }
 
+  @Get('daily')
+  @UseGuards(JwtGuard)
+  getDaily() {
+    return this.hadithService.getDaily();
+  }
+
+  @Post('daily/notify')
+  @UseGuards(JwtGuard, AdminGuard)
+  notifyDaily() {
+    return this.hadithService.notifyDaily();
+  }
+
   @Get('user')
   @UseGuards(JwtGuard)
   listUser(
@@ -80,6 +92,12 @@ export class HadithController {
   @UseGuards(JwtGuard)
   unsave(@Req() req: AuthedRequest, @Param('id', ParseUUIDPipe) id: string) {
     return this.hadithService.unsave(req.user.id, id);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtGuard)
+  getById(@Param('id', ParseUUIDPipe) id: string) {
+    return this.hadithService.getById(id);
   }
 
   @Get()

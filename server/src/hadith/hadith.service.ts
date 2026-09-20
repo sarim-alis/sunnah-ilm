@@ -218,4 +218,99 @@ export class HadithService {
     await this.savedHadithRepository.remove(userId, hadithId);
     return { message: 'Hadith removed from saved' };
   }
+
+  utcDateKey(now = new Date()) {
+    return now.toISOString().slice(0, 10);
+  }
+
+  async getDaily(now = new Date()) {
+    const total = await this.hadithRepository.countAll();
+    if (!total) {
+      return { hadith: null, date: this.utcDateKey(now) };
+    }
+
+    const days = Math.floor(now.getTime() / 86_400_000);
+    const hadith = await this.hadithRepository.findAtOffset(days % total);
+    return { hadith, date: this.utcDateKey(now) };
+  }
+
+  async getById(id: string) {
+    const hadith = await this.hadithRepository.findById(id);
+    if (!hadith) {
+      throw new NotFoundException('Hadith not found');
+    }
+    return { hadith };
+  }
+
+  async notifyDaily() {
+    const { hadith, date } = await this.getDaily();
+    if (!hadith) {
+      return { sent: 0, date };
+    }
+
+    const users = await this.usersService.listPushTokens();
+    const tokens = users
+      .map((user) => user.expoPushToken)
+      .filter((token): token is string => Boolean(token));
+    if (!tokens.length) {
+      return { sent: 0, date };
+    }
+
+    const body = dailyNotificationBody(hadith);
+    const invalid: string[] = [];
+    const chunkSize = 100;
+
+    for (let i = 0; i < tokens.length; i += chunkSize) {
+      const chunk = tokens.slice(i, i + chunkSize);
+      const response = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          chunk.map((to) => ({
+            to,
+            sound: 'default',
+            title: 'Hadith of the Day',
+            body,
+            data: {
+              type: 'daily-hadith',
+              date,
+              hadithId: hadith.id,
+            },
+          })),
+        ),
+      });
+
+      const payload = (await response.json()) as {
+        data?: { status?: string; details?: { error?: string } }[];
+      };
+      payload.data?.forEach((ticket, index) => {
+        if (ticket.status === 'error' && ticket.details?.error === 'DeviceNotRegistered') {
+          invalid.push(chunk[index]);
+        }
+      });
+    }
+
+    if (invalid.length) {
+      await this.usersService.clearPushTokens(invalid);
+    }
+
+    return { sent: tokens.length - invalid.length, date };
+  }
+}
+
+function dailyNotificationBody(hadith: {
+  description?: string;
+  text?: string;
+  translation?: { english?: string };
+}) {
+  const text =
+    hadith.description?.trim() ||
+    hadith.translation?.english?.trim() ||
+    hadith.text?.trim() ||
+    'Open Sunnah Ilm to read today’s Hadith.';
+  return text.length > 140 ? `${text.slice(0, 137)}...` : text;
 }

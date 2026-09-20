@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryClient } from '@tanstack/query-core';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { QUERY_CLIENT } from '../../common/query/query-client.provider';
 import { SavedHadith } from '../../hadith/entities/saved-hadith.entity';
 import { Preference } from '../entities/preference.entity';
@@ -123,9 +123,41 @@ export class UsersRepository {
       email: `deleted-${id}@invalid.local`,
       password: passwordHash,
       imageUrl: null,
+      expoPushToken: null,
       isDeleted: true,
     });
     await this.queryClient.removeQueries({ queryKey: userKeys.all });
     return true;
+  }
+
+  async savePushToken(id: string, token: string) {
+    await this.users.update(
+      { id, isDeleted: false },
+      { expoPushToken: token },
+    );
+    await this.queryClient.removeQueries({ queryKey: userKeys.all });
+  }
+
+  async clearPushToken(id: string) {
+    await this.users.update({ id, isDeleted: false }, { expoPushToken: null });
+    await this.queryClient.removeQueries({ queryKey: userKeys.all });
+  }
+
+  async clearPushTokens(tokens: string[]) {
+    if (!tokens.length) return;
+    await this.users
+      .createQueryBuilder()
+      .update(User)
+      .set({ expoPushToken: null })
+      .where('expoPushToken IN (:...tokens)', { tokens })
+      .execute();
+    await this.queryClient.removeQueries({ queryKey: userKeys.all });
+  }
+
+  listPushTokens() {
+    return this.users.find({
+      where: { isDeleted: false, expoPushToken: Not(IsNull()) },
+      select: { id: true, expoPushToken: true },
+    });
   }
 }

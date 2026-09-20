@@ -73,6 +73,21 @@ export const createStyles = (colors: ThemeColors) =>
       flexDirection: 'row',
       gap: 8,
     },
+    bellWrap: {
+      alignItems: 'center',
+      height: 20,
+      justifyContent: 'center',
+      width: 20,
+    },
+    bellDot: {
+      backgroundColor: '#E11D48',
+      borderRadius: 4,
+      height: 8,
+      position: 'absolute',
+      right: -5,
+      top: -4,
+      width: 8,
+    },
     hero: {
       backgroundColor: colors.accent,
       borderRadius: 24,

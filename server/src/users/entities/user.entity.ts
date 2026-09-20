@@ -33,6 +33,9 @@ export class User {
   @Column({ type: 'boolean', default: false })
   isDeleted!: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  expoPushToken!: string | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

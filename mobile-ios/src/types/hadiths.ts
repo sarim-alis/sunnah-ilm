@@ -62,3 +62,8 @@ export type AskHadithResult = {
   hadiths: HadithRecord[];
   explanation: string;
 };
+
+export type DailyHadith = {
+  hadith: HadithRecord | null;
+  date: string;
+};

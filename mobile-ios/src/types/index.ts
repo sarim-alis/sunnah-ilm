@@ -3,6 +3,7 @@ export { USER_ROLES } from './users';
 export type {
   AskHadithResult,
   CreateHadithInput,
+  DailyHadith,
   Hadith,
   HadithPage,
   HadithRecord,

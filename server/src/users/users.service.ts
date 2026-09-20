@@ -36,4 +36,20 @@ export class UsersService {
   softDelete(id: string, passwordHash: string) {
     return this.usersRepository.softDelete(id, passwordHash);
   }
+
+  savePushToken(id: string, token: string) {
+    return this.usersRepository.savePushToken(id, token);
+  }
+
+  clearPushToken(id: string) {
+    return this.usersRepository.clearPushToken(id);
+  }
+
+  clearPushTokens(tokens: string[]) {
+    return this.usersRepository.clearPushTokens(tokens);
+  }
+
+  listPushTokens() {
+    return this.usersRepository.listPushTokens();
+  }
 }

@@ -8,7 +8,12 @@
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sunnahilm.app"
+      "bundleIdentifier": "com.sunnahilm.app",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,14 +22,29 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "extra": {
+      "eas": {
+        "projectId": "d3e1b64d-19c8-47dc-ba31-a3585ffb9c9e"
+      }
+    },
     "plugins": [
       "expo-font",
       "expo-status-bar",
+      [
+        "expo-notifications",
+        {
+          "mode": "development",
+          "enableBackgroundRemoteNotifications": true
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -41,6 +61,7 @@
           "cameraPermission": "Allow Sunnah-Ilm to take a profile photo."
         }
       ]
-    ]
+    ],
+    "owner": "sarim-sam"
   }
 }

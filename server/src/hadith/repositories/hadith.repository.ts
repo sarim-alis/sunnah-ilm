@@ -124,6 +124,20 @@ export class HadithRepository {
     return qb.take(limit).getMany();
   }
 
+  countAll() {
+    return this.hadiths.count();
+  }
+
+  findAtOffset(offset: number) {
+    return this.hadiths
+      .createQueryBuilder('hadith')
+      .orderBy('hadith.book', 'ASC')
+      .addOrderBy('hadith.hadithNumber', 'ASC')
+      .offset(Math.max(0, offset))
+      .limit(1)
+      .getOne();
+  }
+
   findById(id: string) {
     return this.hadiths.findOne({ where: { id } });
   }

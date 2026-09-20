@@ -146,4 +146,18 @@ export class AuthService {
 
     return { message: 'Account deleted' };
   }
+
+  async savePushToken(userId: string, token: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.usersService.savePushToken(userId, token);
+    return { message: 'Push token saved' };
+  }
+
+  async clearPushToken(userId: string) {
+    await this.usersService.clearPushToken(userId);
+    return { message: 'Push token cleared' };
+  }
 }

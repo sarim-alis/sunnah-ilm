@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiConfig } from '@/configs/api';
 import { errorMessage } from '@/services/auth';
-import type { CreateHadithInput, Hadith, HadithPage, HadithRecord } from '@/types';
+import type { CreateHadithInput, DailyHadith, Hadith, HadithPage, HadithRecord } from '@/types';
 
 type HadithResponse = {
   message?: string | string[];
@@ -164,8 +164,24 @@ export async function searchHadiths(_query: string): Promise<Hadith[]> {
   return [];
 }
 
-export async function getHadithById(_id: string): Promise<Hadith | null> {
-  return null;
+export async function getHadithById(id: string): Promise<HadithRecord | null> {
+  const headers = await authHeaders();
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/${id}`, { headers });
+  const data = (await response.json()) as HadithResponse;
+  if (!response.ok) throw new Error(messageFrom(data));
+  return data.hadith ?? null;
+}
+
+export async function getDailyHadith(): Promise<DailyHadith> {
+  const headers = await authHeaders();
+  const response = await fetch(`${apiConfig.baseUrl}/hadith/daily`, { headers });
+  const data = (await response.json()) as DailyHadith & { message?: string | string[] };
+  if (!response.ok) {
+    throw new Error(
+      Array.isArray(data.message) ? data.message[0] : (data.message ?? 'Request failed'),
+    );
+  }
+  return { hadith: data.hadith ?? null, date: data.date };
 }
 
 export async function getSavedHadiths(): Promise<HadithRecord[]> {

@@ -5,6 +5,7 @@ import { AdminGuard } from '../common/guards/admin.guard';
 import { UsersModule } from '../users/users.module';
 import { Hadith } from './entities/hadith.entity';
 import { SavedHadith } from './entities/saved-hadith.entity';
+import { DailyHadithScheduler } from './daily-hadith.scheduler';
 import { HadithController } from './hadith.controller';
 import { HadithService } from './hadith.service';
 import { UserHadithController } from './user-hadith.controller';
@@ -14,7 +15,13 @@ import { SavedHadithRepository } from './repositories/saved-hadith.repository';
 @Module({
   imports: [TypeOrmModule.forFeature([Hadith, SavedHadith]), AuthModule, UsersModule],
   controllers: [HadithController, UserHadithController],
-  providers: [HadithRepository, SavedHadithRepository, HadithService, AdminGuard],
+  providers: [
+    HadithRepository,
+    SavedHadithRepository,
+    HadithService,
+    DailyHadithScheduler,
+    AdminGuard,
+  ],
   exports: [HadithService, HadithRepository],
 })
 export class HadithModule {}

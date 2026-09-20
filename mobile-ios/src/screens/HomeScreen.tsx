@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { BellIcon } from '@/components/BellIcon';
 import { createStyles } from '@/styles/screens/HomeScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 import { useCurrentUser, useToggleMode } from '@/users/hooks';
@@ -10,6 +11,7 @@ type HomeScreenProps = {
   onOpenSearch?: () => void;
   onOpenAsk?: () => void;
   onOpenSaved?: () => void;
+  onOpenNotifications?: () => void;
 };
 
 const quickActions = [
@@ -20,7 +22,7 @@ const quickActions = [
   { key: 'books', label: 'Books', icon: 'library-outline' },
 ] as const;
 
-export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOpenSaved}: HomeScreenProps) {
+export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOpenSaved, onOpenNotifications}: HomeScreenProps) {
   const { colors, mode } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const { data: user } = useCurrentUser();
@@ -84,8 +86,17 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
           />
         </TouchableOpacity>
         {isAdmin ? null : (
-          <TouchableOpacity onPress={onOpenSearch} style={styles.headerIcon}>
-            <Ionicons name="search-outline" size={20} color={colors.primary} />
+          <TouchableOpacity
+            onPress={onOpenNotifications}
+            disabled={!onOpenNotifications}
+            style={styles.headerIcon}
+            activeOpacity={0.8}
+            accessibilityLabel="Notifications"
+          >
+            <View style={styles.bellWrap}>
+              <BellIcon size={20} color={colors.primary} />
+              <View style={styles.bellDot} />
+            </View>
           </TouchableOpacity>
         )}
       </View>

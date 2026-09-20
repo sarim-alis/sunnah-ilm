@@ -11,6 +11,7 @@ export const queryKeys = {
       ['hadiths', 'user', prefs, topic, query, page] as const,
     userSaved: (topic: string, query: string, page: number) =>
       ['hadiths', 'user-saved', topic, query, page] as const,
+    daily: (date: string) => ['hadiths', 'daily', date] as const,
   },
   ask: {
     all: ['ask'] as const,

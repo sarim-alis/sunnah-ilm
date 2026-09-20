@@ -4,6 +4,7 @@ import { fetch } from 'expo/fetch';
 import { apiConfig } from '@/configs/api';
 import { normalizeMode } from '@/constants/colors';
 import type { AppMode } from '@/constants/colors';
+import { clearDailyHadithPush } from '@/services/notifications';
 import type { AuthUser } from '@/types';
 import { normalizePreferences } from '@/users/preferences';
 import { normalizeRole } from '@/users/roles';
@@ -92,6 +93,11 @@ export async function updateProfile(data: {
 }
 
 export async function logout() {
+  try {
+    await clearDailyHadithPush();
+  } catch {
+    // Token clear is best-effort so logout still completes offline.
+  }
   await AsyncStorage.removeItem('token');
   await AsyncStorage.removeItem('user');
 }
