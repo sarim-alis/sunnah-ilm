@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getUser, login, logout, deleteAccount, updateProfile } from '@/services/auth';
 import type { AuthUser } from '@/types';
 import { queryClient } from '@/query/client';
+import { queryKeys } from '@/query/keys';
 import { userKeys } from './query/keys';
 import { currentUserQuery } from './query/profile';
 
@@ -62,6 +63,7 @@ export function useLogout() {
     onSuccess: () => {
       client.setQueryData(userKeys.me(), null);
       client.removeQueries({ queryKey: userKeys.all });
+      client.removeQueries({ queryKey: queryKeys.notifications.all });
     },
   });
 }
@@ -73,6 +75,7 @@ export function useDeleteAccount() {
     onSuccess: () => {
       client.setQueryData(userKeys.me(), null);
       client.removeQueries({ queryKey: userKeys.all });
+      client.removeQueries({ queryKey: queryKeys.notifications.all });
     },
   });
 }

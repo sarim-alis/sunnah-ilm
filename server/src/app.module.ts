@@ -8,6 +8,7 @@ import { CommonModule } from './common/common.module';
 import { QueryModule } from './common/query/query.module';
 import { HadithModule } from './hadith/hadith.module';
 import { HealthController } from './health.controller';
+import { NotificationsModule } from './notifications/notifications.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -28,6 +29,7 @@ import { UsersModule } from './users/users.module';
     QueryModule,
     UsersModule,
     HadithModule,
+    NotificationsModule,
     AskModule,
     AuthModule,
   ],

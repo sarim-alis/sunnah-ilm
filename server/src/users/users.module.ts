@@ -3,11 +3,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Preference } from './entities/preference.entity';
 import { User } from './entities/user.entity';
 import { SavedHadith } from '../hadith/entities/saved-hadith.entity';
+import { Notification } from '../notifications/entities/notification.entity';
 import { UsersRepository } from './repositories/users.repository';
 import { UsersService } from './users.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Preference, SavedHadith])],
+  imports: [TypeOrmModule.forFeature([User, Preference, SavedHadith, Notification])],
   providers: [UsersRepository, UsersService],
   exports: [UsersService],
 })

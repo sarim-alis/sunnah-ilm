@@ -67,6 +67,7 @@ export const createStyles = (colors: ThemeColors) =>
       borderWidth: 1,
       height: 40,
       justifyContent: 'center',
+      overflow: 'visible',
       width: 40,
     },
     headerActions: {
@@ -87,6 +88,23 @@ export const createStyles = (colors: ThemeColors) =>
       right: -5,
       top: -4,
       width: 8,
+    },
+    bellBadge: {
+      alignItems: 'center',
+      backgroundColor: '#E11D48',
+      borderRadius: 8,
+      height: 16,
+      justifyContent: 'center',
+      minWidth: 16,
+      paddingHorizontal: 3,
+      position: 'absolute',
+      right: -10,
+      top: -8,
+    },
+    bellBadgeText: {
+      color: '#FFFFFF',
+      fontSize: 9,
+      fontWeight: '700',
     },
     hero: {
       backgroundColor: colors.accent,

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BellIcon } from '@/components/BellIcon';
+import { useUnreadNotificationCount } from '@/notifications/hooks';
 import { createStyles } from '@/styles/screens/HomeScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 import { useCurrentUser, useToggleMode } from '@/users/hooks';
@@ -28,6 +29,7 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
   const { data: user } = useCurrentUser();
   const toggleMode = useToggleMode();
   const [hideSetup, setHideSetup] = useState(false);
+  const unreadCount = useUnreadNotificationCount();
   const firstName = user?.name?.split(' ')[0] ?? 'friend';
   const initial = firstName.charAt(0).toUpperCase();
   const showSetup = Boolean(user) && !user?.imageUrl && !hideSetup;
@@ -95,7 +97,13 @@ export default function HomeScreen({onOpenProfile, onOpenSearch, onOpenAsk, onOp
           >
             <View style={styles.bellWrap}>
               <BellIcon size={20} color={colors.primary} />
-              <View style={styles.bellDot} />
+              {unreadCount > 0 ? (
+                <View style={styles.bellBadge}>
+                  <Text style={styles.bellBadgeText}>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </Text>
+                </View>
+              ) : null}
             </View>
           </TouchableOpacity>
         )}

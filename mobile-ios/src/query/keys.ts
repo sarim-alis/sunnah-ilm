@@ -16,5 +16,9 @@ export const queryKeys = {
   ask: {
     all: ['ask'] as const,
   },
+  notifications: {
+    all: ['notifications'] as const,
+    list: ['notifications', 'list'] as const,
+  },
   users: userKeys,
 };

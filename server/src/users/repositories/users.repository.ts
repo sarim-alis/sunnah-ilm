@@ -4,6 +4,7 @@ import { QueryClient } from '@tanstack/query-core';
 import { IsNull, Not, Repository } from 'typeorm';
 import { QUERY_CLIENT } from '../../common/query/query-client.provider';
 import { SavedHadith } from '../../hadith/entities/saved-hadith.entity';
+import { Notification } from '../../notifications/entities/notification.entity';
 import { Preference } from '../entities/preference.entity';
 import { User } from '../entities/user.entity';
 import { uniqueTopicNames, type HadithTopic } from '../preferences';
@@ -16,6 +17,7 @@ export class UsersRepository {
     @InjectRepository(User) private users: Repository<User>,
     @InjectRepository(Preference) private preferences: Repository<Preference>,
     @InjectRepository(SavedHadith) private savedHadith: Repository<SavedHadith>,
+    @InjectRepository(Notification) private notifications: Repository<Notification>,
     @Inject(QUERY_CLIENT) private queryClient: QueryClient,
   ) {}
 
@@ -117,6 +119,7 @@ export class UsersRepository {
 
     await this.preferences.delete({ userId: id });
     await this.savedHadith.delete({ userId: id });
+    await this.notifications.delete({ userId: id });
 
     await this.users.update(id, {
       name: 'Deleted user',

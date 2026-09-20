@@ -58,22 +58,6 @@ export function NotificationDetailModal({
               </TouchableOpacity>
             </View>
 
-            <View style={[styles.iconWrap, { backgroundColor: iconBackground }]}>
-              <Ionicons name={notification.icon} size={24} color={iconColor} />
-            </View>
-
-            <View style={styles.metaRow}>
-              <Text
-                style={[
-                  styles.status,
-                  notification.unread ? styles.statusUnread : styles.statusRead,
-                ]}
-              >
-                {notification.unread ? 'Unread' : 'Read'}
-              </Text>
-              <Text style={styles.time}> · {notification.time}</Text>
-            </View>
-
             <ScrollView
               style={styles.body}
               showsVerticalScrollIndicator={false}

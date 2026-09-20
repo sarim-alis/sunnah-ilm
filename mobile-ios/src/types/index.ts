@@ -1,3 +1,4 @@
+export type { AppNotification, CreateNotificationInput } from './notifications';
 export type { AuthUser, UserPreference, UserRole } from './users';
 export { USER_ROLES } from './users';
 export type {

@@ -107,13 +107,32 @@ export const createStyles = (colors: ThemeColors) =>
       paddingHorizontal: 20,
       paddingTop: 8,
     },
+    loading: {
+      alignItems: 'center',
+      flex: 1,
+      justifyContent: 'center',
+      paddingTop: 24,
+    },
     section: {
       gap: 10,
+    },
+    sectionHead: {
+      alignItems: 'center',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
     },
     sectionTitle: {
       color: colors.text,
       fontSize: 18,
       fontWeight: '700',
+    },
+    addButton: {
+      alignItems: 'center',
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      height: 32,
+      justifyContent: 'center',
+      width: 32,
     },
     cardShadow: {
       borderRadius: 20,
@@ -192,5 +211,20 @@ export const createStyles = (colors: ThemeColors) =>
       fontSize: 14,
       paddingTop: 24,
       textAlign: 'center',
+    },
+    retryButton: {
+      alignItems: 'center',
+      alignSelf: 'center',
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      justifyContent: 'center',
+      marginTop: 16,
+      minHeight: 40,
+      paddingHorizontal: 16,
+    },
+    retryText: {
+      color: colors.onPrimary,
+      fontSize: 14,
+      fontWeight: '700',
     },
   });

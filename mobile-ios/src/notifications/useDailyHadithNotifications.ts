@@ -25,15 +25,21 @@ export function useDailyHadithNotifications({
     if (!enabled) return;
 
     const openFrom = async (notification?: Notifications.Notification | null) => {
-      const id = dailyHadithIdFromNotification(notification);
-      if (!id) return;
-      const hadith = await getHadithById(id);
-      if (hadith) onOpenHadith(hadith);
+      try {
+        const id = dailyHadithIdFromNotification(notification);
+        if (!id) return;
+        const hadith = await getHadithById(id);
+        if (hadith) onOpenHadith(hadith);
+      } catch {
+        return;
+      }
     };
 
-    void Notifications.getLastNotificationResponseAsync().then((response) => {
-      void openFrom(response?.notification);
-    });
+    void Notifications.getLastNotificationResponseAsync()
+      .then((response) => {
+        void openFrom(response?.notification);
+      })
+      .catch(() => undefined);
 
     const sub = Notifications.addNotificationResponseReceivedListener((response) => {
       void openFrom(response.notification);

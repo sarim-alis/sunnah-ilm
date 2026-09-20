@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   ScrollView,
   Text,
   TextInput,
@@ -7,112 +8,36 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import { AddNotificationModal } from '@/modals/AddNotificationModal';
 import { NotificationDetailModal } from '@/modals/NotificationDetailModal';
+import {
+  notificationGroup,
+  notificationStyle,
+  notificationTimeAgo,
+  type NotificationGroup,
+} from '@/notifications/format';
+import {
+  useCreateNotification,
+  useMarkAllNotificationsRead,
+  useNotifications,
+  useSetNotificationRead,
+} from '@/notifications/hooks';
+import { errorMessage } from '@/services/auth';
 import { createStyles } from '@/styles/screens/NotificationsScreen';
 import { useTheme } from '@/theme/ThemeProvider';
 
-type FilterKey = 'all' | 'daily' | 'saved' | 'alerts';
-type GroupKey = 'today' | 'yesterday' | 'earlier';
-type AccentKey = 'green' | 'red' | 'blue' | 'none';
-
-type NotificationItem = {
-  id: string;
-  title: string;
-  description: string;
-  time: string;
-  group: GroupKey;
-  category: Exclude<FilterKey, 'all'>;
-  icon: keyof typeof Ionicons.glyphMap;
-  accent: AccentKey;
-  unread: boolean;
-};
-
-const FILTERS: { key: FilterKey; label: string }[] = [
+const FILTERS = [
   { key: 'all', label: 'All' },
   { key: 'daily', label: 'Daily' },
   { key: 'saved', label: 'Saved' },
   { key: 'alerts', label: 'Alerts' },
-];
+] as const;
 
-const GROUPS: { key: GroupKey; label: string }[] = [
+const GROUPS: { key: NotificationGroup; label: string }[] = [
   { key: 'today', label: 'Today' },
   { key: 'yesterday', label: 'Yesterday' },
   { key: 'earlier', label: 'Earlier' },
-];
-
-const INITIAL_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: '1',
-    title: 'Hadith of the Day',
-    description:
-      'Today’s narration is ready. Open it and reflect on the Sunnah — a short authentic hadith chosen for this day, with its source and meaning so you can read it in full and carry one teaching with you.',
-    time: '2h ago',
-    group: 'today',
-    category: 'daily',
-    icon: 'checkmark',
-    accent: 'green',
-    unread: true,
-  },
-  {
-    id: '2',
-    title: 'Ask a question',
-    description:
-      'Have you asked a Hadith today? Seek knowledge from authentic sources. Type a question in Ask Hadith and Sunnah Ilm will retrieve narrations with their books, numbers, and topics.',
-    time: '3h ago',
-    group: 'today',
-    category: 'alerts',
-    icon: 'time-outline',
-    accent: 'red',
-    unread: true,
-  },
-  {
-    id: '3',
-    title: 'Saved for later',
-    description:
-      'A hadith you bookmarked is waiting for you to read again. Open Saved to return to the narration, review its wording, and keep it close for later reflection.',
-    time: '5h ago',
-    group: 'today',
-    category: 'saved',
-    icon: 'trending-up-outline',
-    accent: 'blue',
-    unread: true,
-  },
-  {
-    id: '4',
-    title: 'Welcome to Sunnah Ilm',
-    description:
-      'Your journey of learning the Prophet’s teachings starts here. Finish setting up your profile, pick the topics you care about, and begin with one authentic hadith at a time.',
-    time: '1d ago',
-    group: 'yesterday',
-    category: 'alerts',
-    icon: 'person-outline',
-    accent: 'none',
-    unread: false,
-  },
-  {
-    id: '5',
-    title: 'Explore topics',
-    description:
-      'Browse Faith, Prayer, Character, and more authentic collections. Filter by topic to find narrations that match what you want to study today.',
-    time: '1d ago',
-    group: 'yesterday',
-    category: 'alerts',
-    icon: 'notifications-outline',
-    accent: 'none',
-    unread: false,
-  },
-  {
-    id: '6',
-    title: 'Keep seeking knowledge',
-    description:
-      'Even one hadith a day brings barakah to the heart. Come back tomorrow for a new narration, or reopen today’s hadith and sit with its meaning a little longer.',
-    time: '3d ago',
-    group: 'earlier',
-    category: 'daily',
-    icon: 'checkmark',
-    accent: 'none',
-    unread: false,
-  },
 ];
 
 type NotificationsScreenProps = {
@@ -122,11 +47,15 @@ type NotificationsScreenProps = {
 export default function NotificationsScreen({ onBack }: NotificationsScreenProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const [filter, setFilter] = useState<FilterKey>('all');
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]['key']>('all');
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [items, setItems] = useState(INITIAL_NOTIFICATIONS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const listQuery = useNotifications();
+  const createMutation = useCreateNotification();
+  const setReadMutation = useSetNotificationRead();
+  const markAllMutation = useMarkAllNotificationsRead();
 
   const accents = {
     green: '#22C55E',
@@ -142,22 +71,44 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
     none: { backgroundColor: colors.accent, color: colors.primary },
   };
 
+  const items = useMemo(() => {
+    return (listQuery.data?.notifications ?? []).map((item) => {
+      const look = notificationStyle(item.id);
+      return {
+        ...item,
+        unread: !item.isRead,
+        time: notificationTimeAgo(item.createdAt),
+        group: notificationGroup(item.createdAt),
+        accent: look.accent,
+        icon: look.icon,
+      };
+    });
+  }, [listQuery.data?.notifications]);
+
   const visible = items.filter((item) => {
-    const matchesFilter = filter === 'all' || item.category === filter;
     const needle = query.trim().toLowerCase();
     const matchesQuery =
       !needle ||
       item.title.toLowerCase().includes(needle) ||
       item.description.toLowerCase().includes(needle);
-    return matchesFilter && matchesQuery;
+    return matchesQuery;
   });
 
   const hasUnread = items.some((item) => item.unread);
   const selected = items.find((item) => item.id === selectedId) ?? null;
 
   const setUnread = (id: string, unread: boolean) => {
-    setItems((current) =>
-      current.map((item) => (item.id === id ? { ...item, unread } : item)),
+    setReadMutation.mutate(
+      { id, isRead: !unread },
+      {
+        onError: (err) => {
+          Toast.show({
+            type: 'error',
+            text1: 'Update failed',
+            text2: errorMessage(err, 'Could not update notification'),
+          });
+        },
+      },
     );
   };
 
@@ -222,7 +173,15 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
         <View style={styles.markRow}>
           <TouchableOpacity
             onPress={() =>
-              setItems((current) => current.map((item) => ({ ...item, unread: false })))
+              markAllMutation.mutate(undefined, {
+                onError: (err) => {
+                  Toast.show({
+                    type: 'error',
+                    text1: 'Update failed',
+                    text2: errorMessage(err, 'Could not mark all as read'),
+                  });
+                },
+              })
             }
             style={styles.markButton}
             activeOpacity={0.85}
@@ -232,18 +191,47 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
         </View>
       ) : null}
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {visible.length ? (
-          GROUPS.map((group) => {
+      {listQuery.isPending ? (
+        <View style={styles.loading}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : listQuery.isError ? (
+        <View style={styles.loading}>
+          <Text style={styles.empty}>
+            {errorMessage(listQuery.error, 'Could not load notifications')}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              void listQuery.refetch();
+            }}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryText}>Try again</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {GROUPS.map((group) => {
             const groupItems = visible.filter((item) => item.group === group.key);
-            if (!groupItems.length) return null;
+            if (group.key !== 'today' && !groupItems.length) return null;
             return (
               <View key={group.key} style={styles.section}>
-                <Text style={styles.sectionTitle}>{group.label}</Text>
+                <View style={styles.sectionHead}>
+                  <Text style={styles.sectionTitle}>{group.label}</Text>
+                  {group.key === 'today' ? (
+                    <TouchableOpacity
+                      onPress={() => setAddOpen(true)}
+                      style={styles.addButton}
+                      accessibilityLabel="Add notification"
+                    >
+                      <Ionicons name="add" size={22} color={colors.onPrimary} />
+                    </TouchableOpacity>
+                  ) : null}
+                </View>
                 {groupItems.map((item) => {
                   const tint = iconTints[item.accent];
                   return (
@@ -291,13 +279,14 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
                     </TouchableOpacity>
                   );
                 })}
+                {visible.length === 0 && group.key === 'today' ? (
+                  <Text style={styles.empty}>No notifications yet</Text>
+                ) : null}
               </View>
             );
-          })
-        ) : (
-          <Text style={styles.empty}>No notifications yet</Text>
-        )}
-      </ScrollView>
+          })}
+        </ScrollView>
+      )}
 
       <NotificationDetailModal
         visible={Boolean(selected)}
@@ -308,6 +297,27 @@ export default function NotificationsScreen({ onBack }: NotificationsScreenProps
         }
         onClose={() => setSelectedId(null)}
         onSetUnread={setUnread}
+      />
+
+      <AddNotificationModal
+        visible={addOpen}
+        saving={createMutation.isPending}
+        onClose={() => setAddOpen(false)}
+        onSave={(data) => {
+          createMutation.mutate(data, {
+            onSuccess: () => {
+              setAddOpen(false);
+              Toast.show({ type: 'success', text1: 'Added', text2: 'Notification saved' });
+            },
+            onError: (err) => {
+              Toast.show({
+                type: 'error',
+                text1: 'Add failed',
+                text2: errorMessage(err, 'Could not add notification'),
+              });
+            },
+          });
+        }}
       />
     </View>
   );
